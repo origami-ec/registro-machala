@@ -1,0 +1,312 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">#{pcRevisarTramites.taskDataByTaskID.name} # #{pcRevisarTramites.ht.numTramite}</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <h2><center>#{pcRevisarTramites.taskDataByTaskID.name} - Trámite No #{pcRevisarTramites.ht.numTramite}</center></h2>
+            <!--<p:scrollPanel mode="native" style="height: 100px;" rendered="# {pcRevisarTramites.advertencias.length() gt 0}" >
+                <p:outputLabel value="# {pcRevisarTramites.advertencias}" class="Fs18 FontBold icon-lock" 
+                               style="color: darkred; text-transform: uppercase; font-size: 20px;" escape="false"  /><br/>
+            </p:scrollPanel>-->
+            <p:tabView id="mainTab">
+                <p:tab title="Comentarios del Proceso" >
+                    <p:dataTable value="#{pcRevisarTramites.observacionesTramites}" var="obs" id="dtObservaciones">
+                        <p:column headerText="Fecha de Ingreso" width="100">
+                            <p:outputLabel value="#{obs.fecCre}"><f:convertDateTime pattern="dd-MM-yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Usuario" width="100">
+                            <p:outputLabel value="#{obs.userCre}" />
+                        </p:column>
+                        <p:column headerText="Tarea" width="100">
+                            <p:outputLabel value="#{obs.tarea}" />
+                        </p:column>
+                        <p:column headerText="Observación" >
+                            <!--<p:outputLabel value="# {obs.observacion}" />-->
+                            <!--<h:outputText value="# {obs.observacion}" escape="false" />-->
+                            <p:inputTextarea value="#{obs.observacion}" style="width: 100%" readonly="true"/>
+                        </p:column>
+                    </p:dataTable>
+                    <br></br>
+                    <center>
+                        <p:commandButton value="Completar Tarea" icon="pi pi-thumbs-up" style="font-size: 16px;"
+                                         actionListener="#{pcRevisarTramites.showDlgComentarioProceso(true)}">
+                            <p:confirm header="Confirmación" message="Seguro de Regresar el Trámite al Director?" 
+                                       icon="pi pi-exclamation-triangle"  />
+                        </p:commandButton>
+                    </center>
+                </p:tab>
+
+                <p:tab title="Tareas de Tramite" rendered="false" >
+                    <p:dataTable id="dtTareas" value="#{pcRevisarTramites.tareas}" emptyMessage="Sin elementos..." scrollHeight="250" rowIndexVar="indexInsc"
+                                 var="det" style="text-align: center; width: 85%;margin: 0 auto;" scrollable="true" resizableColumns="true">
+                        <p:column headerText="Nº" width="30">#{indexInsc+1}</p:column>
+                        <p:column headerText="Documento/Contrato">
+                            <p:outputLabel value="#{det.detalle.acto.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Repertorio" width="80" rendered="#{pcRevisarTramites.liquidacion.inscripcion}" >
+                            <p:outputLabel value="#{det.detalle.liquidacion.repertorio}"/>
+                        </p:column>
+                        <p:column headerText="Inscripcion" width="80" rendered="#{pcRevisarTramites.liquidacion.inscripcion}">
+                            <p:outputLabel value="#{det.detalle.inscripcion}"/>
+                        </p:column>
+                        <p:column headerText="Nº Certificado" width="80" rendered="#{pcRevisarTramites.liquidacion.certificado}">
+                            <!--<p:outputLabel value="# {det.detalle.inscripcion}"/>-->
+                            <p:outputLabel value="#{det.certificado.numCertificado}"/>
+                        </p:column>
+                        <p:column headerText="Fecha de Ingreso" width="120">
+                            <p:outputLabel value="#{det.fecha}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Realizado" width="60">
+                            <p:graphicImage value="/resources/icons/check.png" height="16" rendered="#{det.realizado}" title="Realizado"/>
+                            <p:graphicImage value="/resources/icons/delete.png" height="16" rendered="#{!det.realizado}" title="NO Realizado"/> 
+                        </p:column>
+                        <p:column headerText="Documentos" width="70">
+                            <p:commandLink actionListener="#{pcRevisarTramites.showDlgDocumentos(det)}">
+                                <p:graphicImage value="/resources/icons/reporte.png" height="20"/>
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+
+                <p:tab title="Detalle proforma">
+                    <div style="display: flex; ">
+                        <p:fieldset legend="Solicitante" style="width: 50%">
+                            <h:panelGrid styleClass="noBorder" style="width: 100%;" columns="4">
+                                <h:panelGroup>
+                                    <p:outputLabel value="CI/Ruc:" /> <br/>
+                                    <p:outputLabel value="#{pcRevisarTramites.liquidacion.solicitante.ciRuc}" style="font-weight: bolder;font-size: 14px;"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Nombres/Razón Social:" /> <br/>
+                                    <p:outputLabel value="#{pcRevisarTramites.liquidacion.solicitante.nombreCompleto}" style="font-weight: bolder;font-size: 14px;"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Fecha Proforma:" /> <br/>
+                                    <p:outputLabel value="#{pcRevisarTramites.liquidacion.fechaCreacion}" style="font-weight: bolder;font-size: 14px;">
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                                    </p:outputLabel>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Fecha Entrega:" /> <br/>
+                                    <p:outputLabel value="#{pcRevisarTramites.liquidacion.tramite.fechaEntrega}" 
+                                                   style="font-weight: bolder;font-size: 14px;">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </p:outputLabel>
+                                </h:panelGroup>
+                            </h:panelGrid>
+                        </p:fieldset>
+                        <p:fieldset legend="Factura" style="width: 50%">
+                            <h:panelGrid styleClass="noBorder" style="width: 100%;" columns="3">
+                                <h:panelGroup>
+                                    <p:outputLabel value="Cl/Ruc:" /> <br></br>
+                                    <p:outputLabel value="#{pcRevisarTramites.liquidacion.beneficiario.ciRuc}" style="font-weight: bolder;font-size: 14px;"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Nombres/Razón Social:" /> <br></br>
+                                    <p:outputLabel value="#{pcRevisarTramites.liquidacion.beneficiario.nombreCompleto}" style="font-weight: bolder;font-size: 14px;"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Correo:" /> <br></br>
+                                    <p:outputLabel value="#{pcRevisarTramites.liquidacion.beneficiario.correo1}" style="font-weight: bolder;font-size: 14px;"/>
+                                </h:panelGroup>
+                            </h:panelGrid>
+                        </p:fieldset>
+                        <h:panelGroup>
+                            <p:commandLink actionListener="#{pcRevisarTramites.showProforma(pcRevisarTramites.liquidacion)}" 
+                                           title="Visualizar Proforma">
+                                <p:graphicImage value="/resources/icons/pdf.png" height="60" />
+                            </p:commandLink>
+                            <br/>
+                            <p:outputLabel value="Visualizar Solicitud" style="font-weight: bolder;"/>
+                        </h:panelGroup>
+                    </div>
+                    <br/>
+                    <p:fieldset legend="Información Adicional" style="width: 100%">
+                        <h:panelGrid style="width: 100%;" columns="1">
+                            <h:panelGroup>
+                                <p:outputLabel value="#{pcRevisarTramites.liquidacion.infAdicionalProf}" />
+                            </h:panelGroup>
+                        </h:panelGrid>
+                    </p:fieldset>
+                    <div class="card">
+                        <p:dataTable var="det"
+                                     value="#{pcRevisarTramites.liquidacion.regpLiquidacionDetallesCollection}"
+                                     style="width:100%">
+                            <p:columnGroup type="header">
+                                <p:row>
+                                    <p:column colspan="3" headerText="Acto"/>
+                                </p:row>
+                            </p:columnGroup>
+                            <p:column>
+                                <h:outputText value="#{det.acto.nombre}" style="font-weight:bold;" />
+                            </p:column>
+                            <p:column colspan="2">
+                                <p:dataTable var="inter"
+                                             value="#{det.regpIntervinientesCollection}"
+                                             style="width:100%; border: none;">
+                                    <p:column headerText="Cl/RUC">
+                                        <h:outputText 
+                                            value="#{inter.ente.ciRuc}" />
+                                    </p:column>
+                                    <p:column headerText="Interviniente/s">
+                                        <h:outputText 
+                                            value="#{inter.ente.nombreCompleto}" />
+                                    </p:column>
+                                    <p:column headerText="Papel">
+                                        <h:outputText value="#{inter.papel.papel}" />
+                                    </p:column>
+                                </p:dataTable>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </p:tab>
+
+                <p:tab title="Información Nota Devolutiva" rendered="#{pcRevisarTramites.tieneNotaDevolutiva}" >
+                    <p:dataTable value="#{pcRevisarTramites.notaDevolutivaAnalisis}" var="notaDevolutiva" >
+                        <p:column headerText="Fecha de Registro" >
+                            #{notaDevolutiva.fecha}
+                        </p:column>
+                        <p:column headerText="Realizado" >
+                            #{notaDevolutiva.realizado}
+                        </p:column>
+                        <p:column headerText="Asunto" >
+                            #{notaDevolutiva.asunto}
+                        </p:column>
+                        <p:column headerText="Retiro" >
+                            #{notaDevolutiva.fechaRetiro}
+                        </p:column>
+                        <p:column headerText="Reingreso" >
+                            #{notaDevolutiva.fechaReingreso}
+                        </p:column>
+                        <p:column headerText="Fecha de Entrega" >
+                            #{notaDevolutiva.fechaEntregaTramite}
+                        </p:column>
+                        <p:column headerText="Estado" >
+                            <p:outputLabel value="GENERADA" rendered="#{notaDevolutiva.documento eq null}"/>
+                            <p:outputLabel value="FIRMADA" rendered="#{notaDevolutiva.documento ne null}"/>
+                        </p:column>
+                        <p:column headerText="Descarga" width="80">
+                            <center>
+                                <p:commandLink actionListener="#{pcRevisarTramites.imprimirNotaDevolutiva(notaDevolutiva)}">
+                                    <p:graphicImage value="/resources/icons/reporte.png"/>
+                                </p:commandLink> 
+                            </center>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+
+                <p:tab title="Correo del Trámite" rendered="false">
+                    <h:panelGrid columns="4">
+                        <p:outputLabel value="Correo Ingresado para el Trámite:" style="font-weight: bolder;"/>
+                        <p:inputText value="#{pcRevisarTramites.liquidacion.correoTramite}" size="40"/>
+                        <p:spacer width="20" height="1"/>
+                        <p:commandButton value="Actualizar" icon="pi pi-refresh" 
+                                         actionListener="#{pcRevisarTramites.updateLiquidacion()}"/>
+                    </h:panelGrid>
+                </p:tab>
+
+                <p:tab title="Documentos">
+                    <p:dataTable value="#{pcRevisarTramites.lazyArchivos}" style="text-align: center;" scrollable="true" lazy="true"
+                                 emptyMessage="Sin documentos digitalizados..." scrollHeight="300" var="doc1" paginator="true" reflow="true"
+                                 rows="5" paginatorAlwaysVisible="false" >
+                        <p:column headerText="Nombre" >
+                            <p:outputLabel id="nombreDoc" value="#{doc1.detalleDocumento}" />
+                            <p:tooltip for="nombreDoc" value="#{doc1.detalleDocumento}" position="top" />
+                        </p:column>
+                        <p:column headerText="Usuario" >
+                            <p:outputLabel value="#{doc1.usuario.usuario}" />
+                        </p:column>
+                        <p:column headerText="Fecha" >
+                            <p:outputLabel value="#{doc1.fecha}" />
+                        </p:column>
+                        <p:column headerText="Descripción" >
+                            <p:outputLabel value="Páginas: " style="font-weight: bolder"/>
+                            <p:outputLabel value="#{doc1.numeroPaginas}" /> <br/>
+                            <p:outputLabel value="Formato: " style="font-weight: bolder"/>
+                            <p:outputLabel value="#{doc1.formato}" /> <br/>
+                            <p:outputLabel value="Peso: " style="font-weight: bolder"/>
+                            <p:outputLabel value="#{doc1.peso}" />
+                        </p:column>
+                        <p:column headerText="***" >
+                            <p:panelGrid columns="2" styleClass="ui-noborder">
+                                <p:commandLink actionListener="#{tramitesIngresados.visualizarDocumento(doc1)}" process="@this" 
+                                               style="margin-right: 10px" title="Visualizar">
+                                    <i class="pi pi-file-pdf" style="font-size: 1.5em; margin-right: 5px;color: darkgreen;"></i>
+                                </p:commandLink> 
+                                <p:commandLink actionListener="#{tramitesIngresados.descargarDocumento(doc1)}" process="@this" 
+                                               style="margin-right: 10px" title="Descargar">
+                                    <i class="pi pi-download" style="font-size: 1.5em; margin-right: 5px;color: darkcyan;"></i>
+                                </p:commandLink> 
+                            </p:panelGrid>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+            </p:tabView>
+
+            <p:confirmDialog global="true">
+                <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+
+        </h:form>
+
+        <p:dialog id="dlgObervaciones" widgetVar="dlgObsvs" header="INGRESAR COMENTARIO" modal="true" width="400" 
+                  resizable="false" position="center">
+            <h:form id="formObs">
+                <p:outputLabel value="Observación del Trámite:" style="font-weight: bolder;font-size: 16px"/>
+                <p:inputTextarea value="#{pcRevisarTramites.observacion}" rows="5" autoResize="false"
+                                 style="width: 100%" maxlength="2000"/>
+                <br/><br/>
+                <center>
+                    <p:commandButton value="Enviar" icon="pi pi-send" 
+                                     actionListener="#{pcRevisarTramites.completarTareaDirector()}"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgDocumentos" header="Documentos" modal="true">
+            <h:form id="frmDocuments">
+                <h:panelGrid columns="1" style="font-weight: bolder;text-align: center;"
+                             rendered="#{pcRevisarTramites.rtt.detalle.acto.solvencia}">
+                    <p:outputLabel value="Certificado"/>
+                    <p:commandLink actionListener="#{pcRevisarTramites.generarCertificado()}">
+                        <p:graphicImage value="/resources/icons/reporte.png"/>
+                    </p:commandLink>
+                </h:panelGrid>
+                <h:panelGrid columns="3" style="font-weight: bolder;text-align: center;"
+                             rendered="#{!pcRevisarTramites.rtt.detalle.acto.solvencia}">
+                    <p:outputLabel value="Acta de Inscripcion"/>
+                    <p:spacer width="10"/>
+                    <p:outputLabel value="Razon de Inscripcion"/>
+                    <p:commandLink actionListener="#{pcRevisarTramites.actaInscripcion()}">
+                        <p:graphicImage value="/resources/icons/reporte.png"/>
+                    </p:commandLink>
+                    <p:spacer width="10"/>
+                    <p:commandLink actionListener="#{pcRevisarTramites.razonInscripcion()}">
+                        <p:graphicImage value="/resources/icons/reporte.png"/>
+                    </p:commandLink>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgObervacionesCertificados" widgetVar="dlgObsvsCertificados" header="Agregar Observación" modal="true" width="400" 
+                  resizable="false" position="center">
+            <h:form id="formObsCertificados">
+                <p:outputLabel value="Ingrese Comentario:" style="font-weight: bolder;font-size: 16px"/>
+                <p:inputTextarea value="#{pcRevisarTramites.observacion}" rows="5" autoResize="false"
+                                 style="width: 100%" />
+                <br/><br/>
+                <center><p:commandButton value="Guardar Comentario" icon="pi pi-save" update=":mainForm:mainTab:dtObservaciones" 
+                                         oncomplete="PF('dlgObsvsCertificados').hide();"
+                                         actionListener="#{pcRevisarTramites.guardarComentarioTramite()}" /></center>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

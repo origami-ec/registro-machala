@@ -1,0 +1,171 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2>Consultas Catastro</h2></center> 
+            <p:panel header="CONSULTA CATASTRO">
+                <p:panelGrid styleClass="noBorder" columns="4">
+                    Tipo Consulta:
+                    <p:selectOneMenu value="#{consultaCatastro.tipo}">
+                        <f:selectItem itemLabel="Cedula / Ruc" itemValue="#{1}"/>
+                        <f:selectItem itemLabel="Clave Predial" itemValue="#{2}"/>
+                    </p:selectOneMenu>
+                    <p:inputText value="#{consultaCatastro.ingreso}" size="40" maxlength="17"/>
+                    <p:commandButton value="Buscar" styleClass="btnStyle" actionListener="#{consultaCatastro.consultar()}"/>
+                </p:panelGrid>
+            </p:panel>
+            <p:panel header="INFORMACION DE PROPIEDADES" rendered="#{consultaCatastro.render == 1}">
+                <p:dataTable value="#{consultaCatastro.list}" var="pre" style="text-align: center" rowIndexVar="rowIndex"
+                             emptyMessage="No se encontraron elementos..."  scrollHeight="300" scrollable="true">
+                    <p:column headerText="No" width="60">
+                        #{rowIndex+1}
+                    </p:column>
+                    <p:column headerText="Clave Catastral" width="150">
+                        <p:outputLabel value="#{pre.clavecatastral}"/>
+                    </p:column>
+                    <p:column headerText="Ubicacion">
+                        <p:outputLabel value="#{pre.ubicacion}"/>
+                    </p:column>
+                    <p:column headerText="Parroquia" width="150">
+                        <p:outputLabel value="#{pre.parroquia}"/>
+                    </p:column>
+                    <p:column headerText="Sector">
+                        <p:outputLabel value="#{pre.sector}"/>
+                    </p:column>
+                </p:dataTable>
+                <p:dataGrid value="#{consultaCatastro.list}" var="pr" rows="1" paginator="true" style="width: 100%;" columns="1">
+                    <p:panel header="DETALLE DE CADA PROPIEDAD">
+                        <p:panelGrid styleClass="noBorder" columns="4">
+                            Cedula / RUC:
+                            <p:inputText value="#{pr.cedularuc}" size="40" readonly="true"/>
+                            Propietario:
+                            <p:inputText value="#{pr.propietario}" size="40" readonly="true"/>
+                            Clave Catastral:
+                            <p:inputText value="#{pr.clavecatastral}" size="40" readonly="true"/>
+                            Estado:
+                            <p:outputLabel value="ACTIVO" rendered="#{!pr.historico}"/>
+                            <p:outputLabel value="INACTIVO" rendered="#{pr.historico}"/>
+                            Ubicacion:
+                            <p:inputText value="#{pr.ubicacion}" size="40" readonly="true"/>
+                            Parroquia:
+                            <p:inputText value="#{pr.parroquia}" size="40" readonly="true"/>
+                            Sector:
+                            <p:inputText value="#{pr.sector}" size="40" readonly="true"/>
+                        </p:panelGrid>
+                        <p:panelGrid columns="2">
+                            <p:dataTable value="#{pr.linderositio}" var="linsit" style="text-align: center" emptyMessage="No se encontraron elementos...">
+                                <f:facet name="header">Linderos Sitio</f:facet>
+                                <p:column headerText="Nombre">
+                                    <p:outputLabel value="#{linsit.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Valor">
+                                    <p:outputLabel value="#{linsit.valor}"/>
+                                </p:column>
+                            </p:dataTable>
+                            <p:dataTable value="#{pr.linderoescritura}" var="linesc" style="text-align: center" emptyMessage="No se encontraron elementos...">
+                                <f:facet name="header">Linderos Escritura</f:facet>
+                                <p:column headerText="Nombre">
+                                    <p:outputLabel value="#{linesc.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Valor">
+                                    <p:outputLabel value="#{linesc.valor}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:panelGrid>
+                        <p:panelGrid styleClass="noBorder" columns="4">
+                            Area Terreno:
+                            <p:inputText value="#{pr.areaterreno}" readonly="true"/>
+                            Area Terreno Comunal:
+                            <p:inputText value="#{pr.areaterrenocomunal}" readonly="true"/>
+                            Area Construccion:
+                            <p:inputText value="#{pr.areaconstruccion}" readonly="true"/>
+                            Area Construccion Comunal:
+                            <p:inputText value="#{pr.areaconstruccioncomunal}" readonly="true"/>
+                            Avaluo Terreno:
+                            <p:inputText value="#{pr.avaluoterreno}" readonly="true"/>
+                            Avaluo Terreno Comunal:
+                            <p:inputText value="#{pr.avaluoterrenocomunal}" readonly="true"/>
+                            Avaluo Construccion:
+                            <p:inputText value="#{pr.avaluoconstruccion}" readonly="true"/>
+                            Avaluo Construccion Comunal:
+                            <p:inputText value="#{pr.avaluoconstruccioncomunal}" readonly="true"/>
+                        </p:panelGrid>
+                        <p:panel header="UBICACION GEOGRAFICA">
+                            <center>
+                                <p:graphicImage value="#{pr.foto}"/>
+                            </center>
+                        </p:panel>
+                    </p:panel>
+                </p:dataGrid>
+            </p:panel>
+            <p:panel header="INFORMACION CATASTRAL" rendered="#{consultaCatastro.render == 2}">
+                <p:panelGrid styleClass="noBorder" columns="4">
+                    Cedula / RUC:
+                    <p:inputText value="#{consultaCatastro.pm.cedularuc}" size="40" readonly="true"/>
+                    Propietario:
+                    <p:inputText value="#{consultaCatastro.pm.propietario}" size="40" readonly="true"/>
+                    Clave Catastral:
+                    <p:inputText value="#{consultaCatastro.pm.clavecatastral}" size="40" readonly="true"/>
+                    Estado:
+                    <p:outputLabel value="ACTIVO" rendered="#{!consultaCatastro.pm.historico}"/>
+                    <p:outputLabel value="INACTIVO" rendered="#{consultaCatastro.pm.historico}"/>
+                    Ubicacion:
+                    <p:inputText value="#{consultaCatastro.pm.ubicacion}" size="40" readonly="true"/>
+                    Parroquia:
+                    <p:inputText value="#{consultaCatastro.pm.parroquia}" size="40" readonly="true"/>
+                    Sector:
+                    <p:inputText value="#{consultaCatastro.pm.sector}" size="40" readonly="true"/>
+                </p:panelGrid>
+                <p:panelGrid columns="2">
+                    <p:dataTable value="#{consultaCatastro.pm.linderositio}" var="sit" style="text-align: center" emptyMessage="No se encontraron elementos...">
+                        <f:facet name="header">Linderos Sitio</f:facet>
+                        <p:column headerText="Nombre">
+                            <p:outputLabel value="#{sit.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Valor">
+                            <p:outputLabel value="#{sit.valor}"/>
+                        </p:column>
+                    </p:dataTable>
+                    <p:dataTable value="#{consultaCatastro.pm.linderoescritura}" var="esc" style="text-align: center" emptyMessage="No se encontraron elementos...">
+                        <f:facet name="header">Linderos Escritura</f:facet>
+                        <p:column headerText="Nombre">
+                            <p:outputLabel value="#{esc.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Valor">
+                            <p:outputLabel value="#{esc.valor}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:panelGrid>
+                <p:panelGrid styleClass="noBorder" columns="4">
+                    Area Terreno:
+                    <p:inputText value="#{consultaCatastro.pm.areaterreno}" readonly="true"/>
+                    Area Terreno Comunal:
+                    <p:inputText value="#{consultaCatastro.pm.areaterrenocomunal}" readonly="true"/>
+                    Area Construccion:
+                    <p:inputText value="#{consultaCatastro.pm.areaconstruccion}" readonly="true"/>
+                    Area Construccion Comunal:
+                    <p:inputText value="#{consultaCatastro.pm.areaconstruccioncomunal}" readonly="true"/>
+                    Avaluo Terreno:
+                    <p:inputText value="#{consultaCatastro.pm.avaluoterreno}" readonly="true"/>
+                    Avaluo Terreno Comunal:
+                    <p:inputText value="#{consultaCatastro.pm.avaluoterrenocomunal}" readonly="true"/>
+                    Avaluo Construccion:
+                    <p:inputText value="#{consultaCatastro.pm.avaluoconstruccion}" readonly="true"/>
+                    Avaluo Construccion Comunal:
+                    <p:inputText value="#{consultaCatastro.pm.avaluoconstruccioncomunal}" readonly="true"/>
+                </p:panelGrid>
+                <p:panel header="UBICACION GEOGRAFICA">
+                    <center>
+                        <p:graphicImage value="#{consultaCatastro.pm.foto}"/>
+                    </center>
+                </p:panel>
+            </p:panel>
+        </h:form>
+    </ui:define>
+</ui:composition>

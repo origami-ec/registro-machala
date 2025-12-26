@@ -1,0 +1,10 @@
+server:
+  port: 8783
+spring:
+  application:
+    name: ws-zuul
+  servlet:
+    multipart:
+      max-file-size: 1GB
+      max-request-size: 1GB
+

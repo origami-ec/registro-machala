@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+    <ui:define name="title">Bandeja de tareas</ui:define>
+    <ui:define name="content">
+        <center><h1>Bandeja de tareas</h1></center>
+        <h:form id="formMain">
+            <p:growl id="notasReunion" showDetail="true" />
+            <h:panelGrid style="width: 100%;" columns="2">
+                <h:panelGroup>
+                    <div class="p-col-12 p-mb-2 p-lg-4 p-mb-lg-0">
+                        <span class="ui-input-icon-left ui-input-icon-right">
+                            <i class="pi pi-user"></i>
+                            <p:inputText value="#{dashBoard.usuario}" rendered="#{dashBoard.esAdmin}" />
+                            <p:commandButton actionListener="#{dashBoard.actualizarTramitePendiente()}" 
+                                             icon="fa fa-search" styleClass="info-button rounded-button p-mr-2 p-mb-2" rendered="#{dashBoard.esAdmin}" >
+                                <i class="pi pi-search"></i>
+                            </p:commandButton>
+                        </span>
+                    </div> 
+                </h:panelGroup>
+                <h:panelGroup>
+                    <!--<p:outputLabel value="Total Trámites: # {dashBoard.cantidad}" style="font-size: 18px; font-weight: bolder; float: right;"/>-->
+                </h:panelGroup>
+            </h:panelGrid>
+            <p:dataTable paginator="true"  var="v_task" value="#{dashBoard.lazy}" lazy="true" 
+                         rowIndexVar="indexInd" resizableColumns="true" widgetVar="dtTareas" id="dtTareas"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         reflow="true" style="font-size: 12px"
+                         rows="10" rowsPerPageTemplate="10, 20, 30,500" 
+                         emptyMessage="No tiene tareas pendientes..." 
+                         filterEvent="enter"
+                         paginatorPosition="bottom"  >
+                <!--<p:column headerText="*" width="15">
+                    <p:graphicImage value="/resources/image/circleOrange.png" height="15" rendered="# {v_task.priority lt 50 ? true : false}"/>
+                    <p:graphicImage value="/resources/image/circleRed.png" height="15" rendered="# {v_task.priority gt 50 ? true : false}" title="Prioridad Alta"/>
+                    <p:graphicImage value="/resources/image/circleGreen.png" height="15" rendered="# {v_task.priority eq 50 ? true : false}"/>
+                </p:column>-->
+                <p:column headerText="#" width="10">
+                    <h:outputText value="#{indexInd+1}" style="font-size: 12px"/>
+                </p:column>
+                <p:column headerText="Fecha Ingreso" width="100">
+                    <p:outputLabel value="#{v_task.fechaIngreso}" style="font-size: 12px">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </p:outputLabel>
+                </p:column>
+                <p:column headerText="Fecha Entrega" width="100">
+                    <p:outputLabel value="#{v_task.fechaEntrega}" style="font-size: 12px">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </p:outputLabel>
+                </p:column>
+                <p:column headerText="Referencia" filterBy="#{v_task.ciRucSolicitante}" width="100"
+                          style="text-align: center;">
+                    <p:outputLabel value="#{v_task.campoReferencia}" style="text-transform: uppercase; font-size: 12px"/>
+                </p:column>
+                <p:column headerText="Identificación" filterBy="#{v_task.ciRucSolicitante}" width="100"
+                          style="text-align: center;">
+                    <p:outputLabel value="#{v_task.ciRucSolicitante}" style="text-transform: uppercase; font-size: 12px"/>
+                </p:column>
+                <p:column headerText="Trámite" style="text-align: center;" filterMatchMode="contains" filterBy="#{v_task.codigo}" filterStyle="width: 90%" width="150">
+                    <center>
+                        <p:outputLabel value="#{v_task.codigo==null?'--':v_task.codigo}" style="text-transform: uppercase; font-size: 12px"/>
+                    </center>
+                </p:column>
+                <p:column headerText="Solicitante" style="text-align: center;" filterBy="#{v_task.nombreSolicitante}">
+                    <p:outputLabel value="#{v_task.nombreSolicitante}" style="text-transform: uppercase; font-size: 12px"/>
+                </p:column>
+                <p:column headerText="Asunto" filterBy="#{v_task.asunto}" style="text-align: center">
+                    <p:outputLabel value="#{v_task.asunto}" style="font-size: 12px"/> <br/>
+                    <p:outputLabel value="#{v_task.idProcesoTemp}" style="font-size: 12px; word-wrap: break-word;"/> 
+                </p:column>
+                <p:column headerText="Tipo" filterBy="#{v_task.idProcesoTemp}" rendered="#{dashBoard.renderedColumn()}" style="text-align: center">
+                    <f:facet name="filter">
+                        <p:selectOneMenu onchange="PF('dtTareas').filter()" styleClass="custom-filter"
+                                         filter="true">
+                            <f:selectItem itemLabel="Seleccione..." itemValue="#{null}"/>
+                            <f:selectItems value="#{dashBoard.servicios}" var="t"
+                                           itemLabel="#{t.nombre}" itemValue="#{t.nombre}"/>
+                        </p:selectOneMenu> 
+                    </f:facet>
+                    <p:outputLabel value="#{v_task.idProcesoTemp}" style="font-size: 12px"/>
+                </p:column>
+                <p:column headerText="Tarea" width="50"> 
+                    <p:commandButton  icon="pi pi-caret-right" styleClass="rounded-button p-mr-2 p-mb-2" 
+                                      actionListener="#{dashBoard.redirecTask(v_task)}" /> 
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>

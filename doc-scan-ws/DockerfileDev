@@ -1,0 +1,6 @@
+FROM adoptopenjdk/openjdk11:alpine-jre
+COPY ./target/origami-firma-ec-1.0.0.jar /opt/app/origami-firma-ec.jar
+WORKDIR /opt/app
+RUN sh -c 'touch origami-firma-ec-1.0.0.jar'
+#EXPOSE 8712
+ENTRYPOINT ["java","-Dspring.profiles.active=test","-jar","ec-gob-loja-firma-ec-0.0.1-SNAPSHOT.jar"]

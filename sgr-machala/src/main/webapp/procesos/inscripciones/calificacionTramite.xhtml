@@ -1,0 +1,541 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">#{calificacionRegistral.taskDataByTaskID.name} # #{calificacionRegistral.ht.numTramite}</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <h2><center>#{calificacionRegistral.taskDataByTaskID.name} - Trámite No #{calificacionRegistral.ht.numTramite}</center></h2>
+            <!--<p:scrollPanel mode="native" style="height: 100px;" rendered="# {calificacionRegistral.advertencias.length() gt 0}" >
+                <p:outputLabel value="# {calificacionRegistral.advertencias}" class="FontBold icon-lock"
+                               style="color: darkred; text-transform: uppercase; font-size: 20px;" escape="false"  />
+            </p:scrollPanel>-->
+            <p:tabView id="mainTab">
+
+                <p:tab title="Detalle proforma">
+
+                    <h:panelGrid columns="1" style="margin: 0 auto;text-align: center;">
+                        <p:outputLabel value="TRÁMITE INICIADO EN LÍNEA" 
+                                       rendered="#{calificacionRegistral.liquidacion.tramiteOnline}" 
+                                       style="font-weight: bolder; font-size: 24px;color: #0033FF;"/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="1" style="margin: 0 auto;text-align: center;">
+                        <p:outputLabel value="TRÁMITE MARCADO CON NEGATIVA!!!" 
+                                       rendered="#{calificacionRegistral.liquidacion.ingresado}" 
+                                       style="font-weight: bolder; font-size: 24px;color: #0033FF;"/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="1" style="margin: 0 auto;text-align: center;">
+                        <p:outputLabel value="TRÁMITE POSEE NOTA DEVOLUTIVA" 
+                                       rendered="#{calificacionRegistral.tieneNotaDevolutiva}"
+                                       style="font-weight: bolder;color: red; font-size: 16px" />
+                    </h:panelGrid>
+
+                    <div style="display: flex; ">
+                        <p:fieldset legend="Solicitante" style="width: 50%">
+                            <h:panelGrid styleClass="noBorder" style="width: 100%;" columns="4">
+                                <h:panelGroup>
+                                    <p:outputLabel value="Cl/Ruc:" /> <br/>
+                                    <p:outputLabel value="#{calificacionRegistral.liquidacion.solicitante.ciRuc}" style="font-weight: bolder;font-size: 14px;"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Nombres/Razón Social:" /> <br/>
+                                    <p:outputLabel value="#{calificacionRegistral.liquidacion.solicitante.nombreCompleto}" style="font-weight: bolder;font-size: 14px;"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Fecha Ingreso:" /> <br/>
+                                    <p:outputLabel value="#{calificacionRegistral.liquidacion.fechaIngreso}" style="font-weight: bolder;font-size: 14px;">
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                                    </p:outputLabel>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Fecha Entrega:" /> <br/>
+                                    <p:outputLabel value="#{calificacionRegistral.liquidacion.tramite.fechaEntrega}" 
+                                                   style="font-weight: bolder;font-size: 14px;">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </p:outputLabel>
+                                </h:panelGroup>
+                            </h:panelGrid>
+                        </p:fieldset>
+                        <p:fieldset legend="Factura" style="width: 50%">
+                            <h:panelGrid styleClass="noBorder" style="width: 100%;" columns="3">
+                                <h:panelGroup>
+                                    <p:outputLabel value="Cl/Ruc:" /> <br></br>
+                                    <p:outputLabel value="#{calificacionRegistral.liquidacion.beneficiario.ciRuc}" style="font-weight: bolder;font-size: 14px;"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Nombres/Razón Social:" /> <br></br>
+                                    <p:outputLabel value="#{calificacionRegistral.liquidacion.beneficiario.nombreCompleto}" style="font-weight: bolder;font-size: 14px;"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Correo:" /> <br></br>
+                                    <p:outputLabel value="#{calificacionRegistral.liquidacion.beneficiario.correo1}" style="font-weight: bolder;font-size: 14px;"/>
+                                </h:panelGroup>
+                            </h:panelGrid>
+                        </p:fieldset>
+                        <h:panelGroup>
+                            <p:commandLink actionListener="#{calificacionRegistral.showProforma(calificacionRegistral.liquidacion)}" 
+                                           title="Visualizar Proforma">
+                                <p:graphicImage value="/resources/icons/pdf.png" height="60" />
+                            </p:commandLink>
+                            <br/>
+                            <p:outputLabel value="Visualizar Solicitud" style="font-weight: bolder;"/>
+                        </h:panelGroup>
+                    </div>
+                    <br/>
+                    <p:fieldset legend="Información Adicional" style="width: 100%">
+                        <h:panelGrid style="width: 100%;" columns="1">
+                            <h:panelGroup>
+                                <p:outputLabel value="#{calificacionRegistral.liquidacion.infAdicionalProf}" />
+                            </h:panelGroup>
+                        </h:panelGrid>
+                    </p:fieldset>
+                    <div class="card">
+                        <p:dataTable var="det"
+                                     value="#{calificacionRegistral.liquidacion.regpLiquidacionDetallesCollection}"
+                                     style="width:100%">
+                            <p:columnGroup type="header">
+                                <p:row>
+                                    <p:column colspan="3" headerText="Acto"/>
+                                </p:row>
+                            </p:columnGroup>
+                            <p:column>
+                                <h:outputText value="#{det.acto.nombre}" style="font-weight:bold;" />
+                            </p:column>
+                            <p:column colspan="2">
+                                <p:dataTable var="inter"
+                                             value="#{det.regpIntervinientesCollection}"
+                                             style="width:100%; border: none;">
+                                    <p:column headerText="Cl/RUC">
+                                        <h:outputText 
+                                            value="#{inter.ente.ciRuc}" />
+                                    </p:column>
+                                    <p:column headerText="Interviniente/s">
+                                        <h:outputText 
+                                            value="#{inter.ente.nombreCompleto}" />
+                                    </p:column>
+                                    <p:column headerText="Papel">
+                                        <h:outputText value="#{inter.papel.papel}" />
+                                    </p:column>
+                                </p:dataTable>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+
+                </p:tab>
+
+                <p:tab title="Información Nota Devolutiva" rendered="#{calificacionRegistral.tieneNotaDevolutiva}" >
+                    <p:dataTable value="#{calificacionRegistral.notaDevolutivaAnalisis}" var="notaDevolutiva" >
+                        <p:column headerText="Fecha de Registro" >
+                            #{notaDevolutiva.fecha}
+                        </p:column>
+                        <p:column headerText="Nro Documento" >
+                            #{notaDevolutiva.numNotaDevolutiva}
+                        </p:column>
+                        <p:column headerText="Realizado" >
+                            #{notaDevolutiva.realizado}
+                        </p:column>
+                        <p:column headerText="Asunto" >
+                            #{notaDevolutiva.asunto}
+                        </p:column>
+                        <p:column headerText="Retiro" >
+                            <p:outputLabel value="#{notaDevolutiva.fechaRetiro}"><f:convertDateTime pattern="dd-MM-yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Reingreso" >
+                            <p:outputLabel value="#{notaDevolutiva.fechaReingreso}"><f:convertDateTime pattern="dd-MM-yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Fecha de Entrega" >
+                            <p:outputLabel value="#{notaDevolutiva.fechaEntregaTramite}"><f:convertDateTime pattern="dd-MM-yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Estado" >
+                            <p:outputLabel value="GENERADA" rendered="#{notaDevolutiva.documento eq null}"/>
+                            <p:outputLabel value="FIRMADA" rendered="#{notaDevolutiva.documento ne null}"/>
+                        </p:column>
+                        <p:column headerText="Descarga" width="80">
+                            <center>
+                                <p:commandLink actionListener="#{calificacionRegistral.imprimirNotaDevolutiva(notaDevolutiva)}">
+                                    <p:graphicImage value="/resources/icons/reporte.png"/>
+                                </p:commandLink>
+                            </center>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+
+                <p:tab title="Pronunciamiento Jurídico" rendered="#{calificacionRegistral.tienePronunciamiento}" >
+                    <br></br>
+                    <center>
+                        <p:dataTable value="#{calificacionRegistral.pronunciamientos}" var="pron" >
+                            <p:column headerText="Nro Documento" >
+                                #{pron.numeroDocumento}
+                            </p:column>
+                            <p:column headerText="Fecha de Registro" >
+                                <p:outputLabel value="#{pron.fechaIngreso}"><f:convertDateTime pattern="dd-MM-yyyy HH:mm"/></p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Usuario" >
+                                #{pron.realizado}
+                            </p:column>
+                            <p:column headerText="Asunto" >
+                                #{pron.asunto}
+                            </p:column>
+                            <p:column headerText="Descargar" >
+                                <center>
+                                    <p:commandLink actionListener="#{calificacionRegistral.generarPronunciamiento(pron.id)}">
+                                        <p:graphicImage value="/resources/icons/down.png"/>
+                                    </p:commandLink>
+                                </center>
+                            </p:column>
+                        </p:dataTable>
+                    </center>
+                    <br></br>
+                </p:tab>
+
+                <p:tab title="Comentarios del Proceso" >
+                    <center>
+                        <p:commandButton value="Ingresar Comentario al Proceso" icon="pi pi-comments"
+                                         actionListener="#{calificacionRegistral.nuevaObservacion()}"
+                                         style="background-color: darkcyan;" />
+                    </center>
+                    <p:dataTable value="#{calificacionRegistral.observacionesTramites}" var="obs" id="dtObservaciones">
+                        <p:column headerText="Fecha de Ingreso" width="100">
+                            <p:outputLabel value="#{obs.fecCre}"><f:convertDateTime pattern="dd-MM-yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Usuario" width="100">
+                            <p:outputLabel value="#{obs.userCre}" />
+                        </p:column>
+                        <p:column headerText="Tarea" width="100">
+                            <p:outputLabel value="#{obs.tarea}" />
+                        </p:column>
+                        <p:column headerText="Observación" >
+                            <!--<p:outputLabel value="# {obs.observacion}" />-->
+                            <!--<h:outputText value="# {obs.observacion}" escape="false" />-->
+                            <p:inputTextarea value="#{obs.observacion}" style="width: 100%" readonly="true"/>
+                        </p:column>
+                    </p:dataTable>
+                    <br></br>
+                </p:tab>
+
+                <p:tab title="Documentos">
+                    <p:dataTable value="#{calificacionRegistral.lazyArchivos}" style="text-align: center;" scrollable="true" lazy="true"
+                                 emptyMessage="Sin documentos digitalizados..." scrollHeight="300" var="doc1" paginator="true" reflow="true"
+                                 rows="5" paginatorAlwaysVisible="false" >
+                        <p:column headerText="Nombre" >
+                            <p:outputLabel id="nombreDoc" value="#{doc1.detalleDocumento}" />
+                            <p:tooltip for="nombreDoc" value="#{doc1.detalleDocumento}" position="top" />
+                        </p:column>
+                        <p:column headerText="Usuario" >
+                            <p:outputLabel value="#{doc1.usuario.usuario}" />
+                        </p:column>
+                        <p:column headerText="Fecha" >
+                            <p:outputLabel value="#{doc1.fecha}" />
+                        </p:column>
+                        <p:column headerText="Descripción" >
+                            <p:outputLabel value="Páginas: " style="font-weight: bolder"/>
+                            <p:outputLabel value="#{doc1.numeroPaginas}" /> <br/>
+                            <p:outputLabel value="Formato: " style="font-weight: bolder"/>
+                            <p:outputLabel value="#{doc1.formato}" /> <br/>
+                            <p:outputLabel value="Peso: " style="font-weight: bolder"/>
+                            <p:outputLabel value="#{doc1.peso}" />
+                        </p:column>
+                        <p:column headerText="***" >
+                            <p:panelGrid columns="2" styleClass="ui-noborder">
+                                <p:commandLink actionListener="#{tramitesIngresados.visualizarDocumento(doc1)}" process="@this" 
+                                               style="margin-right: 10px" title="Visualizar">
+                                    <i class="pi pi-file-pdf" style="font-size: 1.5em; margin-right: 5px;color: darkgreen;"></i>
+                                </p:commandLink> 
+                                <p:commandLink actionListener="#{tramitesIngresados.descargarDocumento(doc1)}" process="@this" 
+                                               style="margin-right: 10px" title="Descargar">
+                                    <i class="pi pi-download" style="font-size: 1.5em; margin-right: 5px;color: darkcyan;"></i>
+                                </p:commandLink> 
+                            </p:panelGrid>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+
+                <p:tab title="Información de Trámite" >
+
+                    <p:dataTable id="dtTareas" value="#{calificacionRegistral.tareas}" emptyMessage="Sin elementos..." 
+                                 scrollHeight="250" rowIndexVar="indexInsc" var="det" style="width: 95%;margin: 0 auto;" 
+                                 scrollable="true" resizableColumns="true">
+                        <p:column headerText="Nº" width="30">#{indexInsc+1}</p:column>
+                        <p:column headerText="Contrato">
+                            <p:outputLabel value="#{det.detalle.acto.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Repertorio" width="100">
+                            <h:outputText value="#{det.detalle.liquidacion.repertorio}"/>
+                        </p:column>
+                        <p:column headerText="Fecha Ingreso" width="100">
+                            <p:outputLabel value="#{det.fecha}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Visualizar" width="50">
+                            <p:commandButton icon="pi pi-folder" style="background-color: darkolivegreen;" 
+                                             title="Visualizar datos ingresados" 
+                                             actionListener="#{calificacionRegistral.showDlgMovSelect(det)}"/>
+                        </p:column>
+                        <p:column headerText="Ingresar" width="50" rendered="false">
+                            <p:commandButton icon="pi pi-pencil" style="background-color: darkorange;" 
+                                             title="Ingresar datos de título"
+                                             actionListener="#{calificacionRegistral.realizarTarea(det)}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+
+                <p:tab title="Consulta a Senior" >
+                    <h:panelGrid columns="1" style="width: 60%;margin: 0 auto;">
+                        <p:outputLabel value="CONTENIDO DEL DOCUMENTO:" style="font-weight: bolder;font-size: 16px;color: blue;"/>
+                        <p:textEditor value="#{calificacionRegistral.liquidacion.infAdicional}" style="width: 100%;" 
+                                      allowLinks="false" height="250" allowImages="false" secure="false" 
+                                      placeholder="Ingrese aquí el contenido del documento para revisión del Analista Senior.">
+                            <f:facet name="toolbar">
+                                <span class="ql-formats">
+                                    <button class="ql-bold" title="Negrita"></button>
+                                    <button class="ql-italic" title="Cursiva"></button>
+                                    <button class="ql-underline" title="Subrayado"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-list" value="ordered" title="Numeración"></button>
+                                    <button class="ql-list" value="bullet" title="Viñeta"></button>
+                                    <!--<button class="ql-indent" value="-1" title="Disminuir Sangría"></button>-->
+                                    <!--<button class="ql-indent" value="+1" title="Aumentar Sangría"></button>-->
+                                </span>
+                                <!--<span class="ql-formats">
+                                    <button class="ql-align" value="center"></button>
+                                    <button class="ql-align" value="right"></button>
+                                    <button class="ql-align" value="justify"></button>
+                                </span>-->
+                            </f:facet>
+                        </p:textEditor>
+                    </h:panelGrid>
+                </p:tab>
+
+            </p:tabView>
+            <br></br>
+            <center>
+                <h:panelGrid id="pnlAprobacion" columns="5" style="font-size: 16px;margin: 0 auto;" >
+                    <p:commandButton value="Nota Devolutiva" icon="pi pi-undo" 
+                                     actionListener="#{calificacionRegistral.rechazar()}"
+                                     rendered="#{calificacionRegistral.solicitudAprobada}"
+                                     update="mainForm:pnlAprobacion, mainForm:pnlRechazada"
+                                     style="font-size: 16px;background-color: darkorange;" />
+                    <p:spacer width="50" height="1"/>
+                    <p:commandButton value="Enviar a Senior" icon="pi pi-flag" 
+                                     rendered="#{calificacionRegistral.solicitudAprobada}" 
+                                     style="font-size: 16px;background-color: darkolivegreen;" 
+                                     actionListener="#{calificacionRegistral.solicitarConsultaSenior()}" >
+                        <p:confirm message="Esta seguro que desea Solicitar Consulta al Analista Senior?" header="Confirmación" 
+                                   icon="pi pi-exclamation-triangle" ></p:confirm>
+                    </p:commandButton>
+                    <p:spacer width="50" height="1"/>
+                    <p:commandButton value="Pasar a Inscribir" icon="pi pi-thumbs-up"
+                                     rendered="#{calificacionRegistral.solicitudAprobada}"
+                                     actionListener="#{calificacionRegistral.showDlgAprobado(false)}"
+                                     style="font-size: 16px;">
+                        <p:confirm message="Esta seguro de que desea Aprobar este trámite?" header="Confirmación"
+                                   icon="pi pi-exclamation-triangle" ></p:confirm>
+                    </p:commandButton>
+
+                    <!--<p:spacer width="50" height="1" rendered="false"/>
+                    <p:commandButton value="Pronunciamiento Jurídico" icon="pi pi-flag" rendered="false"
+                                     rendered="# {calificacionRegistral.solicitudAprobada}"
+                                     update="mainForm:pnlAprobacion, mainForm:pnlRechazada"
+                                     style="font-size: 16px;background-color: orangered;"
+                                     actionListener="# {calificacionRegistral.solicitarPronunciamientoJuridico()}" >
+                        <p:confirm message="Esta seguro que desea Solicitar Pronunciamiento Jurídico?"
+                                   icon="pi pi-exclamation-triangle" ></p:confirm>
+                    </p:commandButton>-->
+                    <!--<p:spacer width="50" height="1"/>-->
+                    <!--<p:commandButton value="Inscipción Negativa" icon="pi pi-ban"
+                                     actionListener="# {calificacionRegistral.showDlgNegativa()}" 
+                                     rendered="# {calificacionRegistral.solicitudAprobada}" 
+                                     style="font-size: 16px;background-color: orangered;">
+                        <p:confirm message="Esta seguro de que desea registrar inscripción NEGATIVA?" header="Confirmación"
+                                   icon="pi pi-exclamation-triangle" ></p:confirm>
+                    </p:commandButton>--> 
+                </h:panelGrid>
+                <h:panelGrid id="pnlRechazada" style="font-size: 16px;" >
+                    <h:panelGrid  columns="1" rendered="#{!calificacionRegistral.solicitudAprobada}" >
+                        <p:outputLabel value="Solicitud Rechazada" style="font-weight: bolder;font-size: 16px; color: red" />
+                        <p:outputLabel value="#{calificacionRegistral.notaDevolutiva.fecha}" style="font-weight: bolder" />
+                        <!--<p:outputLabel value="Para: # {calificacionRegistral.notaDevolutiva.para.nombreCompleto}"   />-->
+                        <p:outputLabel value="Asunto: #{calificacionRegistral.notaDevolutiva.asunto}"   />
+                        <br></br>
+                        <p:textEditor widgetVar="editorNotaDevolutiva" secure="false"
+                                      value="#{calificacionRegistral.notaDevolutiva.detalle}"
+                                      style="margin-bottom:10px; width: 900px; height: 450px; "
+                                      placeholder="Escriba aquí su Nota Devolutiva">
+                            <f:facet name="toolbar">
+                                <span class="ql-formats">
+                                    <button class="ql-bold" title="Negrita"></button>
+                                    <button class="ql-italic" title="Cursiva"></button>
+                                    <button class="ql-underline" title="Subrayado"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-list" value="ordered" title="Numeración"></button>
+                                    <button class="ql-list" value="bullet" title="Viñeta"></button>
+                                    <!--<button class="ql-indent" value="-1" title="Disminuir Sangría"></button>-->
+                                    <!--<button class="ql-indent" value="+1" title="Aumentar Sangría"></button>-->
+                                </span>
+                                <!--<span class="ql-formats">
+                                    <button class="ql-align" value="center"></button>
+                                    <button class="ql-align" value="right"></button>
+                                    <button class="ql-align" value="justify"></button>
+                                </span>-->
+                            </f:facet>
+                        </p:textEditor>
+
+                        <br></br><br></br>
+
+                        <h:panelGrid columns="5" style="margin: 0 auto;" >
+                            <p:commandButton value="Guardar Devolutiva" icon="pi pi-save" update="mainForm:pnlAprobacion"
+                                             actionListener="#{calificacionRegistral.guardarNotaDevolutiva()}">
+                                <p:confirm header="Confirmación" message="Está seguro de guardar el documento?"
+                                           icon="pi pi-exclamation-triangle" />
+                            </p:commandButton>
+                            <p:spacer width="100" height="1" />
+                            <p:commandButton value="Firmar y Enviar" icon="pi pi-send" style="background-color: darkolivegreen;"
+                                             actionListener="#{calificacionRegistral.completarTareaDevolutiva()}" >
+                                <p:confirm header="Confirmación" message="Está seguro de enviar por correo la nota devolutiva?"
+                                           icon="pi pi-exclamation-triangle" />
+                            </p:commandButton>
+                            <p:spacer width="100" height="1" />
+                            <p:commandButton value="Cancelar" icon="pi pi-ban" update="mainForm" style="background-color: orangered;"
+                                             actionListener="#{calificacionRegistral.cancelar()}" />
+                        </h:panelGrid>
+                    </h:panelGrid>
+
+                </h:panelGrid>
+
+            </center>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+            </p:confirmDialog>
+
+        </h:form>
+
+        <p:dialog id="dlgObervaciones" widgetVar="dlgObsvs" header="Confirmar Tarea" modal="true" width="600"
+                  resizable="false" position="center">
+            <h:form id="formObs">
+                <h:panelGrid columns="1" style="text-align: center;width: 100%;">
+                    <p:outputLabel value="TRÁMITE APROBADO" style="font-weight: bolder;font-size: 18px; color: darkblue;"/>
+                    <p:outputLabel value="COMENTARIO" style="font-weight: bolder;font-size: 16px"/>
+                    <p:inputTextarea value="#{calificacionRegistral.observacion}" rows="10" autoResize="false" style="width: 100%"/>
+                    <p:commandButton value="Aceptar" icon="pi pi-thumbs-up" 
+                                     actionListener="#{calificacionRegistral.completarTareaRevision()}"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgNegativa" header="Motivación de NEGATIVA" modal="true" 
+                  width="600" resizable="false" position="center">
+            <h:form id="formNegativa">
+                <center>
+                    <p:outputLabel value="NEGATIVA PARA TRÁMITE No #{calificacionRegistral.liquidacion.numTramiteRp}"
+                                   style="font-weight: bolder;font-size: 16px; color: green"/>
+                </center>
+                <br></br>
+                <p:outputLabel value="Ingrese aquí la Motivación para la NEGATIVA:" style="font-weight: bolder;font-size: 16px"/>
+                <p:inputTextarea value="#{calificacionRegistral.negativa}" rows="10" autoResize="false" style="width: 100%" />
+                <br/><br/>
+                <center>
+                    <p:commandButton value="Solicitar Inscripción Negativa" icon="pi pi-ban" 
+                                     style="background-color: darkcyan;" 
+                                     actionListener="#{calificacionRegistral.guardarNegativa()}"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgObervacionesCertificados" widgetVar="dlgObsvsCertificados"
+                  header="Agregar Observación" modal="true" width="400" resizable="false" position="center">
+            <h:form id="formObsCertificados">
+                <p:outputLabel value="Ingrese Comentario:" style="font-weight: bolder;font-size: 16px"/>
+                <p:inputTextarea value="#{calificacionRegistral.observacion}" rows="5" autoResize="false"
+                                 style="width: 100%" />
+                <br/><br/>
+                <center><p:commandButton value="Guardar Comentario" icon="pi pi-save" update=":mainForm:mainTab:dtObservaciones" 
+                                         oncomplete="PF('dlgObsvsCertificados').hide();"
+                                         actionListener="#{calificacionRegistral.guardarComentarioTramite()}"/></center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgMovimientoRegistral" header="Movimiento Registral Seleccionado" widgetVar="dlgMovRegSelec"
+                  resizable="false" modal="true" closeOnEscape="true" width="800" height="470" style="font-size: 12px;">
+            <h:form id="formMovRegSelec">
+                <h:panelGrid columns="3" style="font-weight: bolder;">
+                    Naturaleza/Libro:
+                    <p:spacer width="20" height="1"/>
+                    <p:inputText value="#{calificacionRegistral.movimiento.libro.nombre}" size="80" readonly="true"/>
+                </h:panelGrid>
+                <h:panelGrid columns="3" style="font-weight: bolder;">
+                    Contrato/Acto:
+                    <p:spacer width="35" height="1"/>
+                    <p:inputText value="#{calificacionRegistral.movimiento.acto.nombre}" size="80" readonly="true"/>
+                </h:panelGrid>
+                <h:panelGrid columns="4" style="font-weight: bolder;">
+                    No. Repertorio:
+                    <p:inputText  value="#{calificacionRegistral.movimiento.numRepertorio}" size="30" readonly="true"/>
+                    Fecha Repertorio:
+                    <p:inputText value="#{calificacionRegistral.movimiento.fechaRepertorio}" size="30" readonly="true">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </p:inputText>
+                    Notaría/Juz.:
+                    <p:inputText value="#{calificacionRegistral.movimiento.enteJudicial.nombre}" size="30" readonly="true"/>
+                    Cantón Not./Juz.:
+                    <p:inputText value="#{calificacionRegistral.movimiento.domicilio.nombre}" size="30" readonly="true"/>
+                    Fech/Otorg.:
+                    <p:inputText value="#{calificacionRegistral.movimiento.fechaOto}" size="30" readonly="true">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </p:inputText>
+                    Esc./Juicio/Prov./Res.:
+                    <p:inputText value="#{calificacionRegistral.movimiento.escritJuicProvResolucion}" size="30" readonly="true"/>
+                </h:panelGrid>
+                <p:tabView id="tvMovimiento">
+                    <p:tab title="Intervinientes">
+                        <p:dataTable emptyMessage="No hay datos para mostrar..." var="inter" scrollable="true" resizableColumns="true"
+                                     value="#{calificacionRegistral.modelo.listMovCli}" scrollHeight="190" style="text-align: center">
+                            <p:column headerText="C.I/R.U.C" width="150">
+                                <p:outputLabel value="#{inter.enteInterv.cedRuc}"/>
+                            </p:column>
+                            <p:column headerText="Nombre del Cliente">
+                                <p:outputLabel value="#{inter.enteInterv.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Papel" width="200">
+                                <p:outputLabel value="#{inter.papel.papel}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Bienes">
+                        <p:dataTable value="#{calificacionRegistral.modelo.fichas}" var="fich" style="width: 100%;text-align: center" 
+                                     scrollable="true" resizableColumns="true" emptyMessage="No se encontraron elementos..."
+                                     scrollHeight="230" rowIndexVar="rowIndex" >
+                            <p:column headerText="No" width="30">
+                                #{rowIndex+1}
+                            </p:column>
+                            <p:column headerText="No Ficha" width="100">
+                                <p:outputLabel value="#{fich.numFicha}"/>
+                            </p:column>
+                            <p:column headerText="Descripción">
+                                <h:outputText id="descFricha" value="#{fich.descripcionBien}"/>
+                                <p:tooltip for="descFricha" value="#{fich.descripcionBien}" position="top" />
+                            </p:column>
+                            <p:column headerText="Parroquia" rendered="false">
+                                <p:outputLabel value="#{fich.parroquia.descripcion}"/>
+                            </p:column>
+                            <p:column headerText="Clave Catastral" rendered="false">
+                                <p:outputLabel value="#{fich.claveCatastral}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Observación">
+                        <p:inputTextarea value="#{calificacionRegistral.movimiento.observacion}" readonly="true" 
+                                         autoResize="false" scrollHeight="200" style="width: 100%; height: 150px;"/>
+                    </p:tab>
+                </p:tabView>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

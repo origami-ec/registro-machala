@@ -1,0 +1,13 @@
+server:
+  port: 8781
+
+spring:
+  application:
+    name: sigeri-firmaec
+  main:
+    allow-bean-definition-overriding: true
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false

@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<bindings xmlns="http://java.sun.com/xml/ns/jaxb" if-exists="true" version="2.1">
+      
+    <!--
+
+Este archivo ha sido generado por la arquitectura JavaTM para la implantación de la referencia de enlace (JAXB) XML v2.3.0 
+Visite <a href="https://javaee.github.io/jaxb-v2/">https://javaee.github.io/jaxb-v2/</a> 
+Todas las modificaciones realizadas en este archivo se perderán si se vuelve a compilar el esquema de origen. 
+Generado el: 2021.09.21 a las 06:50:32 PM COT 
+
+  -->
+      
+    <bindings xmlns:tns="http://interoperabilidad.dinardap.gob.ec/interoperador/" if-exists="true" scd="x-schema::tns">
+            
+        <schemaBindings map="false">
+                  
+            <package name="ec.gob.loja.dinardap"/>
+                
+        </schemaBindings>
+            
+        <bindings if-exists="true" scd="~tns:consultar">
+                  
+            <class ref="Consultar"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="tns:consultarFault">
+                  
+            <class ref="ConsultarFault"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:consultarResponse">
+                  
+            <class ref="ConsultarResponse"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:paquete">
+                  
+            <class ref="Paquete"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:entidades">
+                  
+            <class ref="Entidades"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:entidad">
+                  
+            <class ref="Entidad"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:filas">
+                  
+            <class ref="Filas"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:fila">
+                  
+            <class ref="Fila"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:columnas">
+                  
+            <class ref="Columnas"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:columna">
+                  
+            <class ref="Columna"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:parametro">
+                  
+            <class ref="Parametro"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:parametros">
+                  
+            <class ref="Parametros"/>
+                
+        </bindings>
+          
+    </bindings>
+      
+    <bindings xmlns:tns="http://dinardapmiddle.loja.gob.ec/" if-exists="true" scd="x-schema::tns">
+            
+        <schemaBindings map="false">
+                  
+            <package name="ec.gob.loja.dinardap"/>
+                
+        </schemaBindings>
+            
+        <bindings if-exists="true" scd="~tns:antDatosLicencia">
+                  
+            <class ref="AntDatosLicencia"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:antDatosLicenciaResponse">
+                  
+            <class ref="AntDatosLicenciaResponse"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:antHistorialVH">
+                  
+            <class ref="AntHistorialVH"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:antHistorialVHResponse">
+                  
+            <class ref="AntHistorialVHResponse"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:antInfraccion">
+                  
+            <class ref="AntInfraccion"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:antInfraccionResponse">
+                  
+            <class ref="AntInfraccionResponse"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:antMatriculacion">
+                  
+            <class ref="AntMatriculacion"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:antMatriculacionResponse">
+                  
+            <class ref="AntMatriculacionResponse"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:antRestriccion">
+                  
+            <class ref="AntRestriccion"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:antRestriccionResponse">
+                  
+            <class ref="AntRestriccionResponse"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:biometrico">
+                  
+            <class ref="Biometrico"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:biometricoResponse">
+                  
+            <class ref="BiometricoResponse"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:consulPorNombre">
+                  
+            <class ref="ConsulPorNombre"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:consulPorNombreResponse">
+                  
+            <class ref="ConsulPorNombreResponse"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:demografico">
+                  
+            <class ref="Demografico"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:demograficoResponse">
+                  
+            <class ref="DemograficoResponse"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:sriActEcoEstabl">
+                  
+            <class ref="SriActEcoEstabl"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:sriActEcoEstablResponse">
+                  
+            <class ref="SriActEcoEstablResponse"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:sriRUC">
+                  
+            <class ref="SriRUC"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:sriRUCCompleto">
+                  
+            <class ref="SriRUCCompleto"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:sriRUCCompletoResponse">
+                  
+            <class ref="SriRUCCompletoResponse"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:sriRUCResponse">
+                  
+            <class ref="SriRUCResponse"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:sriVHConsltarUltimoPago">
+                  
+            <class ref="SriVHConsltarUltimoPago"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:sriVHConsltarUltimoPagoResponse">
+                  
+            <class ref="SriVHConsltarUltimoPagoResponse"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:vehiculo">
+                  
+            <class ref="Vehiculo"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:vehiculoIdentificacion">
+                  
+            <class ref="VehiculoIdentificacion"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:vehiculoIdentificacionResponse">
+                  
+            <class ref="VehiculoIdentificacionResponse"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:vehiculoResponse">
+                  
+            <class ref="VehiculoResponse"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:responseContribuyente">
+                  
+            <class ref="ResponseContribuyente"/>
+                
+        </bindings>
+            
+        <bindings if-exists="true" scd="~tns:generalResponse">
+                  
+            <class ref="GeneralResponse"/>
+                
+        </bindings>
+          
+    </bindings>
+    
+</bindings>

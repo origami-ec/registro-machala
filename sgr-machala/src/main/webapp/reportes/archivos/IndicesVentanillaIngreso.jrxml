@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="IndicesVentanilla" language="groovy" pageWidth="595" pageHeight="842" columnWidth="525" leftMargin="35" rightMargin="35" topMargin="20" bottomMargin="20" uuid="74697560-fe80-442e-9642-f905f69de0de">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="DESDE" class="java.lang.String"/>
+	<parameter name="HASTA" class="java.lang.String"/>
+	<parameter name="USUARIO" class="java.lang.String"/>
+	<parameter name="MES_INDICE" class="java.lang.String"/>
+	<field name="nombreFuncionario" class="java.lang.String"/>
+	<field name="inscripcionSinValor" class="java.lang.Long"/>
+	<field name="usuario" class="java.lang.String"/>
+	<field name="inscripcionConValor" class="java.lang.Long"/>
+	<field name="certificadoSinValor" class="java.lang.Long"/>
+	<field name="certificadoConValor" class="java.lang.Long"/>
+	<field name="totalIngresos" class="java.lang.Long"/>
+	<variable name="SUM_INS_S_V" class="java.lang.Long" calculation="Sum">
+		<variableExpression><![CDATA[$F{inscripcionSinValor}]]></variableExpression>
+	</variable>
+	<variable name="SUM_INS_C_V" class="java.lang.Long" calculation="Sum">
+		<variableExpression><![CDATA[$F{inscripcionConValor}]]></variableExpression>
+	</variable>
+	<variable name="SUM_CER_S_V" class="java.lang.Long" calculation="Sum">
+		<variableExpression><![CDATA[$F{certificadoSinValor}]]></variableExpression>
+	</variable>
+	<variable name="SUM_CER_C_V" class="java.lang.Long" calculation="Sum">
+		<variableExpression><![CDATA[$F{certificadoConValor}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_INS" class="java.lang.Long">
+		<variableExpression><![CDATA[$V{SUM_INS_S_V} + $V{SUM_INS_C_V}]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_CERT" class="java.lang.Long">
+		<variableExpression><![CDATA[$V{SUM_CER_S_V} + $V{SUM_CER_C_V}]]></variableExpression>
+	</variable>
+	<title>
+		<band height="45" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="1" width="525" height="20" uuid="a9d1a0ec-b565-4c1f-ae2b-b5c2608443e6"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["REPORTE DE INFORMACIÓN CORRESPONDIENTE AL MES DE " + $P{MES_INDICE}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="25" width="525" height="20" uuid="ad78d44e-ff58-4533-8653-ba39aed388c6"/>
+				<textElement verticalAlignment="Bottom"/>
+				<text><![CDATA[1. Cantidad de proformas ingresadas para inscripciones y certificaciones con y sin valor]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="35" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="424" y="19" width="75" height="16" backcolor="#CCCCCC" uuid="441b7646-6feb-4026-8278-d0e3631ac8e4"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CON VALOR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="274" y="19" width="75" height="16" backcolor="#CCCCCC" uuid="473cb1b0-8e6c-48b4-9be5-610a8514ad31"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CON VALOR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="349" y="19" width="75" height="16" backcolor="#CCCCCC" uuid="1320f42a-4518-4bd3-aba3-3632b2855316"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[SIN VALOR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="199" y="19" width="75" height="16" backcolor="#CCCCCC" uuid="f75ae284-dc25-42d5-a87c-df3bd4d5593e"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SIN VALOR]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="349" y="1" width="150" height="18" backcolor="#CCCCCC" uuid="8b2a0880-0bc2-423b-9aab-889453fa79c7"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[CERTIFICACIONES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="199" y="1" width="150" height="18" backcolor="#CCCCCC" uuid="f1aa93a1-7665-4420-8363-543d4cbfc2e6"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[INSCRIPCIONES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="22" y="1" width="177" height="34" backcolor="#CCCCCC" uuid="7795e399-96a5-41d3-88e9-18713264c864"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FUNCIONARIO]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="15" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="274" y="0" width="75" height="14" backcolor="#FFFF99" uuid="e13ea8b6-590c-4f7b-936c-940ff2a75ca6"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inscripcionConValor}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="424" y="0" width="75" height="14" backcolor="#CCFFCC" uuid="68e1ff57-5110-4d87-a42f-026c1cf2dae4"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{certificadoConValor}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="199" y="0" width="75" height="14" backcolor="#FFFF99" uuid="c67b5bdc-b7fa-475b-a50b-0989a4bb8912"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inscripcionSinValor}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="349" y="0" width="75" height="14" backcolor="#CCFFCC" uuid="a8f2fe55-3e47-4a44-b569-72a205923a58"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{certificadoSinValor}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="22" y="0" width="177" height="14" backcolor="#FFFFFF" uuid="7ac8d9c2-191d-4e97-962a-60cc357e15bc"/>
+				<box leftPadding="5">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombreFuncionario}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="75" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="61" width="70" height="14" uuid="3421797e-501e-4e9a-8ea6-5c59cba453dd"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Impreso por:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy HH.mm.ss" isBlankWhenNull="true">
+				<reportElement x="396" y="61" width="129" height="14" uuid="5156b23c-7270-4d79-87d0-fa1ac034be38"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="311" y="61" width="85" height="14" uuid="dd89415f-baa3-48a9-a2d1-2e938a1da37d"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Impresión:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="70" y="61" width="241" height="14" uuid="96ae4a24-8c72-441c-a5d7-100eb445f8d1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{USUARIO}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="125">
+			<textField>
+				<reportElement mode="Opaque" x="199" y="0" width="75" height="16" backcolor="#CCCCCC" uuid="944e4926-f31f-4f95-bbe2-31d1548fb1eb"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{SUM_INS_S_V}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Opaque" x="22" y="0" width="177" height="16" backcolor="#CCCCCC" uuid="f32420b6-6624-4897-a85d-3861187044bd"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL]]></text>
+			</staticText>
+			<textField>
+				<reportElement mode="Opaque" x="274" y="0" width="75" height="16" backcolor="#CCCCCC" uuid="0f54471d-7b10-4f95-9604-5ad12e02841e"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{SUM_INS_C_V}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="349" y="0" width="75" height="16" backcolor="#CCCCCC" uuid="f4d3183e-b6bf-47f2-8c65-643c40249c92"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{SUM_CER_S_V}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="424" y="0" width="75" height="16" backcolor="#CCCCCC" uuid="c31cce94-2407-49ee-a871-1b606b59f1b3"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{SUM_CER_C_V}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Opaque" x="22" y="61" width="177" height="16" backcolor="#CCCCCC" uuid="04995f75-1825-475a-958c-89bac48c09d8"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[CERTIFICADOS]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="199" y="45" width="225" height="16" uuid="06b8f23f-7c21-4ac7-a8c3-5ecb82bed3ca"/>
+				<box leftPadding="5">
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TOTAL_INS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="199" y="61" width="225" height="16" uuid="dba6a120-daaa-4240-beb1-4c49e8fde9be"/>
+				<box leftPadding="5">
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TOTAL_CERT}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Opaque" x="22" y="45" width="177" height="16" backcolor="#CCCCCC" uuid="cc19bc36-49bf-42c4-b880-2ff757977169"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[INSCRIPCIONES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="21" width="525" height="20" uuid="411728f9-ca6f-462f-8ed2-818f6c9be2ac"/>
+				<textElement verticalAlignment="Bottom"/>
+				<text><![CDATA[2. Cantidad de trámites ingresados]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

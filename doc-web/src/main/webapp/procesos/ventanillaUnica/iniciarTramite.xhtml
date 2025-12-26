@@ -1,0 +1,201 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+    <ui:define name="title">Trámite</ui:define>
+    <ui:define name="content">
+        <style type="text/css">
+            .old {
+                background-color: #E7D0E7 !important;
+                background-image: none !important;
+                color: #000000 !important;
+            }
+        </style>
+        <h:form id="formMain" prependId="false">
+            <center>
+                <div class="p-col-12 p-md-8">
+                    <h5>Iniciar nuevo trámite</h5>
+                    <p:steps id="stepsTramite" activeIndex="#{iniciarTramiteMB.activarPaso}"  readonly="true"  style="width: 100%">
+                        <p:menuitem value="Servicios" />
+                        <p:menuitem value="Requisitos" /> 
+                    </p:steps>
+                    <br/>
+                    <h:panelGroup id="depServ" rendered="#{iniciarTramiteMB.pasoUno}">
+                        <ui:include  src="_departamentoServicio.xhtml" />
+                    </h:panelGroup>
+                    <h:panelGroup id="requisitos" rendered="#{iniciarTramiteMB.pasoDos}">
+                        <ui:include src="_requisitos.xhtml" />
+                    </h:panelGroup>
+                </div>
+            </center> 
+        </h:form>
+
+        <p:dialog id="tramiteGenerado" showHeader="false" widgetVar="continuarDlg"   modal="true" height="350" width="500" resizable="false"  showEffect="fade" >
+            <h:form prependId="false" id="frmContinuar">
+                <div>
+                    <hr></hr>
+                    <br/>
+                    <center>
+                        <p:outputLabel value="#{iniciarTramiteMB.tipoTramite.descripcion}" style="width: 100%; font-size: 20px;"/>
+                    </center>
+                    <br/><br/>
+                    <center>
+                        <!--<p:outputLabel value="Trámite Nro: # {iniciarTramiteMB.historicoTramites.secuencial}"  style="width: 100%; font-size: 30px;"/>-->
+                        <p:outputLabel value="Trámite Nro: #{iniciarTramiteMB.historicoTramites.codigo}"  style="width: 100%; font-size: 30px;"/>
+                    </center>
+                    <br/>
+                    <hr></hr>
+                    <center>
+                        <p:commandButton value="Continuar" style="width: 150px;" 
+                                         icon="pi pi-play" actionListener="#{iniciarTramiteMB.init()}"
+                                         update="formMain" oncomplete="PF('continuarDlg').hide()"
+                                         process="@this" />
+                        <p:spacer width="10"/>
+                        <p:commandButton value="Imprimir" style="width: 150px;"
+                                         icon="fa fa-print" actionListener="#{iniciarTramiteMB.redirectTab()}"
+                                         update="formMain" 
+                                         process="@this" />
+                    </center>
+                </div>
+
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgTicked" widgetVar="dlgTicked" width="700" height="500"
+                  modal="true" resizable="false" showEffect="fade" closeOnEscape="true">
+            <h:form prependId="false" id="frmTicked">
+                <h:panelGroup>
+                    <iframe src="/origamiGT/ReporteWS" style="width: 100%; height: 600px;" />
+                </h:panelGroup>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="DlgoDocumento" width="800"   widgetVar="DlgoDocumento" modal="true" showEffect="fade" header="Documentos"
+                  hideEffect="fade" resizable="false"  height="500" closeOnEscape="true">
+            <h:form id="formDocumento"  prependId="false">
+                <p:panelGrid id="pnlDocumento" columns="2" columnClasses="fifty-percent, fifty-percent" styleClass="ui-panelgrid-blank" style="width: 100% !important" >
+                    <h:panelGroup id="pnlIndices">
+                        <p:panelGrid id="pnlIndex" columns="1" styleClass="ui-panelgrid-blank" style="width: 100% !important" >
+                            <h:panelGroup> 
+                                <p:outputLabel value="Indexación: " style="width: 100%; font-weight: bolder"/><br/>
+                                <p:selectOneMenu value="#{iniciarTramiteMB.indice}" converter="dtoConverter" style="width: 100%">
+                                    <p:ajax update="dtIndicesFrm, fileUpload" />
+                                    <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                    <f:selectItems var="i" value="#{iniciarTramiteMB.indices}" itemLabel="#{i.descripcion}" itemValue="#{i}"/>
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup> 
+                                <p:outputLabel value="Descripción del documento" style="width: 100%; font-weight: bolder"/><br/>
+                                <p:inputText value="#{iniciarTramiteMB.indice.descripcionArchivo}"  style="width: 100%" />
+
+                                <!--                                
+                                <p:ajax event="blur" listener="# {iniciarTramiteMB.validarCampoTesauro()}" update="dtTablas"></p:ajax>
+                                                                </p:inputText><p:dataGrid var="tbl" value="# {iniciarTramiteMB.sugerencias}" columns="2" layout="grid" lazy="false" id="dtTablas" widgetVar="dtTablas" >
+                                                                    <f:facet name="header">
+                                                                        Sugerencias 
+                                                                    </f:facet>
+                                                                    <div class="product-grid-item card" style="margin-bottom: 0">
+                                                                        <div class="product-grid-item-top">
+                                                                            <div>
+                                                                                <i class="pi pi-tag product-category-icon"/>
+                                                                                <span class="product-category">
+                                                                                    <p:outputLabel value="# {tbl.palabra}" style="font-weight: bolder"/>
+                                                                                </span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <br/>
+                                                                        <div class="product-grid-item-content">
+                                                                            <p:dataList value="# {tbl.sugerencias}" var="field"  lazy="false" >
+                                                                                <p:outputLabel value="# {field}"/>
+                                                                            </p:dataList>
+                                                                        </div>
+                                                                    </div>
+                                                                </p:dataGrid>   -->
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:dataTable id="dtIndicesFrm" var="index" value="#{iniciarTramiteMB.indice.campos}" editable="true" lazy="false">
+                                    <p:ajax event="rowEdit" listener="#{iniciarTramiteMB.onRowEdit}" />
+                                    <p:ajax event="rowEditCancel" listener="#{iniciarTramiteMB.onRowCancel}" />
+                                    <p:column headerText="Descripción" width="100">
+                                        <p:outputLabel value="* " style="color: red" rendered="#{index.obligatorio}"/>
+                                        <p:outputLabel value="#{index.descripcion}" />
+                                    </p:column>
+                                    <p:column headerText="Detalle">
+                                        <p:cellEditor>
+                                            <f:facet name="output">
+                                                <p:outputLabel value="#{index.detalle}"/>
+                                            </f:facet>
+                                            <f:facet name="input">
+                                                <br/>
+                                                <p:inputText id="modelInput" value="#{index.detalle}" style="width:100%;"
+                                                             rendered="#{index.tipoDato eq 'TEXTO'}"/>
+                                                <p:inputText id="text2" value="#{index.detalle}" rendered="#{index.tipoDato eq 'NUMERO'}" style="width:100%;">
+                                                    <p:keyFilter mask="num" />
+                                                </p:inputText>
+                                                <p:selectBooleanButton onLabel="SI" offLabel="NO" value="#{index.detalle}" rendered="#{index.tipoDato eq 'LOGICO'}"
+                                                                       onIcon="pi pi-check" offIcon="pi pi-times" style="width:6rem;" />
+
+                                                <p:calendar id="datetime" value="#{index.detalle}"  style="width:100%; " 
+                                                            showOn="button" placeholder="dd-MM-yyyy" navigator="true"
+                                                            pattern="dd-MM-yyyy" rendered="#{index.tipoDato eq 'FECHA'}">
+                                                    <f:convertDateTime pattern="dd-MM-yyyy" />
+                                                </p:calendar>
+
+                                                <p:selectOneMenu value="#{index.detalle}"  style="width:100%;" rendered="#{index.tipoDato eq 'CATEGORIA'}"> 
+                                                    <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                                    <f:selectItems var="i" value="#{index.categorias}" itemLabel="#{i}" itemValue="#{i}"/>
+                                                </p:selectOneMenu>
+                                                <br/>
+
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column style="width:6rem" headerText="***">
+                                        <p:rowEditor editTitle="Editar #{index.descripcion}" cancelTitle="Cancelar" saveTitle="Grabar datos #{index.descripcion}"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </h:panelGroup>
+                        </p:panelGrid>
+
+                    </h:panelGroup>
+                    <h:panelGroup id="fileUpload">
+                        <p:outputLabel value="URL del documento" class="Fs15" style="font-weight: bolder"/><br/>
+                        <p:inputText  value="#{iniciarTramiteMB.requisitosModel.serviciosRequisitos.urlDocumento}" class="Fs15" style="font-weight: bolder; width: 100%"/><br/>
+                        <p:outputLabel value="Debe escoger el tipo de indexación para continuar" 
+                                       class="Fs15" style="font-weight: bolder; color: red"/> <br/>
+                        <p:outputLabel value="Los tipos de archivos permitidos: #{iniciarTramiteMB.getArchivoPermitido()} " 
+                                       class="Fs15" style="font-weight: bolder"/> 
+                        <p:outputLabel value="Tamaño máximo de archivo: #{iniciarTramiteMB.requisitosModel.serviciosRequisitos.tamanio}" 
+                                       class="Fs15" style="font-weight: bolder"/>
+                        <p:fileUpload listener="#{iniciarTramiteMB.handleFileUpload}" style="width: 100%"
+                                      allowTypes="#{iniciarTramiteMB.getTipoArchivo()}" disabled="#{iniciarTramiteMB.indice eq null}"
+                                      mode="advanced" dragDropSupport="true" label="Buscar" uploadLabel="Subir" 
+                                      sizeLimit="#{iniciarTramiteMB.requisitosModel.serviciosRequisitos.tamanioArchivo}" multiple="true"
+                                      cancelLabel="Cancelar" update="dtRequisitos" previewWidth="60"   />
+                        
+                    </h:panelGroup>
+
+
+                </p:panelGrid> 
+                <br/> 
+                <br/>
+                <center>
+                    <p:commandButton value="Firmar y grabar" update="dtRequisitos" 
+                                     icon="fa fa-copyright" 
+                                     actionListener="#{iniciarTramiteMB.agregarFirmarDocumento()}"
+                                     style="width: auto;" >
+                        <p:ajax event="dialogReturn" listener="#{iniciarTramiteMB.archivoFirmado}" 
+                                update="dtRequisitos"/>
+                    </p:commandButton>
+                    <p:spacer width="5" />
+                    <p:commandButton value="Grabar"  icon="fa fa-save" actionListener="#{iniciarTramiteMB.closeDialogDoc()}" style="width: auto;"
+                                     update="dtRequisitos"/>
+                </center>
+            </h:form>
+        </p:dialog> 
+    </ui:define>
+</ui:composition>

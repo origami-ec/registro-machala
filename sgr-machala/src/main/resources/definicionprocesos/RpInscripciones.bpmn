@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <collaboration id="Collaboration">
+    <participant id="pool1" name="Proceso de Inscripciones del Registro de la Propiedad del Cantón Machala" processRef="RpInscripciones"></participant>
+  </collaboration>
+  <process id="RpInscripciones" name="Proceso de Inscripciones" isExecutable="true">
+    <laneSet id="laneSet_RpInscripciones">
+      <lane id="lane1" name="Atención al Usuario">
+        <flowNodeRef>startevent1</flowNodeRef>
+        <flowNodeRef>PIentregaDevolutiva</flowNodeRef>
+      </lane>
+      <lane id="lane2" name="Analista Junior de Revisión">
+        <flowNodeRef>exclusivegateway10</flowNodeRef>
+        <flowNodeRef>PIcalificacionTramite</flowNodeRef>
+        <flowNodeRef>endevent3</flowNodeRef>
+        <flowNodeRef>PIrazonNegativa</flowNodeRef>
+      </lane>
+      <lane id="lane3" name="Analista Senior de Revisión">
+        <flowNodeRef>exclusivegateway1</flowNodeRef>
+        <flowNodeRef>PIrevisionTramite</flowNodeRef>
+      </lane>
+      <lane id="lane5" name="Director de Área de Inscripción">
+        <flowNodeRef>exclusivegateway5</flowNodeRef>
+        <flowNodeRef>PIanalisisTramite</flowNodeRef>
+      </lane>
+      <lane id="lane6" name="Asesor Jurídico">
+        <flowNodeRef>exclusivegateway9</flowNodeRef>
+        <flowNodeRef>endevent2</flowNodeRef>
+        <flowNodeRef>PIasesoriaJuridica</flowNodeRef>
+      </lane>
+      <lane id="lane7" name="Analista Junior de Inscripción">
+        <flowNodeRef>exclusivegateway7</flowNodeRef>
+        <flowNodeRef>PIinscripcionDocumento</flowNodeRef>
+        <flowNodeRef>PIregistroInscripcion</flowNodeRef>
+      </lane>
+      <lane id="lane8" name="Analista Senior de Inscripción">
+        <flowNodeRef>exclusivegateway8</flowNodeRef>
+        <flowNodeRef>PIcontrolCalidad</flowNodeRef>
+      </lane>
+      <lane id="lane9" name="Analista de Rectificación">
+        <flowNodeRef>PIrectificarDatos</flowNodeRef>
+      </lane>
+      <lane id="lane10" name="Analista Senior de Certificación">
+        <flowNodeRef>endevent1</flowNodeRef>
+        <flowNodeRef>PIcontrolCalidadCertificacion</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="PIcalificacionTramite"></sequenceFlow>
+    <userTask id="PIrevisionTramite" name="Revisión de Trámite" activiti:assignee="${analistaSeniorRevision}" activiti:formKey="/procesos/inscripciones/revisionTramite.xhtml" activiti:priority="${prioridad}">
+      <documentation>${proceso}</documentation>
+    </userTask>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow2" sourceRef="PIrevisionTramite" targetRef="exclusivegateway1"></sequenceFlow>
+    <userTask id="PIentregaDevolutiva" name="Entrega Nota Devolutiva" activiti:candidateUsers="${ventanilla}" activiti:formKey="/procesos/inscripciones/entregaDevolutiva.xhtml" activiti:priority="${prioridad}">
+      <documentation>${proceso}</documentation>
+    </userTask>
+    <userTask id="PIanalisisTramite" name="Análisis de Trámite" activiti:assignee="${directorInscripcion}" activiti:formKey="/procesos/inscripciones/analisisTramite.xhtml" activiti:priority="${prioridad}">
+      <documentation>${proceso}</documentation>
+    </userTask>
+    <sequenceFlow id="flow17" sourceRef="PIanalisisTramite" targetRef="exclusivegateway5"></sequenceFlow>
+    <userTask id="PIinscripcionDocumento" name="Inscripción de Documento" activiti:assignee="${analistaJuniorInscripcion}" activiti:formKey="/procesos/inscripciones/InscripcionDocumento.xhtml" activiti:priority="${prioridad}">
+      <documentation>${proceso}</documentation>
+    </userTask>
+    <exclusiveGateway id="exclusivegateway7" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow23" sourceRef="PIinscripcionDocumento" targetRef="exclusivegateway7"></sequenceFlow>
+    <sequenceFlow id="flow24" sourceRef="exclusivegateway7" targetRef="PIcalificacionTramite">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobado==2}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow27" sourceRef="exclusivegateway7" targetRef="PIcontrolCalidad">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobado==1}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="PIcalificacionTramite" name="Calificación de Trámite" activiti:assignee="${analistaJuniorRevision}" activiti:formKey="/procesos/inscripciones/calificacionTramite.xhtml" activiti:priority="${prioridad}">
+      <documentation>${proceso}</documentation>
+    </userTask>
+    <sequenceFlow id="flow32" sourceRef="exclusivegateway10" targetRef="PIrevisionTramite">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobado==3}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="PIasesoriaJuridica" name="Asesoría Jurídica" activiti:assignee="${asesorJuridico}" activiti:formKey="/procesos/inscripciones/asesorJuridico.xhtml" activiti:priority="${prioridad}">
+      <documentation>${proceso}</documentation>
+    </userTask>
+    <sequenceFlow id="flow20" sourceRef="PIasesoriaJuridica" targetRef="PIanalisisTramite"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway9" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow37" sourceRef="exclusivegateway9" targetRef="PIcontrolCalidadCertificacion">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobado==2}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow39" sourceRef="PIentregaDevolutiva" targetRef="PIcalificacionTramite"></sequenceFlow>
+    <sequenceFlow id="flow16" sourceRef="exclusivegateway1" targetRef="PIanalisisTramite">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobado==2}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway5" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow18" sourceRef="exclusivegateway5" targetRef="PIasesoriaJuridica">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobado==2}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow19" sourceRef="exclusivegateway5" targetRef="PIrevisionTramite">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobado==1}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway10" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow40" sourceRef="PIcalificacionTramite" targetRef="exclusivegateway10"></sequenceFlow>
+    <sequenceFlow id="flow38" sourceRef="exclusivegateway10" targetRef="PIentregaDevolutiva">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobado==2}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow41" sourceRef="exclusivegateway1" targetRef="PIcalificacionTramite">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobado==1}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow22" sourceRef="exclusivegateway10" targetRef="PIinscripcionDocumento">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobado==1}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="PIcontrolCalidad" name="Control de Calidad" activiti:assignee="${analistaSeniorInscripcion}" activiti:formKey="/procesos/inscripciones/controlCalidad.xhtml" activiti:priority="${prioridad}">
+      <documentation>${proceso}</documentation>
+    </userTask>
+    <sequenceFlow id="flow29" sourceRef="PIcontrolCalidad" targetRef="exclusivegateway8"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway8" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow31" sourceRef="exclusivegateway8" targetRef="PIinscripcionDocumento">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobado==2}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="PIregistroInscripcion" name="Registro de Inscripción" activiti:assignee="${analistaInscripcion}" activiti:formKey="/procesos/inscripciones/registroInscripcion.xhtml" activiti:priority="${prioridad}">
+      <documentation>${proceso}</documentation>
+    </userTask>
+    <sequenceFlow id="flow35" sourceRef="PIregistroInscripcion" targetRef="exclusivegateway9"></sequenceFlow>
+    <sequenceFlow id="flow36" sourceRef="exclusivegateway8" targetRef="PIregistroInscripcion">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobado==1}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow42" sourceRef="exclusivegateway9" targetRef="endevent2">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobado==1}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent2" name="End"></endEvent>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <userTask id="PIcontrolCalidadCertificacion" name="Control de Calidad" activiti:assignee="${analistaCertificacion}" activiti:formKey="/procesos/inscripciones/controlCalidadPc.xhtml" activiti:priority="${prioridad}"></userTask>
+    <sequenceFlow id="flow26" sourceRef="PIcontrolCalidadCertificacion" targetRef="endevent1"></sequenceFlow>
+    <userTask id="PIrectificarDatos" name="Rectificar Datos Ficha" activiti:assignee="${analistaRectificacion}" activiti:formKey="/procesos/inscripciones/rectifcacionDatosFicha.xhtml" activiti:priority="${prioridad}"></userTask>
+    <sequenceFlow id="flow43" sourceRef="exclusivegateway8" targetRef="PIrectificarDatos">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobado==3}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow44" sourceRef="PIrectificarDatos" targetRef="PIcontrolCalidad"></sequenceFlow>
+    <userTask id="PIrazonNegativa" name="Razón de Negativa" activiti:assignee="${analistaJuniorRevision}" activiti:formKey="/procesos/inscripciones/razonNegativa.xhtml" activiti:priority="${prioridad}"></userTask>
+    <sequenceFlow id="flow45" sourceRef="exclusivegateway1" targetRef="PIrazonNegativa">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobado==3}]]></conditionExpression>
+    </sequenceFlow>
+    <endEvent id="endevent3" name="End"></endEvent>
+    <sequenceFlow id="flow46" sourceRef="PIrazonNegativa" targetRef="endevent3"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Collaboration">
+    <bpmndi:BPMNPlane bpmnElement="Collaboration" id="BPMNPlane_Collaboration">
+      <bpmndi:BPMNShape bpmnElement="pool1" id="BPMNShape_pool1">
+        <omgdc:Bounds height="2141.0" width="1111.0" x="30.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lane1" id="BPMNShape_lane1">
+        <omgdc:Bounds height="221.0" width="1091.0" x="50.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lane2" id="BPMNShape_lane2">
+        <omgdc:Bounds height="256.0" width="1091.0" x="50.0" y="251.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lane3" id="BPMNShape_lane3">
+        <omgdc:Bounds height="264.0" width="1091.0" x="50.0" y="507.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lane5" id="BPMNShape_lane5">
+        <omgdc:Bounds height="250.0" width="1091.0" x="50.0" y="771.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lane6" id="BPMNShape_lane6">
+        <omgdc:Bounds height="190.0" width="1091.0" x="50.0" y="1021.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lane7" id="BPMNShape_lane7">
+        <omgdc:Bounds height="240.0" width="1091.0" x="50.0" y="1211.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lane8" id="BPMNShape_lane8">
+        <omgdc:Bounds height="230.0" width="1091.0" x="50.0" y="1451.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lane9" id="BPMNShape_lane9">
+        <omgdc:Bounds height="220.0" width="1091.0" x="50.0" y="1681.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="lane10" id="BPMNShape_lane10">
+        <omgdc:Bounds height="270.0" width="1091.0" x="50.0" y="1901.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="190.0" y="124.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PIrevisionTramite" id="BPMNShape_PIrevisionTramite">
+        <omgdc:Bounds height="81.0" width="141.0" x="460.0" y="550.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="510.0" y="690.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PIentregaDevolutiva" id="BPMNShape_PIentregaDevolutiva">
+        <omgdc:Bounds height="81.0" width="121.0" x="470.0" y="101.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PIanalisisTramite" id="BPMNShape_PIanalisisTramite">
+        <omgdc:Bounds height="75.0" width="141.0" x="460.0" y="820.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PIinscripcionDocumento" id="BPMNShape_PIinscripcionDocumento">
+        <omgdc:Bounds height="71.0" width="121.0" x="640.0" y="1265.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway7" id="BPMNShape_exclusivegateway7">
+        <omgdc:Bounds height="40.0" width="40.0" x="410.0" y="1280.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PIcalificacionTramite" id="BPMNShape_PIcalificacionTramite">
+        <omgdc:Bounds height="81.0" width="141.0" x="290.0" y="340.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PIasesoriaJuridica" id="BPMNShape_PIasesoriaJuridica">
+        <omgdc:Bounds height="81.0" width="141.0" x="460.0" y="1069.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway9" id="BPMNShape_exclusivegateway9">
+        <omgdc:Bounds height="40.0" width="40.0" x="900.0" y="1100.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway5" id="BPMNShape_exclusivegateway5">
+        <omgdc:Bounds height="40.0" width="40.0" x="510.0" y="950.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway10" id="BPMNShape_exclusivegateway10">
+        <omgdc:Bounds height="40.0" width="40.0" x="510.0" y="360.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PIcontrolCalidad" id="BPMNShape_PIcontrolCalidad">
+        <omgdc:Bounds height="75.0" width="121.0" x="370.0" y="1523.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway8" id="BPMNShape_exclusivegateway8">
+        <omgdc:Bounds height="40.0" width="40.0" x="680.0" y="1540.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PIregistroInscripcion" id="BPMNShape_PIregistroInscripcion">
+        <omgdc:Bounds height="71.0" width="121.0" x="860.0" y="1265.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent2" id="BPMNShape_endevent2">
+        <omgdc:Bounds height="35.0" width="35.0" x="800.0" y="1103.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="860.0" y="2020.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PIcontrolCalidadCertificacion" id="BPMNShape_PIcontrolCalidadCertificacion">
+        <omgdc:Bounds height="81.0" width="121.0" x="980.0" y="1997.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PIrectificarDatos" id="BPMNShape_PIrectificarDatos">
+        <omgdc:Bounds height="71.0" width="121.0" x="640.0" y="1760.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PIrazonNegativa" id="BPMNShape_PIrazonNegativa">
+        <omgdc:Bounds height="81.0" width="105.0" x="780.0" y="340.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent3" id="BPMNShape_endevent3">
+        <omgdc:Bounds height="35.0" width="35.0" x="970.0" y="363.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="207.0" y="159.0"></omgdi:waypoint>
+        <omgdi:waypoint x="207.0" y="329.0"></omgdi:waypoint>
+        <omgdi:waypoint x="360.0" y="340.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="530.0" y="631.0"></omgdi:waypoint>
+        <omgdi:waypoint x="530.0" y="690.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
+        <omgdi:waypoint x="530.0" y="895.0"></omgdi:waypoint>
+        <omgdi:waypoint x="530.0" y="950.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow23" id="BPMNEdge_flow23">
+        <omgdi:waypoint x="640.0" y="1300.0"></omgdi:waypoint>
+        <omgdi:waypoint x="450.0" y="1300.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow24" id="BPMNEdge_flow24">
+        <omgdi:waypoint x="410.0" y="1300.0"></omgdi:waypoint>
+        <omgdi:waypoint x="207.0" y="1300.0"></omgdi:waypoint>
+        <omgdi:waypoint x="207.0" y="380.0"></omgdi:waypoint>
+        <omgdi:waypoint x="290.0" y="380.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow27" id="BPMNEdge_flow27">
+        <omgdi:waypoint x="430.0" y="1320.0"></omgdi:waypoint>
+        <omgdi:waypoint x="430.0" y="1523.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow32" id="BPMNEdge_flow32">
+        <omgdi:waypoint x="530.0" y="400.0"></omgdi:waypoint>
+        <omgdi:waypoint x="530.0" y="550.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow20" id="BPMNEdge_flow20">
+        <omgdi:waypoint x="460.0" y="1109.0"></omgdi:waypoint>
+        <omgdi:waypoint x="375.0" y="1109.0"></omgdi:waypoint>
+        <omgdi:waypoint x="375.0" y="857.0"></omgdi:waypoint>
+        <omgdi:waypoint x="460.0" y="857.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow37" id="BPMNEdge_flow37">
+        <omgdi:waypoint x="940.0" y="1120.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1040.0" y="1120.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1040.0" y="1997.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow39" id="BPMNEdge_flow39">
+        <omgdi:waypoint x="470.0" y="141.0"></omgdi:waypoint>
+        <omgdi:waypoint x="360.0" y="141.0"></omgdi:waypoint>
+        <omgdi:waypoint x="360.0" y="340.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="530.0" y="730.0"></omgdi:waypoint>
+        <omgdi:waypoint x="530.0" y="820.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow18" id="BPMNEdge_flow18">
+        <omgdi:waypoint x="530.0" y="990.0"></omgdi:waypoint>
+        <omgdi:waypoint x="530.0" y="1069.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow19" id="BPMNEdge_flow19">
+        <omgdi:waypoint x="550.0" y="970.0"></omgdi:waypoint>
+        <omgdi:waypoint x="642.0" y="969.0"></omgdi:waypoint>
+        <omgdi:waypoint x="642.0" y="590.0"></omgdi:waypoint>
+        <omgdi:waypoint x="601.0" y="590.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow40" id="BPMNEdge_flow40">
+        <omgdi:waypoint x="431.0" y="380.0"></omgdi:waypoint>
+        <omgdi:waypoint x="510.0" y="380.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow38" id="BPMNEdge_flow38">
+        <omgdi:waypoint x="530.0" y="360.0"></omgdi:waypoint>
+        <omgdi:waypoint x="530.0" y="182.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow41" id="BPMNEdge_flow41">
+        <omgdi:waypoint x="510.0" y="710.0"></omgdi:waypoint>
+        <omgdi:waypoint x="360.0" y="709.0"></omgdi:waypoint>
+        <omgdi:waypoint x="360.0" y="421.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow22" id="BPMNEdge_flow22">
+        <omgdi:waypoint x="550.0" y="380.0"></omgdi:waypoint>
+        <omgdi:waypoint x="700.0" y="380.0"></omgdi:waypoint>
+        <omgdi:waypoint x="700.0" y="1265.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow29" id="BPMNEdge_flow29">
+        <omgdi:waypoint x="491.0" y="1560.0"></omgdi:waypoint>
+        <omgdi:waypoint x="680.0" y="1560.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow31" id="BPMNEdge_flow31">
+        <omgdi:waypoint x="700.0" y="1540.0"></omgdi:waypoint>
+        <omgdi:waypoint x="700.0" y="1336.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow35" id="BPMNEdge_flow35">
+        <omgdi:waypoint x="920.0" y="1265.0"></omgdi:waypoint>
+        <omgdi:waypoint x="920.0" y="1140.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow36" id="BPMNEdge_flow36">
+        <omgdi:waypoint x="720.0" y="1560.0"></omgdi:waypoint>
+        <omgdi:waypoint x="920.0" y="1559.0"></omgdi:waypoint>
+        <omgdi:waypoint x="920.0" y="1336.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow42" id="BPMNEdge_flow42">
+        <omgdi:waypoint x="900.0" y="1120.0"></omgdi:waypoint>
+        <omgdi:waypoint x="835.0" y="1120.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow26" id="BPMNEdge_flow26">
+        <omgdi:waypoint x="980.0" y="2037.0"></omgdi:waypoint>
+        <omgdi:waypoint x="895.0" y="2037.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow43" id="BPMNEdge_flow43">
+        <omgdi:waypoint x="700.0" y="1580.0"></omgdi:waypoint>
+        <omgdi:waypoint x="700.0" y="1760.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow44" id="BPMNEdge_flow44">
+        <omgdi:waypoint x="640.0" y="1795.0"></omgdi:waypoint>
+        <omgdi:waypoint x="430.0" y="1795.0"></omgdi:waypoint>
+        <omgdi:waypoint x="430.0" y="1598.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow45" id="BPMNEdge_flow45">
+        <omgdi:waypoint x="550.0" y="710.0"></omgdi:waypoint>
+        <omgdi:waypoint x="832.0" y="709.0"></omgdi:waypoint>
+        <omgdi:waypoint x="832.0" y="421.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow46" id="BPMNEdge_flow46">
+        <omgdi:waypoint x="885.0" y="380.0"></omgdi:waypoint>
+        <omgdi:waypoint x="970.0" y="380.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

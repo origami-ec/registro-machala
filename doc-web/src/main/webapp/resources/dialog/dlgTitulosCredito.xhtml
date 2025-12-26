@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:poue="http://primefaces.org/ui/extensions">
+
+    <h:head>
+        <title>Titulos de crédito para #{dlgTitulosCreditoMB.infoEmision.data}</title>
+        <ui:include src="styleTemplete.xhtml" />
+    </h:head>
+    <h:body>            
+        <h:form id="formTituloCredito"  prependId="false" enctype="multipart/form-data">
+            <center>
+                <p:dataTable id="errores" filterEvent="enter" var="t" value="#{dlgTitulosCreditoMB.titulosCreditosData}" widgetVar="errores"
+                             emptyMessage="No existen Titulos creditos" rowIndexVar="i" editable="true" editMode="cell" style="width: 90%"
+                             rows="5" 
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                             rowsPerPageTemplate="5,10,15">
+                    <p:column headerText="#"   width="20">
+                        <p:outputLabel value="#{i+1}"/>
+                    </p:column>
+                    <p:column headerText="Id Oblig/Factura"  filterBy="#{t.id}"  width="100">
+                        <p:outputLabel value="#{t.id}"/>
+                    </p:column>
+                    <p:column headerText="Descripción"  filterMatchMode="contains" filterBy="#{t.data}" >
+                        <p:outputLabel value="#{t.data}"/>
+                    </p:column> 
+                    <p:column headerText="Agregar" style="text-align: center" width="40">
+                        <center>
+                            <p:commandLink title="Agregar Título Crédito" actionListener="#{dlgTitulosCreditoMB.addTituloCredito(t)}"  process="@this">
+                                <i class="fa fa-fw fa-plus" style="font-size: 1.3em; margin-right: 8px; color: #00796B;"></i>
+                            </p:commandLink>
+                        </center>                
+                    </p:column>
+                </p:dataTable>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+            </center>
+        </h:form>
+    </h:body>
+</html>

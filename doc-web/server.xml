@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Server port="8005" shutdown="SHUTDOWN">
+    <Listener className="org.apache.tomee.catalina.ServerListener"/>
+    <Listener className="org.apache.catalina.startup.VersionLoggerListener"/>
+  
+    <Listener SSLEngine="on" className="org.apache.catalina.core.AprLifecycleListener"/>
+    <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener"/>
+    <Listener className="org.apache.catalina.mbeans.GlobalResourcesLifecycleListener"/>
+    <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener"/>
+    <GlobalNamingResources>
+        <Resource name="UserDatabase" auth="Container"
+                  type="org.apache.catalina.UserDatabase"
+                  description="User database that can be updated and saved"
+                  factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
+                  pathname="conf/tomcat-users.xml" />
+    </GlobalNamingResources>
+
+    <Service name="Catalina">
+
+        <Connector connectionTimeout="20000" port="8089" protocol="HTTP/1.1" redirectPort="8443" server="Apache TomEE" xpoweredBy="false" maxPostSize="-1"/>
+
+        <Engine defaultHost="ventanillaInteligente" name="Catalina">
+            <Realm className="org.apache.catalina.realm.LockOutRealm">
+                <Realm className="org.apache.catalina.realm.UserDatabaseRealm" resourceName="UserDatabase"/>
+            </Realm>
+            <Host name="ventanillaInteligente"  appBase="webapps"  unpackWARs="true" autoDeploy="false">
+                <Alias>ventanillaInteligente</Alias>
+            </Host>  
+        </Engine>
+    </Service>
+</Server>

@@ -1,0 +1,318 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Entrega de Trámites</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <style>
+                .finalizado {
+                    background-color: #a9e4a6 !important;
+                    color: #192a37 !important;
+                }
+                .paraFirma {
+                    background-color: sandybrown !important;
+                    color: #192a37 !important;
+                }
+                .devolutiva {
+                    background-color: pink !important;
+                    color: #192a37 !important;
+                }
+                .entrega {
+                    background-color: pink !important;
+                    color: #192a37 !important;
+                }
+                .enProceso {
+                    background-color: skyblue !important;
+                    color: #192a37 !important;
+                }
+            </style>
+            <center><h2>ENTREGA DE TRÁMITES</h2></center>
+            <h:panelGrid columns="7" style="text-align: right;margin: 0 auto;">
+                <p:outputLabel value="NOMENCLATURA: " style="font-size: 18px;font-weight: bolder;"/>
+                <p:spacer width="40" height="1"/>
+                <p:outputLabel value="Finalizado" class="finalizado" style="font-size: 18px;border: 3px solid;border-radius: 5px;"/>
+                <p:spacer width="20" height="1"/>
+                <p:outputLabel value="Para Entrega" class="entrega" style="font-size: 18px;border: 3px solid;border-radius: 5px;"/>
+                <p:spacer width="20" height="1"/>
+                <p:outputLabel value="En Proceso" class="enProceso" style="font-size: 18px;border: 3px solid;border-radius: 5px;"/>
+            </h:panelGrid>
+            <p:dataTable id="dtTramites" paginator="true" lazy="true" rows="20" rowsPerPageTemplate="20,50,100" resizableColumns="false"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         value="#{entregaTramiteRp.liquidaciones}" var="liq" filterEvent="enter" 
+                         rowStyleClass="#{liq.tramite.estadoTramite eq 0 ? 'enProceso' : (liq.tramite.estadoTramite eq 1 ? 'entrega' : 'finalizado')}">
+                <p:column headerText="N° Trámite" filterBy="#{liq.numTramiteRp}" sortBy="#{liq.numTramiteRp}" width="90" 
+                          filterStyle="width: 95%;">
+                    <h:outputText  value="#{liq.numTramiteRp}"/>
+                </p:column>
+                <p:column headerText="N° Oficio" filterBy="#{liq.oficioMemoReferencia}" width="100" filterStyle="width: 95%;">
+                    <h:outputText  value="#{liq.oficioMemoReferencia}"/>
+                </p:column>
+                <p:column headerText="Repertorio" filterBy="#{liq.repertorio}" width="60" filterStyle="width: 99%;">
+                    <h:outputText value="#{liq.repertorio}"/>
+                </p:column>
+                <!--<p:column headerText="Nº Comprobante" filterBy="# {liq.codigoComprobante}" width="150" filterStyle="width: 95%;">
+                    <h:outputText value="# {liq.codigoComprobante}"/>
+                </p:column>
+                <p:column headerText="N° Referencia" filterBy="# {liq.numeroAutorizacion}" width="100" filterStyle="width: 95%;">
+                    <h:outputText value="# {liq.numeroAutorizacion}"/>
+                </p:column>-->
+                <p:column headerText="Correo del Trámite" width="100">
+                    <h:outputText id="labelMail" value="#{liq.correoTramite}" />
+                    <p:tooltip for="labelMail" value="#{liq.correoTramite}" position="top"/>
+                </p:column>
+                <p:column headerText="Fecha de Ingreso" width="80">
+                    <h:outputText value="#{liq.tramite.fechaIngreso}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+                </p:column>
+                <p:column headerText="Fecha de Entrega" width="80">
+                    <h:outputText value="#{liq.tramite.fechaEntrega}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+                </p:column>
+                <p:column headerText="CI/RUC de Factura" width="120" filterBy="#{liq.solicitante.ciRuc}" filterStyle="width: 95%;">
+                    <h:outputText value="#{liq.beneficiario.ciRuc}"/>
+                </p:column>
+                <p:column headerText="Nombres de Factura">
+                    <h:outputText value="#{liq.beneficiario.nombreCompleto}" style="text-transform: uppercase;"/>
+                </p:column>
+                <p:column headerText="Contratos">
+                    <ui:repeat value="#{liq.regpLiquidacionDetallesCollection}" var="det">
+                        <p:outputLabel value="#{det.acto.nombre} &lt;br/&gt;" escape="false"  style="font-size: 12px"/>
+                    </ui:repeat>
+                </p:column>
+                <p:column headerText="Tipo Ingreso" width="80" rendered="false">
+                    <p:outputLabel value="En Línea" rendered="#{liq.tramiteOnline}"/>
+                    <p:outputLabel value="Presencial" rendered="#{!liq.tramiteOnline}"/>
+                </p:column>
+                <p:column headerText="Acciones" width="150">
+                    <p:commandButton icon="pi pi-folder" actionListener="#{entregaTramiteRp.showInfo(liq)}" 
+                                     title="Ver Infomación"/>
+                    <p:spacer width="10" />
+                    <p:commandButton icon="pi pi-file-pdf" actionListener="#{entregaTramiteRp.showDocsD(liq)}" 
+                                     title="Ver Documentación"/>
+                    <p:spacer width="10" />
+                    <p:commandButton icon="pi pi-envelope" actionListener="#{entregaTramiteRp.showEnvTramiteD(liq)}" 
+                                     title="Enviar Proforma"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog id="dlgVerInfo" header="Información de Trámite" widgetVar="dlgVerInfoRp" resizable="false" 
+                  closeOnEscape="true" modal="true" width="1200" height="550" appendTo="@(body)" position="top">
+            <h:form id="formInformLiq">
+                <h:panelGrid columns="4" style="width: 100%">
+                    <h:panelGroup>
+                        <p:outputLabel value="Tarea Actual:" style="font-weight: bold; font-size: 16px;color: #00a9e7"/><br></br>
+                        <p:outputLabel value="#{entregaTramiteRp.descripcionTareaActual}" style="font-weight: bold; font-size: 16px;color: red;"/>    
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="No de Trámite:" style="font-weight: bold; font-size: 16px;color: #00a9e7"/><br></br>
+                        <p:outputLabel value="#{entregaTramiteRp.liquidacion.numTramiteRp}" style="font-weight: bold; font-size: 16px;"/>    
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Solicitante" style="font-weight: bold; font-size: 16px;color: #00a9e7"/><br></br>
+                        <p:outputLabel value="#{entregaTramiteRp.liquidacion.solicitante.nombreCompleto}" 
+                                       style="font-weight: bold; font-size: 16px;text-transform: uppercase;"/>    
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Actos" style="font-weight: bold; font-size: 18px;color: #00a9e7"/><br></br>
+                        <ui:repeat value="#{entregaTramiteRp.liquidacion.regpLiquidacionDetallesCollection}" var="det">
+                            <p:outputLabel value="#{det.acto.nombre} &lt;br/&gt;" escape="false" style="font-size: 10px; font-weight: bold;"/>
+                        </ui:repeat>
+                    </h:panelGroup>
+                </h:panelGrid><br/>
+                <h:panelGrid columns="1" rendered="#{entregaTramiteRp.liquidacion.estadoPago.id eq 7}">
+                    <p:outputLabel value="TRÁMITE INGRESADO EN LÍNEA" style="font-weight: bold; font-size: 18px; color: #0033FF;"/>
+                </h:panelGrid>
+                <h:panelGrid columns="5" style="margin: 0 auto;text-align: center;">
+                    <p:commandButton value="Reenviar Correo Trámite Finalizado" icon="pi pi-envelope" disabled="false"
+                                     actionListener="#{entregaTramiteRp.showDlgReenvioCorreo()}" style="font-size: 14px;"/>
+                    <p:spacer width="30" height="1"/>
+                    <p:commandButton value="Agregar Observación" icon="pi pi-comments" styleClass="btnStyle" 
+                                     disabled="#{entregaTramiteRp.liquidacion.tramite.estadoTramite eq 2}"
+                                     actionListener="#{entregaTramiteRp.showDlgObservacion()}" style="font-size: 14px;"/>
+                    <p:spacer width="30" height="1"/>
+                    <p:commandButton value="Entregar Trámite" icon="pi pi-send" style="font-size: 14px;" 
+                                     actionListener="#{entregaTramiteRp.realizarTarea()}"/>
+                    <!--<p:commandButton value="Entregar Trámite" disabled="# {!entregaTramiteRp.tramiteFinalizado}"
+                                     icon="pi pi-send" style="font-size: 14px;" 
+                                     actionListener="# {entregaTramiteRp.realizarTarea()}"/>--> 
+                </h:panelGrid>
+                <h:panelGrid columns="2" style="width: 100%; margin: auto" >
+                    <p:fieldset legend="Tareas del Proceso" rendered="#{entregaTramiteRp.liquidacion.certificadoSinFlujo eq false}">
+                        <p:dataTable value="#{entregaTramiteRp.tareas}" emptyMessage="El tramite no ha sido ingresado." 
+                                     var="tarea" scrollable="true" scrollHeight="300" style="text-align: center">
+                            <p:column headerText="Nombre Tarea" width="80">
+                                <p:outputLabel value="#{tarea.name}" />
+                            </p:column>
+                            <p:column headerText="Usuario" width="60">
+                                <p:outputLabel value="#{tarea.assignee}" rendered="#{tarea.assignee ne null}"/>
+                                <p:outputLabel value="#{entregaTramiteRp.usuariosCandidatos(tarea.id)}" rendered="#{tarea.assignee eq null}"/>
+                            </p:column>
+                            <p:column headerText="Fech.Inicio" width="60">
+                                <p:outputLabel value="#{tarea.createTime}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Fech.Fin" width="60">
+                                <p:outputLabel value="#{tarea.endTime}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm"    />
+                                </p:outputLabel>
+                            </p:column>
+                        </p:dataTable>
+                    </p:fieldset>
+                    <p:fieldset legend="Observaciones" >
+                        <p:dataTable value="#{entregaTramiteRp.htObservaciones}" emptyMessage="Sin elementos..."
+                                     var="obs" scrollable="true" scrollHeight="300" sortBy="#{obs.id}" >
+                            <p:column headerText="Fecha" width="60">
+                                <p:outputLabel value="#{obs.fecCre}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm" />
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Tarea" >
+                                <h:outputText id="nombretarea" value="#{obs.tarea}"/> 
+                                <p:tooltip for="nombretarea" trackMouse="true" value="#{obs.tarea}" />
+                            </p:column>
+                            <p:column headerText="Observacion">
+                                <h:outputText id="observaciontexto" value="#{obs.observacion}"/> 
+                                <p:tooltip for="observaciontexto" trackMouse="true" value="#{obs.observacion}" />
+                            </p:column>
+                            <p:column headerText="Usuario" rendered="#{!entregaTramiteRp.xpress}" width="60">
+                                <p:outputLabel value="#{obs.userCre}"/>
+                            </p:column>
+                        </p:dataTable>
+
+                        <br></br>
+                    </p:fieldset>
+                </h:panelGrid>
+                <br></br>
+
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgVerDocsT" header="Documentos" widgetVar="dlgVerDocsRp" resizable="false" 
+                  closeOnEscape="true" modal="true" width="1000" height="350" appendTo="@(body)" position="top">
+            <h:form id="formInformDocsDT">
+                <h:panelGroup>
+                    <p:outputLabel value="No de Trámite:" style="font-weight: bold; font-size: 16px;color: #00a9e7"/><br></br>
+                    <p:outputLabel value="#{entregaTramiteRp.liquidacion.numTramiteRp}" style="font-weight: bold; font-size: 16px;"/>    
+                </h:panelGroup>
+                <p:dataTable value="#{entregaTramiteRp.lazyArchivos}" style="text-align: center;" scrollable="true" lazy="true"
+                             emptyMessage="Sin documentos digitalizados..." scrollHeight="300" var="doc1" paginator="true" reflow="true"
+                             rows="5" paginatorAlwaysVisible="false" >
+                    <p:column headerText="Nombre" >
+                        <p:outputLabel id="nombreDoc" value="#{doc1.detalleDocumento}" />
+                        <p:tooltip for="nombreDoc" value="#{doc1.detalleDocumento}" position="top" />
+                    </p:column>
+                    <p:column headerText="Usuario" width="80" >
+                        <p:outputLabel value="#{doc1.usuario.usuario}" />
+                    </p:column>
+                    <p:column headerText="Fecha" width="80" >
+                        <p:outputLabel value="#{doc1.fecha}" />
+                    </p:column>
+                    <p:column headerText="Descripción" width="80" >
+                        <p:outputLabel value="Páginas: " style="font-weight: bolder"/>
+                        <p:outputLabel value="#{doc1.numeroPaginas}" /> <br/>
+                        <p:outputLabel value="Formato: " style="font-weight: bolder"/>
+                        <p:outputLabel value="#{doc1.formato}" /> <br/>
+                        <p:outputLabel value="Peso: " style="font-weight: bolder"/>
+                        <p:outputLabel value="#{doc1.peso}" />
+                    </p:column>
+                    <p:column headerText="***" width="50">
+                        <p:panelGrid columns="2" styleClass="ui-noborder">
+                            <p:commandLink actionListener="#{tramitesIngresados.visualizarDocumento(doc1)}" process="@this" 
+                                           style="margin-right: 10px" title="Visualizar">
+                                <i class="pi pi-file-pdf" style="font-size: 1.5em; margin-right: 5px;color: darkgreen;"></i>
+                            </p:commandLink> 
+                            <p:commandLink actionListener="#{tramitesIngresados.descargarDocumento(doc1)}" process="@this" 
+                                           style="margin-right: 10px" title="Descargar">
+                                <i class="pi pi-download" style="font-size: 1.5em; margin-right: 5px;color: darkcyan;"></i>
+                            </p:commandLink> 
+                        </p:panelGrid>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgObsvsCertificados" header="Agregar Observación" modal="true" width="600" 
+                  resizable="false" position="center">
+            <h:form id="formObsCertificados">
+                <h:panelGroup>
+                    <p:outputLabel value="Trámite:" style="font-weight: bold; font-size: 18px;color: #00a9e7"/>
+                    <p:spacer width="20" height="1"/>
+                    <p:outputLabel value="#{entregaTramiteRp.liquidacion.numTramiteRp}" style="font-weight: bold; font-size: 18px;"/><br/>
+                    <p:outputLabel value="Solicitante:" style="font-weight: bold; font-size: 18px;color: #00a9e7"/>
+                    <p:spacer width="20" height="1"/>
+                    <p:outputLabel value="#{entregaTramiteRp.liquidacion.solicitante.nombreCompleto}" 
+                                   style="font-weight: bold; font-size: 18px;"/>    
+                </h:panelGroup>
+                <h:panelGrid columns="1" style="width: 100%;text-align: center;">
+                    <p:outputLabel value="Ingrese Comentario:" style="font-weight: bolder;font-size: 16px"/>
+                    <p:inputTextarea value="#{entregaTramiteRp.observacion}" rows="5" autoResize="false" 
+                                     style="width: 100%" maxlength="99"/>
+                    <p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{entregaTramiteRp.guardarObservacion()}" />
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgReenvioCorreo" header="Reenviar Documentos Trámite" modal="true" width="600" 
+                  resizable="false" position="center">
+            <h:form id="formEnvioMail">
+                <h:panelGroup>
+                    <p:outputLabel value="Nro. Trámite:" style="font-weight: bold; font-size: 18px;color: #00a9e7"/>
+                    <p:spacer width="20" height="1"/>
+                    <p:outputLabel value="#{entregaTramiteRp.liquidacion.numTramiteRp}" style="font-weight: bold; font-size: 18px;"/><br/>
+                    <p:outputLabel value="Solicitante:" style="font-weight: bold; font-size: 18px;color: #00a9e7"/>
+                    <p:spacer width="20" height="1"/>
+                    <p:outputLabel value="#{entregaTramiteRp.liquidacion.solicitante.nombreCompleto}" style="font-weight: bold; font-size: 18px;"/>    
+                </h:panelGroup>
+                <h:panelGrid columns="1" style="width: 100%;text-align: center;">
+                    <p:outputLabel value="Ingrese Nuevo Correo:" style="font-weight: bolder;font-size: 16px"/>
+                    <p:inputText value="#{entregaTramiteRp.email}" style="width: 100%" maxlength="99"/>
+                    <p:spacer width="1"/>
+                    <p:commandButton value="Reenviar" icon="pi pi-send" actionListener="#{entregaTramiteRp.reenviarDocsEmail()}" />
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgReenvioProf" header="Reenviar Proforma" modal="true" width="600" 
+                  resizable="false" position="center">
+            <h:form id="formEnvioProfMail">
+                <h:panelGroup>
+                    <p:outputLabel value="Nro. Trámite:" style="font-weight: bold; font-size: 18px;color: #00a9e7"/>
+                    <p:spacer width="20" height="1"/>
+                    <p:outputLabel value="#{entregaTramiteRp.liquidacion.numTramiteRp}" style="font-weight: bold; font-size: 18px;"/><br/>
+                    <p:outputLabel value="Solicitante:" style="font-weight: bold; font-size: 18px;color: #00a9e7"/>
+                    <p:spacer width="20" height="1"/>
+                    <p:outputLabel value="#{entregaTramiteRp.liquidacion.solicitante.nombreCompleto}" style="font-weight: bold; font-size: 18px;"/>    
+                </h:panelGroup>
+                <h:panelGrid columns="1" style="width: 100%;text-align: center;">
+                    <p:outputLabel value="Confirmar Correo:" style="font-weight: bolder;font-size: 16px"/>
+                    <p:inputText value="#{entregaTramiteRp.liquidacion.correoTramite}" style="width: 100%" maxlength="99"/>
+                    <p:spacer width="1"/>
+                    <p:commandButton value="Reenviar" icon="pi pi-send" actionListener="#{entregaTramiteRp.continuarNuevaProforma()}" />
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+        
+        <p:dialog widgetVar="dlgProformaGenerada" header="PROFORMA GENERADA" modal="true" 
+                  resizable="false" position="center" closable="false" closeOnEscape="false">
+            <h:form id="formProformaGenerada">
+                <h:panelGrid columns="1" style="text-align: center;font-weight: bolder;">
+                    <p:outputLabel value="NRO DE TRÁMITE:" style="font-size: 16px;"/>
+                    <p:outputLabel value="#{entregaTramiteRp.liquidacion.numTramiteRp}" 
+                                   style="font-size: 30px;color: #0033FF"/>
+                    <p:outputLabel value="CORREO REGISTRADO:" style="font-size: 16px;"/>
+                    <p:outputLabel value="#{entregaTramiteRp.email}" 
+                                   style="font-size: 30px;color: #0033FF"/>
+                    <p:spacer width="1" height="1"/>
+                    <p:commandButton value="Enviar Notificación" icon="pi pi-send" 
+                                     actionListener="# {entregaTramiteRp.continuarNuevaProforma()}">
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+    </ui:define>
+</ui:composition>

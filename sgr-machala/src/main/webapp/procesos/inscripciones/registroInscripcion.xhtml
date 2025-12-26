@@ -1,0 +1,449 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"> 
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <h2><center>#{firmarInscripcion.taskDataByTaskID.name} - Trámite No #{firmarInscripcion.ht.numTramite}</center></h2>
+            <p:scrollPanel mode="native" style="height: 100px;" rendered="#{firmarInscripcion.advertencias.length() gt 0}" >
+                <p:outputLabel value="#{firmarInscripcion.advertencias}" class="FontBold icon-lock"
+                               style="color: darkred; text-transform: uppercase; font-size: 20px;" escape="false"  />
+            </p:scrollPanel>
+            <h:panelGrid columns="1" style="margin: 0 auto;text-align: center;">
+                <p:outputLabel value="TRÁMITE INICIADO EN LÍNEA" 
+                               rendered="#{firmarInscripcion.liquidacion.tramiteOnline}" 
+                               style="font-weight: bolder; font-size: 24px;color: #0033FF;"/>
+            </h:panelGrid>
+            <h:panelGrid columns="1" style="margin: 0 auto;text-align: center;">
+                <p:outputLabel value="TRÁMITE MARCADO CON NEGATIVA!!!" 
+                               rendered="#{firmarInscripcion.liquidacion.ingresado}" 
+                               style="font-weight: bolder; font-size: 24px;color: #0033FF;"/>
+            </h:panelGrid>
+            <h:panelGrid columns="1" style="margin: 0 auto;text-align: center;">
+                <p:outputLabel value="TRÁMITE POSEE NOTA DEVOLUTIVA" 
+                               rendered="#{firmarInscripcion.tieneNotaDevolutiva}"
+                               style="font-weight: bolder;color: red; font-size: 16px" />
+            </h:panelGrid>
+            <p:tabView id="mainTab">
+
+                <p:tab title="Tareas del Trámite">
+                    <p:dataTable id="dtTareas" value="#{firmarInscripcion.tareas}" emptyMessage="Sin elementos..." 
+                                 scrollHeight="250" rowIndexVar="indexInsc" var="det" scrollable="true" resizableColumns="true"  
+                                 style="text-align: center;margin: 0 auto;" >
+                        <p:column headerText="Nº" width="30">#{indexInsc+1}</p:column>
+                        <p:column headerText="Documento/Contrato">
+                            <p:outputLabel value="#{det.detalle.acto.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Nro de Repertorio" width="100">
+                            <h:outputText value="#{det.movimiento.numRepertorio}"/>
+                        </p:column>
+                        <p:column headerText="Fecha de Repertorio" width="120">
+                            <p:outputLabel value="#{det.movimiento.fechaRepertorio}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Nro de Inscripcion" width="100">
+                            <h:outputText value="#{det.movimiento.numInscripcion}"/>
+                        </p:column>
+                        <p:column headerText="Fecha de Inscripcion" width="120">
+                            <p:outputLabel value="#{det.movimiento.fechaInscripcion}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Acta" width="50" rendered="#{firmarInscripcion.liquidacion.inscripcion}" >
+                            <p:commandLink actionListener="#{firmarInscripcion.verActaInscripcion(det)}" disabled="#{det.detalle.acto.solvencia}" >
+                                <p:graphicImage value="/resources/icons/reporte.png" height="16"/>
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Estado" width="40">
+                            <p:graphicImage value="/resources/icons/check.png" height="16" rendered="#{det.realizado}" title="Realizado"/>
+                            <p:graphicImage value="/resources/icons/delete.png" height="16" rendered="#{!det.realizado}" title="NO Realizado"/> 
+                        </p:column>
+                        <p:column headerText="Tarea" width="30">
+                            <p:commandLink actionListener="#{firmarInscripcion.realizarTarea(det)}" title="Realizar">
+                                <p:graphicImage value="/resources/icons/ir.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+
+                    <br/>
+                    <center>
+                        <p:commandButton value="Completar Tarea" icon="pi pi-thumbs-up" style="font-size: 16px;" disabled="true"
+                                         actionListener="#{firmarInscripcion.completarTarea()}">
+                            <p:confirm header="Confirmación" message="Seguro de Completar Tarea?" icon="pi pi-exclamation-triangle" />
+                        </p:commandButton>
+                        <!--<p:spacer width="40" />-->
+                        <p:commandButton value="Rechazar Trámite" icon="pi pi-refresh" rendered="false"
+                                         style="background-color: orangered;font-size: 16px;"
+                                         actionListener="#{firmarInscripcion.showDlgRegresarTramite()}">
+                            <p:confirm header="Confirmación" message="Seguro de Regresar el Trámite?" icon="pi pi-exclamation-triangle" />
+                        </p:commandButton>
+                    </center>
+                    <p:confirmDialog global="true">
+                        <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </p:confirmDialog>
+
+                </p:tab>
+
+                <p:tab title="Documentos de Inscripción" >
+                    <p:dataTable id="dtMovimientos" value="#{firmarInscripcion.inscripciones}" emptyMessage="Sin elementos..." 
+                                 scrollHeight="250" rowIndexVar="indexInsc" var="insc" scrollable="true" resizableColumns="true"  
+                                 style="margin: 0 auto;" lazy="false">
+                        <p:column headerText="Nº" width="30">#{indexInsc+1}</p:column>
+                        <p:column headerText="Sec." width="40" rendered="false">
+                            <p:outputLabel value="#{insc.registro}"/>
+                        </p:column>
+                        <p:column headerText="Libro" width="200">
+                            <p:outputLabel value="#{insc.libro.nombre}" style="text-transform: uppercase;"/>
+                        </p:column>
+                        <p:column headerText="Contrato">
+                            <p:outputLabel value="#{insc.acto.nombre}" style="text-transform: uppercase;"/>
+                        </p:column>
+                        <p:column headerText="Repertorio" width="80" >
+                            <p:outputLabel value="#{insc.numRepertorio}"/>
+                        </p:column>
+                        <p:column headerText="Fecha Repertorio" width="120">
+                            <p:outputLabel value="#{insc.fechaRepertorio}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Inscripción" width="80" >
+                            <p:outputLabel value="#{insc.numInscripcion}"/>
+                        </p:column>
+                        <p:column headerText="Fecha Inscripción" width="120">
+                            <p:outputLabel value="#{insc.fechaInscripcion}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Sign" width="40" rendered="true">
+                            <p:commandButton icon="pi pi-pencil" style="background-color: darkcyan;" title="Firmar Acta"
+                                             actionListener="#{firmarInscripcion.firmarActaInscripcion(insc)}"/>
+                        </p:column>
+                        <p:column headerText="View" width="40" rendered="true">
+                            <p:commandButton icon="pi pi-file-pdf" title="Descargar Acta" update="dtMovimientos" 
+                                             style="background-color: orangered;"
+                                             actionListener="#{firmarInscripcion.descargarActa(insc)}"/>
+                        </p:column>
+                        <p:column headerText="Docs." width="40" rendered="false">
+                            <p:commandButton icon="pi pi-file-pdf" style="background-color: orangered;" 
+                                             actionListener="#{firmarInscripcion.showDlgDocumentos(insc)}"/>
+                        </p:column>
+                        <p:column headerText="Ins." width="40" rendered="false">
+                            <p:commandButton icon="pi pi-sort-numeric-up" title="Generar Nro Inscripcion" update="dtMovimientos" 
+                                             style="background-color: darkcyan;"
+                                             actionListener="#{firmarInscripcion.generarNroInscripcion(insc)}"/>
+                        </p:column>
+                    </p:dataTable><br/>
+                    <center>
+                        <h:panelGroup>
+                            <p:outputLabel value="Firmar Razón" style="font-weight: bolder;"/><br/>
+                            <p:commandLink title="Firmar Razón" 
+                                           actionListener="#{firmarInscripcion.firmarRazonInscripcion()}"  >
+                                <p:graphicImage value="/resources/icons/archivo_firmado.png" height="90"/>
+                            </p:commandLink>
+                        </h:panelGroup>
+                    </center>
+                </p:tab>
+
+                <p:tab title="Información Nota Devolutiva" rendered="#{firmarInscripcion.tieneNotaDevolutiva}" >
+                    <p:dataTable value="#{firmarInscripcion.notaDevolutivaAnalisis}" var="notaDevolutiva" >
+                        <p:column headerText="Fecha de Registro" >
+                            #{notaDevolutiva.fecha}
+                        </p:column>
+                        <p:column headerText="Nro Documento" >
+                            #{notaDevolutiva.numNotaDevolutiva}
+                        </p:column>
+                        <p:column headerText="Realizado" >
+                            #{notaDevolutiva.realizado}
+                        </p:column>
+                        <p:column headerText="Asunto" >
+                            #{notaDevolutiva.asunto}
+                        </p:column>
+                        <p:column headerText="Retiro" >
+                            <p:outputLabel value="#{notaDevolutiva.fechaRetiro}"><f:convertDateTime pattern="dd-MM-yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Reingreso" >
+                            <p:outputLabel value="#{notaDevolutiva.fechaReingreso}"><f:convertDateTime pattern="dd-MM-yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Fecha de Entrega" >
+                            <p:outputLabel value="#{notaDevolutiva.fechaEntregaTramite}"><f:convertDateTime pattern="dd-MM-yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Estado" >
+                            <p:outputLabel value="GENERADA" rendered="#{notaDevolutiva.documento eq null}"/>
+                            <p:outputLabel value="FIRMADA" rendered="#{notaDevolutiva.documento ne null}"/>
+                        </p:column>
+                        <p:column headerText="Descarga" width="80">
+                            <center>
+                                <p:commandLink actionListener="#{firmarInscripcion.imprimirNotaDevolutiva(notaDevolutiva)}">
+                                    <p:graphicImage value="/resources/icons/reporte.png"/>
+                                </p:commandLink>
+                            </center>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+
+                <p:tab title="Pronunciamiento Jurídico" rendered="#{firmarInscripcion.tienePronunciamiento}" >
+                    <br></br>
+                    <center>
+                        <p:dataTable value="#{firmarInscripcion.pronunciamientos}" var="pron" >
+                            <p:column headerText="Nro Documento" >
+                                #{pron.numeroDocumento}
+                            </p:column>
+                            <p:column headerText="Fecha de Registro" >
+                                <p:outputLabel value="#{pron.fechaIngreso}"><f:convertDateTime pattern="dd-MM-yyyy HH:mm"/></p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Usuario" >
+                                #{pron.realizado}
+                            </p:column>
+                            <p:column headerText="Asunto" >
+                                #{pron.asunto}
+                            </p:column>
+                            <p:column headerText="Descargar" >
+                                <center>
+                                    <p:commandLink actionListener="#{firmarInscripcion.generarPronunciamiento(pron.id)}">
+                                        <p:graphicImage value="/resources/icons/down.png"/>
+                                    </p:commandLink>
+                                </center>
+                            </p:column>
+                        </p:dataTable>
+                    </center>
+                    <br></br>
+                </p:tab>
+
+                <p:tab title="Comentarios del Proceso" >
+                    <center>
+                        <p:commandButton value="Ingresar Comentario al Proceso" icon="pi pi-comments"
+                                         actionListener="#{firmarInscripcion.nuevaObservacion()}"
+                                         style="background-color: darkcyan;" />
+                    </center>
+                    <p:dataTable value="#{firmarInscripcion.observacionesTramites}" var="obs" id="dtObservaciones">
+                        <p:column headerText="Fecha de Ingreso" width="100">
+                            <p:outputLabel value="#{obs.fecCre}"><f:convertDateTime pattern="dd-MM-yyyy HH:mm"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Usuario" width="100">
+                            <p:outputLabel value="#{obs.userCre}" />
+                        </p:column>
+                        <p:column headerText="Tarea" width="100">
+                            <p:outputLabel value="#{obs.tarea}" />
+                        </p:column>
+                        <p:column headerText="Observación" >
+                            <!--<p:outputLabel value="# {obs.observacion}" />-->
+                            <!--<h:outputText value="# {obs.observacion}" escape="false" />-->
+                            <p:inputTextarea value="#{obs.observacion}" style="width: 100%" readonly="true"/>
+                        </p:column>
+                    </p:dataTable>
+                    <br></br>
+                </p:tab>
+
+                <p:tab title="Detalle proforma">
+
+                    <div style="display: flex; ">
+                        <p:fieldset legend="Solicitante" style="width: 50%">
+                            <h:panelGrid styleClass="noBorder" style="width: 100%;" columns="4">
+                                <h:panelGroup>
+                                    <p:outputLabel value="Cl/Ruc:" /> <br/>
+                                    <p:outputLabel value="#{firmarInscripcion.liquidacion.solicitante.ciRuc}" style="font-weight: bolder;font-size: 14px;"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Nombres/Razón Social:" /> <br/>
+                                    <p:outputLabel value="#{firmarInscripcion.liquidacion.solicitante.nombreCompleto}" style="font-weight: bolder;font-size: 14px;"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Fecha Proforma:" /> <br/>
+                                    <p:outputLabel value="#{firmarInscripcion.liquidacion.fechaCreacion}" style="font-weight: bolder;font-size: 14px;">
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                                    </p:outputLabel>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Fecha Entrega:" /> <br/>
+                                    <p:outputLabel value="#{firmarInscripcion.liquidacion.tramite.fechaEntrega}" 
+                                                   style="font-weight: bolder;font-size: 14px;">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                    </p:outputLabel>
+                                </h:panelGroup>
+                            </h:panelGrid>
+                        </p:fieldset>
+                        <p:fieldset legend="Factura" style="width: 50%">
+                            <h:panelGrid styleClass="noBorder" style="width: 100%;" columns="3">
+                                <h:panelGroup>
+                                    <p:outputLabel value="Cl/Ruc:" /> <br></br>
+                                    <p:outputLabel value="#{firmarInscripcion.liquidacion.beneficiario.ciRuc}" style="font-weight: bolder;font-size: 14px;"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Nombres/Razón Social:" /> <br></br>
+                                    <p:outputLabel value="#{firmarInscripcion.liquidacion.beneficiario.nombreCompleto}" style="font-weight: bolder;font-size: 14px;"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Correo:" /> <br></br>
+                                    <p:outputLabel value="#{firmarInscripcion.liquidacion.beneficiario.correo1}" style="font-weight: bolder;font-size: 14px;"/>
+                                </h:panelGroup>
+                            </h:panelGrid>
+                        </p:fieldset>
+                        <h:panelGroup>
+                            <p:commandLink actionListener="#{firmarInscripcion.showProforma(firmarInscripcion.liquidacion)}" 
+                                           title="Visualizar Proforma">
+                                <p:graphicImage value="/resources/icons/pdf.png" height="60" />
+                            </p:commandLink>
+                            <br/>
+                            <p:outputLabel value="Visualizar Solicitud" style="font-weight: bolder;"/>
+                        </h:panelGroup>
+                    </div>
+                    <br/>
+                    <p:fieldset legend="Información Adicional" style="width: 100%">
+                        <h:panelGrid style="width: 100%;" columns="1">
+                            <h:panelGroup>
+                                <p:outputLabel value="#{firmarInscripcion.liquidacion.infAdicionalProf}" />
+                            </h:panelGroup>
+                        </h:panelGrid>
+                    </p:fieldset>
+                    <div class="card">
+                        <p:dataTable var="det"
+                                     value="#{firmarInscripcion.liquidacion.regpLiquidacionDetallesCollection}"
+                                     style="width:100%">
+                            <p:columnGroup type="header">
+                                <p:row>
+                                    <p:column colspan="3" headerText="Acto"/>
+                                </p:row>
+                            </p:columnGroup>
+                            <p:column>
+                                <h:outputText value="#{det.acto.nombre}" style="font-weight:bold;" />
+                            </p:column>
+                            <p:column colspan="2">
+                                <p:dataTable var="inter"
+                                             value="#{det.regpIntervinientesCollection}"
+                                             style="width:100%; border: none;">
+                                    <p:column headerText="Cl/RUC">
+                                        <h:outputText 
+                                            value="#{inter.ente.ciRuc}" />
+                                    </p:column>
+                                    <p:column headerText="Interviniente/s">
+                                        <h:outputText 
+                                            value="#{inter.ente.nombreCompleto}" />
+                                    </p:column>
+                                    <p:column headerText="Papel">
+                                        <h:outputText value="#{inter.papel.papel}" />
+                                    </p:column>
+                                </p:dataTable>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+
+                </p:tab>
+
+                <p:tab title="Documentos">
+                    <p:dataTable value="#{firmarInscripcion.lazyArchivos}" style="text-align: center;" scrollable="true" lazy="true"
+                                 emptyMessage="Sin documentos digitalizados..." scrollHeight="300" var="doc1" paginator="true" reflow="true"
+                                 rows="5" paginatorAlwaysVisible="false" >
+                        <p:column headerText="Nombre" >
+                            <p:outputLabel id="nombreDoc" value="#{doc1.detalleDocumento}" />
+                            <p:tooltip for="nombreDoc" value="#{doc1.detalleDocumento}" position="top" />
+                        </p:column>
+                        <p:column headerText="Usuario" >
+                            <p:outputLabel value="#{doc1.usuario.usuario}" />
+                        </p:column>
+                        <p:column headerText="Fecha" >
+                            <p:outputLabel value="#{doc1.fecha}" />
+                        </p:column>
+                        <p:column headerText="Descripción" >
+                            <p:outputLabel value="Páginas: " style="font-weight: bolder"/>
+                            <p:outputLabel value="#{doc1.numeroPaginas}" /> <br/>
+                            <p:outputLabel value="Formato: " style="font-weight: bolder"/>
+                            <p:outputLabel value="#{doc1.formato}" /> <br/>
+                            <p:outputLabel value="Peso: " style="font-weight: bolder"/>
+                            <p:outputLabel value="#{doc1.peso}" />
+                        </p:column>
+                        <p:column headerText="***" >
+                            <p:panelGrid columns="2" styleClass="ui-noborder">
+                                <p:commandLink actionListener="#{tramitesIngresados.visualizarDocumento(doc1)}" process="@this" 
+                                               style="margin-right: 10px" title="Visualizar">
+                                    <i class="pi pi-file-pdf" style="font-size: 1.5em; margin-right: 5px;color: darkgreen;"></i>
+                                </p:commandLink> 
+                                <p:commandLink actionListener="#{tramitesIngresados.descargarDocumento(doc1)}" process="@this" 
+                                               style="margin-right: 10px" title="Descargar">
+                                    <i class="pi pi-download" style="font-size: 1.5em; margin-right: 5px;color: darkcyan;"></i>
+                                </p:commandLink> 
+                            </p:panelGrid>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+
+                <p:tab title="Información Adicional" rendered="false" >
+                    <p:outputLabel value="Datos adicionales que se ingresaron en ventanilla para el trámite:"
+                                   style="font-weight: bolder; font-size: 16px; color: #0033FF;"/><br/>
+                    <p:inputTextarea value="#{firmarInscripcion.liquidacion.infAdicionalProf}" 
+                                     readonly="true" cols="80" rows="5"/>
+                </p:tab>
+
+                <p:tab title="Correo del Trámite" >
+                    <h:panelGrid columns="4">
+                        <p:outputLabel value="Correo Ingresado para el Trámite:" style="font-weight: bolder;"/>
+                        <p:inputText value="#{firmarInscripcion.liquidacion.correoTramite}" size="40"/>
+                        <p:spacer width="20" height="1"/>
+                        <p:commandButton value="Actualizar" icon="pi pi-refresh" 
+                                         actionListener="#{firmarInscripcion.updateLiquidacion()}"/>
+                    </h:panelGrid>
+                </p:tab>
+
+                <p:tab title="Motivación de Negativa" rendered="#{firmarInscripcion.liquidacion.ingresado}">
+                    <h:panelGrid columns="1" style="width: 600px;">
+                        <p:outputLabel value="Motivación para la NEGATIVA:" style="font-weight: bolder;font-size: 16px;color: blue;"/>
+                        <p:inputTextarea value="#{firmarInscripcion.liquidacion.infAdicional}" rows="15" autoResize="false" 
+                                         style="width: 100%" readonly="true"/>
+                    </h:panelGrid>
+                </p:tab>
+
+            </p:tabView>
+
+        </h:form>
+
+        <p:dialog widgetVar="dlgDocumentos" header="Documentos" modal="true">
+            <h:form id="frmDocuments">
+                <h:panelGrid columns="1" style="font-weight: bolder;text-align: center;"
+                             rendered="#{firmarInscripcion.rtt.detalle.acto.solvencia}">
+                    <p:outputLabel value="Certificado"/>
+                    <p:commandLink actionListener="#{firmarInscripcion.generarCertificado()}">
+                        <p:graphicImage value="/resources/icons/pdf.png" height="50"/>
+                    </p:commandLink>
+                </h:panelGrid>
+                <h:panelGrid columns="3" style="font-weight: bolder;text-align: center;"
+                             rendered="#{!firmarInscripcion.rtt.detalle.acto.solvencia}">
+                    <p:outputLabel value="Acta de Inscripción"/>
+                    <p:spacer width="10"/>
+                    <p:outputLabel value="Razón de Inscripción"/>
+                    <p:commandLink actionListener="#{firmarInscripcion.actaInscripcion()}">
+                        <p:graphicImage value="/resources/icons/pdf.png" height="80"/>
+                    </p:commandLink>
+                    <p:spacer width="10"/>
+                    <p:commandLink actionListener="#{firmarInscripcion.razonInscripcion()}">
+                        <p:graphicImage value="/resources/icons/pdf.png" height="80"/>
+                    </p:commandLink>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgObervacionesCertificados" widgetVar="dlgObsvsCertificados"
+                  header="Agregar Observación" modal="true" width="400" resizable="false" position="center">
+            <h:form id="formObsCertificados">
+                <p:outputLabel value="Ingrese Comentario:" style="font-weight: bolder;font-size: 16px"/>
+                <p:inputTextarea value="#{firmarInscripcion.observacion}" rows="5" autoResize="false"
+                                 style="width: 100%" />
+                <br/><br/>
+                <center><p:commandButton value="Guardar Comentario" icon="pi pi-save" update=":mainForm:mainTab:dtObservaciones" 
+                                         oncomplete="PF('dlgObsvsCertificados').hide();"
+                                         actionListener="#{firmarInscripcion.guardarComentarioTramite()}"/></center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgRegresar" header="Regresar Trámite a Coordinación" modal="true" 
+                  width="400" resizable="false" position="center">
+            <h:form id="formRegresar">
+                <p:outputLabel value="Ingrese Comentario:" style="font-weight: bolder;font-size: 16px"/>
+                <p:inputTextarea value="#{firmarInscripcion.observacion}" rows="5" autoResize="false"
+                                 style="width: 100%" maxlength="900"/>
+                <br/><br/>
+                <center>
+                    <p:commandButton value="Enviar" icon="pi pi-send" style="background-color: orangered;"
+                                     actionListener="#{firmarInscripcion.regresarTramite()}"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

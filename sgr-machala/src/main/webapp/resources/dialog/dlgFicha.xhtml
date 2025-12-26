@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Ficha #{dlgFicha.ficha.numFicha} </title>
+        <ui:include src="styleTemplete.xhtml" />
+    </h:head>
+    <h:body>
+
+        <h:form id="formFichaSelect" style="background-color: white ">
+            <h:panelGrid style="font-weight: bolder;margin: 0 auto;width: 100%;" columns="3">
+                <h:panelGroup>
+                    Nº de Ficha:<br/>
+                    <p:inputText value="#{dlgFicha.ficha.numFicha}" readonly="true" style="width: 100%"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    Parroquia:<br/>
+                    <p:inputText value="#{dlgFicha.ficha.parroquia.descripcion}" readonly="true" style="width: 100%"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    Código Predial:<br/>
+                    <p:inputText value="#{dlgFicha.ficha.claveCatastral}" readonly="true" style="width: 100%"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    Dirección:<br/>
+                    <p:inputText value="#{dlgFicha.ficha.direccionBien}" readonly="true" style="width: 100%"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    Área de Terreno:<br/>
+                    <p:inputText value="#{dlgFicha.ficha.areaTerreno}" readonly="true" style="width: 100%"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    Área de Construcción:<br/>
+                    <p:inputText value="#{dlgFicha.ficha.areaConstruccion}" readonly="true" style="width: 100%"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    Alícuota de Terreno:<br/>
+                    <p:inputText value="#{dlgFicha.ficha.alicuotaEscritura}" readonly="true" style="width: 100%"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    Alícuota de Contrucción:<br/>
+                    <p:inputText value="#{dlgFicha.ficha.alicuotaConstruccion}" readonly="true" style="width: 100%"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    Tipo de Bien:<br/>
+                    <p:inputText value="#{dlgFicha.ficha.uafTipoBien.descripcion}" readonly="true" style="width: 100%"/>
+                </h:panelGroup>
+            </h:panelGrid>
+            <br/>
+            <p:tabView>
+                <p:tab title="Linderos Registrales">
+                    <p:panel header="Descripcion del Bien">
+                        <p:inputTextarea value="#{dlgFicha.ficha.descripcionBien}" style="width: 100%;" rows="2" readonly="true"
+                                         autoResize="false"/>
+                    </p:panel>
+                    <p:panel header="Linderos Registrales">
+                        <p:inputTextarea value="#{dlgFicha.ficha.linderos}" style="width: 100%;" rows="5" readonly="true"
+                                         autoResize="false"/>
+                    </p:panel>
+                </p:tab>
+                <p:tab title="Movimientos Registrales">
+                    <p:dataTable id="dtMov" value="#{fichasIngresadas.movimientos}" scrollable="true" scrollHeight="240"
+                                 var="mov" rowIndexVar="rowIndex" reflow="true" style="text-align: center;" >
+                        <p:column headerText="No" width="30">
+                            #{rowIndex + 1}
+                        </p:column>
+                        <p:column headerText="Libro">
+                            <p:outputLabel value="#{mov.movimiento.libro.nombre}" />
+                        </p:column>
+                        <p:column headerText="Acto">
+                            <p:outputLabel value="#{mov.movimiento.acto.nombre}" />
+                        </p:column>
+                        <p:column headerText="Repertorio" width="80">
+                            <p:outputLabel value="#{mov.movimiento.numRepertorio}" />
+                        </p:column>
+                        <p:column headerText="Inscripcion" width="80">
+                            <p:outputLabel value="#{mov.movimiento.numInscripcion}"/>
+                        </p:column>
+                        <p:column headerText="Fec.Insc." width="80">
+                            <p:outputLabel value="#{mov.movimiento.fechaInscripcion}" >
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column headerText="**" width="80">
+                            <p:commandButton icon="pi pi-folder-open" title="Visualizar" 
+                                             actionListener="#{fichasIngresadas.showDlgInscripcion(mov)}"/>
+                        </p:column>
+
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Propietarios">
+                    <p:dataTable value="#{dlgFicha.ficha.regFichaPropietariosCollection}" var="pro" rowIndexVar="rowIndexProp" 
+                                 resizableColumns="true" style="text-align: center" scrollable="true" scrollHeight="240">
+                        <p:column headerText="No" width="30">
+                            #{rowIndexProp+1}
+                        </p:column>
+                        <p:column headerText="CI/RUC" width="150">
+                            <p:outputLabel value="#{pro.propietario.cedRuc}"/>
+                        </p:column>
+                        <p:column headerText="Nombre" >
+                            <p:outputLabel value="#{pro.propietario.nombre}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Reportes">
+                    <h:panelGrid columns="3" style="font-weight: bolder;text-align: center;margin: 0 auto;">
+                        <p:outputLabel value="Ficha Registral"/>
+                        <p:spacer width="50"/>
+                        <p:outputLabel value="Bitácora"/>
+                        <p:commandLink actionListener="#{fichasIngresadas.imprimirFichaRegistral(dlgFicha.ficha)}">
+                            <p:graphicImage value="/resources/icons/inscripciones.png" height="80"/>
+                        </p:commandLink>
+                        <p:spacer width="50"/>
+                        <p:commandLink actionListener="#{fichasIngresadas.imprimirBitacora()}">
+                            <p:graphicImage value="/resources/icons/buscar-archivo.png" height="80"/>
+                        </p:commandLink>
+                    </h:panelGrid>
+                </p:tab>
+            </p:tabView>
+        </h:form> 
+    </h:body>
+</html>

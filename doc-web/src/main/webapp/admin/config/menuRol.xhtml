@@ -1,0 +1,286 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+    <ui:define name="title">Mantenimiento del Menú</ui:define>
+    <ui:define name="content">
+        <h:form id="frmMenuRol" prependId="false">
+            <h:panelGrid columns="1" style="width: 100%;text-align: center;">
+                <p:outputLabel value="Mantenimiento del Menú"
+                               style="
+                               font-family:  'Courier New', monospace !important;
+                               font-size: 30px;
+                               font-weight: bolder;
+                               text-align: left;
+                               color: black" />
+                <p:commandButton value="Agregar Menú" style="float: right"  icon="pi pi-plus"
+                                 styleClass="info-button  rounded-button p-mr-2 p-mb-2" 
+                                 actionListener="#{menuRol.showDlgNuevoMenu(null)}" />
+            </h:panelGrid>
+            <p:dataTable value="#{menuRol.padre}" var="m1" reflow="true" rowKey="#{m1.id}"
+                         paginator="true" paginatorAlwaysVisible="false" 
+                         rows="10" rowsPerPageTemplate="10,15,20" emptyMessage="No se encontró ningún Item" >
+                <p:column headerText="Mostrar Submenús" width="120">
+                    <p:rowToggler />
+                </p:column>
+                <p:column headerText="Nombre">
+                    <p:outputLabel value="#{m1.nombre}" />
+                </p:column>
+                <p:column headerText="Posición" width="100">
+                    <p:outputLabel value="#{m1.numPosicion}" />
+                </p:column>
+                <p:column headerText="Tipo Acceso" width="120">
+                    <p:outputLabel value="#{m1.tipoAcceso.identificador}" />
+                </p:column>
+                <p:column headerText="Opciones" width="150">
+                    <p:commandLink actionListener="#{menuRol.showDlgEditMenu(m1)}" title="Editar Menú Padre">
+                        <i class="pi pi-pencil" style="font-size: 1.2em; margin-right: 5px;"></i>
+                    </p:commandLink>
+                    <p:spacer width="15" height="0"/>
+                    <p:commandLink actionListener="#{menuRol.showDlgEditPermisos(m1)}" title="Editar Permisos Menú Padre">
+                        <i class="pi pi-eye" style="font-size: 1.2em; margin-right: 5px;"></i>
+                    </p:commandLink>
+                    <p:spacer width="15" height="0"/>
+                    <p:commandLink actionListener="#{menuRol.showDlgNuevoMenu(m1)}" title="Agregar Nuevo SubMenú">
+                        <i class="pi pi-plus" style="font-size: 1.2em; margin-right: 5px;"></i>
+                    </p:commandLink>
+                </p:column>
+
+                <p:rowExpansion id="rowExpansion">
+                    <p:dataTable emptyMessage="No se encontró ningún Item" var="h1" value="#{m1.menusHijos_byNumPosicion}">
+                        <f:facet name="header" >
+                            <p:commandLink value="Agregar SubMenú" style="float: top;" 
+                                           actionListener="#{menuRol.nuevoMenu(false, m1)}" />
+                        </f:facet>
+                        <p:column headerText="Nombre" width="25%">
+                            <p:outputLabel value="#{h1.nombre}" />
+                        </p:column>
+                        <p:column headerText="Posición" width="50">
+                            <p:outputLabel value="#{h1.numPosicion}" />
+                        </p:column>
+                        <p:column headerText="Url">
+                            <p:outputLabel value="#{h1.hrefUrl}" />
+                        </p:column>
+                        <p:column headerText="Pretty">
+                            <p:outputLabel value="#{h1.prettyPattern}" />
+                        </p:column>
+                        <p:column headerText="Tipo Acceso" width="100">
+                            <p:outputLabel value="#{h1.tipoAcceso.identificador}" />
+                        </p:column>
+                        <p:column headerText="Opciones" style="text-align: right;" width="100">
+                            <p:commandLink actionListener="#{menuRol.showDlgEditMenu(h1)}" title="Editar Menu Hijo">
+                                <i class="pi pi-pencil" style="font-size: 1.2em; margin-right: 5px;"></i>
+                            </p:commandLink>
+                            <p:spacer width="5" height="0"/>
+                            <p:commandLink actionListener="#{menuRol.showDlgEditPermisos(h1)}" title="Editar Permisos Menu Hijo">
+                                <i class="pi pi-eye" style="font-size: 1.2em; margin-right: 5px;"></i>
+                            </p:commandLink>
+                            <p:spacer width="5" height="0"/>
+                            <p:commandLink actionListener="#{menuRol.eliminar(h1)}" title="Eliminar Menu Hijo">
+                                <i class="pi pi-trash" style="font-size: 1.2em; margin-right: 5px;"></i>
+                                <p:confirm message="¿Está seguro de eliminar el registro?"   icon="pi pi-exclamation-triangle"/>
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:rowExpansion>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog widgetVar="dlgEditMenu" header="Edición de Menú" modal="true" resizable="false" width="500">
+            <h:form id="formEditMenu">
+                <h:panelGrid columns="1" styleClass="noBorder" style="width: 100%;">
+                    <h:panelGroup>
+                        <p:outputLabel value="Nombre:"  style="font-weight: bolder" /><br></br>
+                        <p:inputText value="#{menuRol.menu.nombre}" style="width: 80%;"/>    
+                    </h:panelGroup>
+                    <h:panelGroup >
+                        <p:outputLabel value="Página URL:"  style="font-weight: bolder" /><br></br>
+                        <p:inputText value="#{menuRol.menu.hrefUrl}" style="width: 80%;" /><br></br>
+                        <p:outputLabel value="Página enmascarada"  style="font-weight: bolder" /><br></br>
+                        <p:inputText value="#{menuRol.menu.prettyPattern}" style="width: 80%;" /><br></br>
+                    </h:panelGroup>
+                    <h:panelGroup >
+                        <p:outputLabel value="Icono:" /><br></br>
+                        <p:selectOneMenu id="advancedIcon" value="#{menuRol.menu.icono}"
+                                         var="ic2" filter="true" style="width: 80% !important"
+                                         filterMatchMode="contains">
+                            <f:selectItems value="#{iconService.faIcons}" var="ic1" itemLabel="#{ic1.type}" itemValue="#{ic1.name}" />
+                            <p:column>
+                                <i class="#{ic2}" style="font-size: 1.5em; margin-right: 5px; color: black;" />
+                                <h:outputText value="#{ic2}" />
+                            </p:column>
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Posición:" style="font-weight: bolder" /><br></br>
+                        <p:inputText value="#{menuRol.menu.numPosicion}" onkeypress="validateIntegerValueAndFocusNext(event, '')"  style="width: 80%;"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Tipo de Acceso:" style="font-weight: bolder" /><br></br>
+                        <p:selectOneMenu value="#{menuRol.menu.tipoAcceso}" converter="dtoConverter" style="width: 80% !important">
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}"/>
+                            <f:selectItems value="#{menuRol.accesos}" var="ac" itemLabel="#{ac.identificador}" itemValue="#{ac}"/>
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+
+
+                </h:panelGrid>
+                <br/>
+                <center>
+                    <p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{menuRol.actualizarMenu()}"/>
+
+                </center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgPermisos" header="Permisos por Menú" width="500" height="350" modal="true" closeOnEscape="true"
+                  closable="true" position="center" resizable="false" responsive="true" >
+            <h:form id="frmPermisos">
+                <center>
+                    <p:outputLabel value="Menu: #{menuRol.menu.nombre}" style="font-weight: bold; font-size: 14px"/>
+                </center>
+                <h:panelGrid columns="1">
+
+                    <h:panelGroup>
+                        <p:outputLabel value="Roles:"/><br/>
+                        <p:selectOneMenu value="#{menuRol.rol}" converter="dtoConverter" var="rol"
+                                         style="min-width:100% !important; max-width: 0 !important"
+                                         filter="true"
+                                         filterMatchMode="contains">
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                            <f:selectItems value="#{menuRol.listRols}" var="ro" itemValue="#{ro}" itemLabel="#{ro.nombre}"/>
+                            <p:column  headerText="Departamento" width="10">
+                                <h:outputText value="#{rol.departamento.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Rol" width="10">
+                                <h:outputText value="#{rol.nombre}"/>
+                            </p:column>
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Acciones:"/><br/>
+                        <p:selectOneMenu value="#{menuRol.rol.accionesMenu}"
+                                         style="min-width:100% !important; max-width: 0 !important">
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                            <f:selectItem itemLabel="Lectura" itemValue="view" />
+                            <f:selectItem itemLabel="Lectura y Escritura" itemValue="new,edit" />
+                            <f:selectItem itemLabel="Lectura, Escritura y Eliminar" itemValue="delete" />
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:commandButton value="Agregar" icon="pi pi-plus" style="margin-top: 20px"
+                                         actionListener="#{menuRol.agregarPermiso()}"
+                                         update="frmPermisos,frmPermisos:dtPermisos"/>
+                    </h:panelGroup>
+                </h:panelGrid>
+
+                <p:dataTable value="#{menuRol.menuRoles}" var="p1" emptyMessage="No se encontró ningún Item" rowIndexVar="rowIndex"
+                             style="text-align: center;" id="dtPermisos" scrollable="true" scrollHeight="200"
+                             tableStyle="table-layout:auto">
+                    <p:column headerText="Rol" style="text-align: center">
+                        <p:outputLabel value="#{menuRol.getNombreRol(p1.rol)}" />
+                    </p:column>
+                    <p:column headerText="Permiso" style="text-align: center">
+                        <p:outputLabel value="#{p1.permiso}" />
+                    </p:column>
+                    <p:column headerText="Borrar">
+                        <p:commandLink actionListener="#{menuRol.eliminarPermiso(p1)}" 
+                                       process="@this" update="dtPermisos">
+                            <i class="pi pi-trash" style="font-size: 1.2em; margin-right: 5px;"></i>
+                            <p:confirm header="Eliminar Permiso" message="¿Esta seguro de continuar?"/>
+                        </p:commandLink> 
+                    </p:column>
+                </p:dataTable>
+                <br/>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgNewMenu" header="Datos de Menú" modal="true" 
+                  resizable="false" height="400" width="600">
+            <h:form id="formNewMenu">
+                <p:tabView id="tbMenu">
+                    <p:tab title="Información del Menú">
+                        <h:panelGrid columns="1" styleClass="noBorder" style="width: 100%;">
+                            <h:panelGroup>
+                                <p:outputLabel value="Nombre:"  style="font-weight: bolder" /><br></br>
+                                <p:inputText value="#{menuRol.menu.nombre}" style="width: 80%;"/>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{menuRol.menu.menuPadre ne null}">
+                                <p:outputLabel value="Página URL:"  style="font-weight: bolder" /><br></br>
+                                <p:inputText value="#{menuRol.menu.hrefUrl}"  style="width: 80%;"/><br></br>
+                                <p:outputLabel value="Página enmascarada"  style="font-weight: bolder" /><br></br>
+                                <p:inputText value="#{menuRol.menu.prettyPattern}" style="width: 80%;" /><br></br>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="#{menuRol.menu.menuPadre ne null}">
+                                <p:outputLabel value="Icono:" style="font-weight: bolder" /><br></br>
+                                <p:selectOneMenu id="advanced" value="#{menuRol.menu.icono}"
+                                                 var="ic2" style="width: 78% !important   " filter="true" 
+                                                 filterMatchMode="contains">
+                                    <f:selectItems value="#{iconService.faIcons}" var="ic1" itemLabel="#{ic1.type}" itemValue="#{ic1.name}" />
+                                    <p:column>
+                                        <i class="#{ic2}" style="font-size: 1.5em; margin-right: 5px; color: black;" />
+                                        <h:outputText value="#{ic2}" />
+                                    </p:column>
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Posición:" style="font-weight: bolder" /><br></br>
+                                <p:inputText value="#{menuRol.menu.numPosicion}" onkeypress="validateIntegerValueAndFocusNext(event, '')"  style="width: 80%;"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Tipo de Acceso:" style="font-weight: bolder" /><br></br>
+                                <p:selectOneMenu value="#{menuRol.menu.tipoAcceso}" converter="dtoConverter" style="width: 78% !important">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}"/>
+                                    <f:selectItems value="#{menuRol.accesos}" var="ac" itemLabel="#{ac.identificador}" itemValue="#{ac}"/>
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                    </p:tab>
+                    <p:tab title="Permisos del Menú" >
+                        <h:panelGrid columns="3" styleClass="noBorder" style="margin: 0 auto;">
+                            <h:panelGrid columns="1">
+                                Roles:
+                                <br/>
+                                Acciones:
+                            </h:panelGrid>
+                            <h:panelGrid columns="1">
+                                <p:selectOneMenu value="#{menuRol.rol}" converter="dtoConverter" 
+                                                 filter="true">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                                    <f:selectItems value="#{menuRol.listRols}" var="ro" itemValue="#{ro}" itemLabel="#{ro.nombre}"/>
+                                </p:selectOneMenu>
+                                <p:selectOneMenu value="#{menuRol.accionesMenu}">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                                    <f:selectItem itemLabel="Lectura" itemValue="view" />
+                                    <f:selectItem itemLabel="Lectura y Escritura" itemValue="new,edit" />
+                                    <f:selectItem itemLabel="Lectura, Escritura y Eliminar" itemValue="delete" />
+                                </p:selectOneMenu>
+                            </h:panelGrid>
+                            <p:commandButton value="Agregar" icon="pi pi-plus"  update="formNewMenu:tbMenu:dtRoles" 
+                                             actionListener="#{menuRol.agregarRol()}"/>
+                        </h:panelGrid>
+                        <p:dataTable value="#{menuRol.rols}" var="rol" emptyMessage="No se encontró ningún Item" rowIndexVar="index" 
+                                     style="text-align: center;" id="dtRoles" scrollable="true" scrollHeight="200">
+                            <p:column headerText="Rol" >
+                                <p:outputLabel value="#{rol.nombre}" />
+                            </p:column>
+                            <p:column headerText="Borrar" width="60">
+                                <p:commandLink actionListener="#{menuRol.eliminarRol(index)}" update="dtRoles">
+                                    <i class="pi pi-trash" style="font-size: 1.2em; margin-right: 5px;"></i>
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>
+                <center>
+                    <p:commandButton value="Guardar Menú" icon="pi pi-save" process="tbMenu" actionListener="#{menuRol.saveNewMenu()}"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

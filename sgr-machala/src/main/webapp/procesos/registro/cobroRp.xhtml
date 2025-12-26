@@ -1,0 +1,1000 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Recaudación y Facturación</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2>RECAUDACIÓN Y FACTURACIÓN</h2> </center>
+            <p:dataTable paginator="true" lazy="true" rows="15" rowsPerPageTemplate="15, 30, 50" value="#{cobroRp.liquidaciones}" 
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         var="liq" filterEvent="enter" scrollable="true" scrollWidth="99%" resizableColumns="true">
+                <p:column headerText="Opciones del Sistema" width="150">
+                    <p:commandButton icon="pi pi-file-pdf" actionListener="#{cobroRp.showProforma(liq)}" 
+                                     title="Solicitud de Trámite" style="background-color: orangered;"/>
+                    <p:spacer width="10" />
+                    <p:commandButton icon="pi pi-print" actionListener="#{cobroRp.showTituloCredito(liq)}" 
+                                     title="Comprobante de Ingreso" style="background-color: darkgoldenrod;" 
+                                     disabled="#{liq.estadoLiquidacion.id ne 2}" />
+                    <!--<p:spacer width="10" />-->
+                    <p:commandButton icon="pi pi-file" actionListener="#{cobroRp.showFormularioUafe(liq)}" rendered="false" 
+                                     title="Formulario UAFE"/>
+                    <p:spacer width="10" />
+                    <p:commandButton icon="pi pi-dollar" actionListener="#{cobroRp.showDlgTipoIngreso(liq)}" 
+                                     title="Generar Factura" style="background-color: darkgreen;" 
+                                     disabled="#{liq.estadoLiquidacion.id ne 1}" />
+                </p:column>
+                <p:column headerText="No Tramite" filterBy="#{liq.numTramiteRp}" sortBy="#{liq.numTramiteRp}" 
+                          width="110" filterStyle="width: 95%">
+                    <h:outputText  value="#{liq.numTramiteRp}"/>
+                </p:column>
+                <p:column headerText="Usuario Asignado" width="100">
+                    <h:outputText value="#{liq.inscriptor.usuario}"/>
+                </p:column>
+                <!--<p:column headerText="Fact." width="25">
+                    <p:commandLink actionListener="# {cobroRp.generarNuevaFactura(liq)}" title="# {liq.numTramiteRp}">
+                        <p:graphicImage value="/resources/icons/reporte.png" height="16"/>   
+                    </p:commandLink>
+                </p:column>
+                <p:column headerText="No Ticket" filterBy="# {liq.tramiteReferencia}" width="140" filterStyle="width: 95%">
+                    <h:outputText  value="# {liq.tramiteReferencia}"/>
+                </p:column>-->
+                <p:column headerText="Reingreso" width="50"> 
+                    <h:outputText value="SI" rendered="#{liq.reingreso}"/>
+                    <h:outputText value="NO" rendered="#{!liq.reingreso}"/>
+                </p:column>
+                <p:column headerText="Repertorio" filterBy="#{liq.repertorio}" width="140" filterStyle="width: 95%">
+                    <h:outputText  value="#{liq.repertorio}"/>
+                </p:column>
+                <p:column headerText="CI/RUC Solicitante" width="150" filterBy="#{liq.solicitante.ciRuc}" filterStyle="width: 95%;">
+                    <h:outputText value="#{liq.solicitante.ciRuc}"/>
+                </p:column>
+                <p:column headerText="Nombres Solicitante" width="300">
+                    <h:outputText value="#{liq.solicitante.nombreCompleto}" style="text-transform: uppercase;"/>
+                </p:column>
+                <p:column headerText="CI/RUC Beneficiario" width="150" filterBy="#{liq.beneficiario.ciRuc}" filterStyle="width: 95%;">
+                    <h:outputText value="#{liq.beneficiario.ciRuc}"/>
+                </p:column>
+                <p:column headerText="Nombres Beneficiario" width="300">
+                    <h:outputText value="#{liq.beneficiario.nombreCompleto}" style="text-transform: uppercase;"/>
+                </p:column>
+                <p:column headerText="Fech.Proforma" sortBy="#{liq.fechaCreacion}" width="120">
+                    <h:outputText value="#{liq.fechaCreacion}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                </p:column>
+                <p:column headerText="Fech.Ingreso" sortBy="#{liq.fechaIngreso}" width="120">
+                    <h:outputText value="#{liq.fechaIngreso}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                </p:column>
+                <p:column headerText="Fech.Entrega" width="120">
+                    <h:outputText value="#{liq.tramite.fechaEntrega}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                </p:column>
+                <p:column headerText="Valor $" width="100">
+                    <p:outputLabel value="#{liq.totalPagar}"><f:convertNumber minFractionDigits="2"/></p:outputLabel>
+                </p:column>
+                <p:column headerText="Usuario Proforma" width="100">
+                    <h:outputText value="#{cobroRp.getNameUserByIdAclUser(liq.userCreacion)}"/>
+                </p:column>
+                <p:column headerText="Usuario Ingreso" width="100">
+                    <h:outputText value="#{cobroRp.getNameUserByIdAclUser(liq.userIngreso)}"/>
+                </p:column>
+                <p:column headerText="Estado Ingreso" width="100">
+                    <h:outputText value="#{liq.estadoLiquidacion.code}"/>
+                </p:column>
+                <p:column headerText="Estado Pago" width="120">
+                    <h:outputText value="#{liq.estadoPago.code}"/>
+                </p:column>
+                <!--<p:column headerText="# Autorización" width="135">
+                    <h:outputText value="# {liq.numeroAutorizacion}"/>
+                </p:column>
+                <p:column headerText="Clave de Acceso" width="135">
+                    <h:outputText value="# {liq.claveAcceso}"/>
+                </p:column>-->
+                <!--<p:column headerText="Factura Exonerada" width="30">
+                    <p:outputLabel value="SI" rendered="# {liq.generaFactura}" />
+                    <p:outputLabel value="NO" rendered="# {!liq.generaFactura}" />
+                </p:column>
+                <p:column headerText="Doc" width="40">
+                    <p:commandLink actionListener="# {cobroRp.showDlgCorrDoc(liq)}" title="# {liq.numTramiteRp}">
+                        <p:graphicImage value="/resources/icons/abrir.png" height="16"/>   
+                    </p:commandLink>
+                </p:column>-->
+                <p:column headerText="***" width="150">
+                    <p:commandButton icon="pi pi-envelope" actionListener="#{cobroRp.showEnvComprobante(liq)}" 
+                                     title="Reenviar Comprobante"
+                                     disabled="#{liq.estadoLiquidacion.id ne 2}"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog id="dlgIngreso" header="Ingreso de Tramite" widgetVar="dlgIngresoTramite" resizable="false" modal="true" closeOnEscape="true" width="400">
+            <h:form id="formIngreso">
+                <p:panelGrid styleClass="noBorder" style="text-align: center;font-weight: bolder;width: 100%;" columns="1">
+                    <p:outputLabel value="Tipo de Ingreso:"/>
+                    <p:selectOneMenu value="#{cobroRp.tipoIngreso}">  
+                        <f:selectItem itemLabel="Seleccione" itemValue="0" />
+                        <f:selectItem itemLabel="Transaccion" itemValue="1" />
+                        <f:selectItem itemLabel="Ctas por Cobrar" itemValue="2" />
+                        <f:selectItem itemLabel="Compensacion" itemValue="3" />
+                    </p:selectOneMenu>
+                    <p:commandButton value="Ingresar" icon="ui-icon-check" styleClass="btnStyle" actionListener="#{cobroRp.procesarLiquidacion()}"/>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgExonerado" showHeader="false" widgetVar="dlgIngresoExo" resizable="false" modal="true" closeOnEscape="true"
+                  width="70%" height="480">
+            <h:form id="formIngresoExo">
+                <center>
+                    <h2>Ingreso de Tramite</h2>
+                </center>
+                <p:tabView id="tabDetalleIng">
+                    <p:tab title="Detalle Ingreso">
+                        <br></br>
+                        <h:panelGrid styleClass="noBorder" columns="3" style="width: 100%;">
+                            <h:panelGroup>
+                                No Tramite: <p:spacer width="10" /> <br></br>
+                                <p:outputLabel value="#{cobroRp.liquidacion.numTramiteRp}" style="font-weight: bold;font-size: 15px;"/>    
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                CI/RUC: <p:spacer width="10" /> <br></br>
+                                <p:outputLabel value="#{cobroRp.liquidacion.beneficiario.ciRuc}" style="font-weight: bold;font-size: 15px;"/>    
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                Cliente: <p:spacer width="10" /> <br></br>
+                                <p:outputLabel value="#{cobroRp.liquidacion.beneficiario.nombreCompleto}" style="font-weight: bold;font-size: 15px;"/>    
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                Telefono: <p:spacer width="10" /> <br></br>
+                                <p:outputLabel value="#{cobroRp.liquidacion.beneficiario.telefono1}" style="font-weight: bold;font-size: 15px;"/>    
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                Correo: <p:spacer width="10" /> <br></br>
+                                <p:outputLabel value="#{cobroRp.liquidacion.beneficiario.correo1}" style="font-weight: bold;font-size: 15px;"/>    
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                Direccion: <p:spacer width="10" /> <br></br>
+                                <p:outputLabel value="#{cobroRp.liquidacion.beneficiario.direccion}" style="font-weight: bold;font-size: 15px;"/>    
+                            </h:panelGroup>
+                        </h:panelGrid>
+                        <h:panelGrid styleClass="noBorder" columns="1" style="width:100%;">
+                            <h:panelGroup layout="block" style="width:100%;">
+                                <h:outputText value="Correo del trámite:" style="font-weight:bold; margin-bottom:5px;" />
+                                <p:outputPanel style="display:flex; width:100%; gap:5px;" layout="block">
+                                    <p:inputText id="correo_tramite"
+                                                 value="#{cobroRp.liquidacion.correoTramite}"
+                                                 style="flex:1;"
+                                                 onkeypress="if (event.keyCode == 13) {
+                                                             return false;
+                                                         }" />
+
+                                    <p:commandButton icon="pi pi-pencil"
+                                                     process="correo_tramite"
+                                                     title="Actualizar Cambios"
+                                                     actionListener="#{cobroRp.updateCorreoTramiteLiq()}"
+                                                     style="flex-shrink:0;" />
+                                </p:outputPanel>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                        <h:panelGrid styleClass="noBorder" columns="1" style="width:100%;">
+                            <h:panelGroup layout="block" style="width:100%;">
+                                <h:outputText value="Información Adicional:" style="font-weight:bold; margin-bottom:5px;" />
+                                <p:outputPanel style="display:flex; width:100%; gap:5px;" layout="block">
+                                    <p:inputText id="info_adicional"
+                                                 value="#{cobroRp.liquidacion.infAdicionalProf}"
+                                                 style="flex:1;"
+                                                 onkeypress="if (event.keyCode == 13) {
+                                                             return false;
+                                                         }" />
+
+                                    <p:commandButton icon="pi pi-pencil"
+                                                     process="@this info_adicional"
+                                                     title="Actualizar Cambios"
+                                                     actionListener="#{cobroRp.updateInformacionAdicionalLiq()}"
+                                                     style="flex-shrink:0;" />
+                                </p:outputPanel>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                        <br></br>
+                        <p:panelGrid styleClass="noBorder" columns="2">
+                            <p:outputLabel value="Solicitud:" rendered="#{cobroRp.liquidacion.ingresado}"/>
+                            <p:outputLabel value="ORDEN JUDICIAL (2 DIAS PARA ENTREGA)" style="font-weight: bold;font-size: 15px;" rendered="#{cobroRp.liquidacion.ingresado}"/>
+                        </p:panelGrid>
+                        <p:dataTable value="#{cobroRp.liquidacion.regpLiquidacionDetallesCollection}" var="det" style="text-align: center;"
+                                     scrollable="true" scrollHeight="180">
+                            <p:column headerText="Contrato">#{det.acto.nombre}</p:column>
+                            <p:column headerText="Avaluo" width="100">#{det.avaluo}</p:column>
+                            <p:column headerText="Cuantia" width="100">#{det.cuantia}</p:column>
+                            <p:column headerText="Valor Uni." width="100">#{det.valorUnitario}</p:column>
+                            <p:column headerText="Exo." width="100">#{det.exoneracion.porcentaje}</p:column>
+                            <p:column headerText="Valor Total" width="100">#{det.valorTotal}</p:column>
+                        </p:dataTable>
+                        <h:panelGrid styleClass="noBorder" columns="6">
+                            Desc.Limit.Cobro:
+                            <p:outputLabel value="$ #{cobroRp.liquidacion.descLimitCobro}" style="font-weight: bold;font-size: 15px;color: #0033FF;"/>
+                            Desc.Ley:
+                            <p:outputLabel value="$ #{cobroRp.liquidacion.descuentoValor}" style="font-weight: bold;font-size: 15px;color: #0033FF;"/>
+                            Total a Cancelar:
+                            <p:outputLabel value="$ #{cobroRp.liquidacion.totalPagar}" style="font-weight: bold;font-size: 15px;color: #0033FF;"/>
+                        </h:panelGrid><br/><br/><br/>
+                        <div align="center">
+                            <p:commandButton value="Confirmar" style="margin-right: 15px;" styleClass="btnStyle" icon="pi pi-print" actionListener="#{cobroRp.ingresarTramiteSinValor()}"/>
+
+                            <p:commandButton value="Cancelar" oncomplete="PF('dlgIngresoExo').hide();" icon="pi pi-ban" style="font-size: 14px;"/>
+
+                        </div>
+                    </p:tab>
+                    <p:tab title="Informacion Proforma" rendered="false">
+                        <p:panel header="Referencia">
+                            <p:panelGrid columns="2" styleClass="noBorder" style="font-weight: bolder;">
+                                No de Trámite de Referencia:
+                                <p:inputNumber value="#{cobroRp.referencia}" decimalPlaces="0"/>
+                            </p:panelGrid>
+                        </p:panel>
+                        <p:panel header="Certificador o Inscriptor">
+                            <p:panelGrid columns="2" styleClass="noBorder" style="font-weight: bolder;">
+                                Seleccionar:
+                                <p:selectOneMenu value="#{cobroRp.asignado}" converter="entityConverter" filter="true" autoWidth="false" 
+                                                 style="display: block; margin-top: 3px; min-width: 0px !important; width: 150px !important;">  
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                                    <f:selectItems value="#{cobroRp.disponibles}" var="us" itemLabel="#{us.usuario}" itemValue="#{us}"/>
+                                </p:selectOneMenu>
+                            </p:panelGrid>
+                        </p:panel>
+                        <p:panel header="Tramitador" rendered="false">
+                            <p:panelGrid id="panelSolicitante" columns="3" styleClass="noBorder" style="font-weight: bolder;" >
+                                Nombre de Solicitante:
+                                <p:inputText value="#{cobroRp.solicitanteInterviniente.nombreCompleto}" size="30" readonly="true"/>
+                                <p:commandButton value="Buscar" icon="ui-icon-search" styleClass="btnStyle" actionListener="#{cobroRp.showDlg('/resources/dialog/dlglazyente')}">
+                                    <p:ajax event="dialogReturn" listener="#{cobroRp.selectObject}" update="panelSolicitante"/>
+                                </p:commandButton>
+                            </p:panelGrid>
+                        </p:panel>
+                        <p:panel id="pnlEstudio" header="Estudio Jurídico" rendered="false">
+                            <p:panelGrid columns="4" styleClass="noBorder" style="font-weight: bolder;" >
+                                Nombre del Representante del Estudio Jurídico:
+                                <p:selectOneMenu value="#{cobroRp.estudioJuridico}" converter="entityConverter">  
+                                    <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+                                    <f:selectItems value="#{cobroRp.estudiosJuridicos}" var="it" itemLabel="#{it.valor}" itemValue="#{it}"/>
+                                </p:selectOneMenu>
+                                <p:commandButton value="Nuevo" icon="ui-icon-plus" styleClass="btnStyle" actionListener="#{cobroRp.showDlgEstudioJuridico()}"/>
+                                <p:commandButton value="Editar" icon="ui-icon-pencil" styleClass="btnStyle" actionListener="#{cobroRp.showDlgEditEstudioJuridico()}"/>
+                            </p:panelGrid>
+                        </p:panel>
+                        <p:panel header="Informacion Adicional">
+                            <p:panelGrid styleClass="noBorder" columns="1">
+                                <p:inputTextarea id="infoAdicional" value="#{cobroRp.infoAdicional}" rows="5" cols="200" style="width: 100%"/>
+                            </p:panelGrid>
+                        </p:panel>                  
+                    </p:tab>
+                    <p:tab title="Detalle Contrato">
+                        <div class="card">
+                            <p:dataTable var="det"
+                                         value="#{cobroRp.liquidacion.regpLiquidacionDetallesCollection}"
+                                         style="width:100%">
+                                <p:columnGroup type="header">
+                                    <p:row>
+                                        <p:column colspan="3" headerText="Acto"/>
+                                    </p:row>
+                                </p:columnGroup>
+                                <p:column>
+                                    <h:outputText value="#{det.acto.nombre}" style="font-weight:bold;" />
+                                </p:column>
+                                <p:column colspan="2">
+                                    <p:dataTable var="inter"
+                                                 value="#{det.regpIntervinientesCollection}"
+                                                 style="width:100%; border: none;">
+
+                                        <p:column headerText="Interviniente/s">
+                                            <h:outputText 
+                                                value="#{inter.ente.nombreCompleto}" />
+                                        </p:column>
+                                        <p:column headerText="Papel">
+                                            <h:outputText value="#{inter.papel.papel}" />
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                        <br></br>
+                        <center>
+                            <p:commandButton value="Cancelar" oncomplete="PF('dlgIngresoExo').hide();" 
+                                             icon="pi pi-ban" style="font-size: 14px;"/>
+                        </center>
+                    </p:tab>
+                </p:tabView>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog showHeader="false" widgetVar="dlgProcesar" resizable="false"
+                  closeOnEscape="true" modal="true" width="70%" position="center" height="600">
+            <h:form id="formProcesar">
+                <center>
+                    <h2>Procesar Pago</h2>
+                </center>
+                <p:tabView id="tabDetalle">
+                    <p:tab title="Detalle Proforma">
+                        <br></br>
+                        <h:panelGrid styleClass="noBorder" columns="3" style="width: 100%;">
+                            <h:panelGroup>
+                                No Tramite: <p:spacer width="10" /> <br></br>
+                                <p:outputLabel value="#{cobroRp.liquidacion.numTramiteRp}" style="font-weight: bold;font-size: 15px;"/>    
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <div class="ui-g ui-fluid">
+                                    <div class="ui-g-12">
+                                        CI/RUC:<p:spacer width="10" />
+                                        <div class="ui-inputgroup">
+                                            <p:inputText id="actonomb" value="#{cobroRp.liquidacion.beneficiario.ciRuc}"
+                                                         onkeypress="focusNextOnEnter(event, 'email')"/>
+                                            <p:commandButton icon="pi pi-search" process="@this" title="Cambiar Beneficiario"
+                                                             actionListener="#{cobroRp.showDlg('/resources/dialog/dlglazyente')}" >
+                                                <p:ajax event="dialogReturn" listener="#{cobroRp.selectInterv}" update="actonomb,nombre_cliente"/>
+                                            </p:commandButton>    
+                                        </div>
+                                    </div>
+                                </div>   
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                Cliente:<p:spacer width="10" /> <br></br>
+                                <p:outputLabel id="nombre_cliente" value="#{cobroRp.liquidacion.beneficiario.nombreCompleto}" style="font-weight: bold;font-size: 15px;"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                Telefono:<p:spacer width="10" /><br></br>
+                                <p:outputLabel value="#{cobroRp.liquidacion.beneficiario.telefono1}" style="font-weight: bold;font-size: 15px;"/>
+                            </h:panelGroup> 
+
+                            <h:panelGroup>
+                                <div class="ui-g ui-fluid">
+                                    <div class="ui-g-12">
+                                        Correo:<br></br>
+                                        <div class="ui-inputgroup">
+                                            <p:inputText id="email" value="#{cobroRp.liquidacion.beneficiario.correo1}" 
+                                                         onkeypress="if (event.keyCode == 13) {
+                                                                     return false;
+                                                                 }" />
+                                            <p:commandButton icon="pi pi-pencil" process="email" title="Actualizar Cambios"
+                                                             actionListener="#{cobroRp.updateCorreoBeneceificiario()}" />
+                                        </div>
+                                    </div>
+                                </div>  
+                            </h:panelGroup> 
+                            <h:panelGroup>
+                                Direccion: <br></br>
+                                <p:outputLabel value="#{cobroRp.liquidacion.beneficiario.direccion}" style="font-weight: bold;font-size: 15px;"/>
+                            </h:panelGroup>
+
+                        </h:panelGrid>
+                        <h:panelGrid styleClass="noBorder" columns="1" style="width:100%;">
+                            <h:panelGroup layout="block" style="width:100%;">
+                                <h:outputText value="Correo del trámite:" style="font-weight:bold; margin-bottom:5px;" />
+                                <p:outputPanel style="display:flex; width:100%; gap:5px;" layout="block">
+                                    <p:inputText id="correo_tramite"
+                                                 value="#{cobroRp.liquidacion.correoTramite}"
+                                                 style="flex:1;"
+                                                 onkeypress="if (event.keyCode == 13) {
+                                                             return false;
+                                                         }" />
+
+                                    <p:commandButton icon="pi pi-pencil"
+                                                     process="correo_tramite"
+                                                     title="Actualizar Cambios"
+                                                     actionListener="#{cobroRp.updateCorreoTramiteLiq()}"
+                                                     style="flex-shrink:0;" />
+                                </p:outputPanel>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                        <h:panelGrid styleClass="noBorder" columns="1" style="width:100%;">
+                            <h:panelGroup layout="block" style="width:100%;">
+                                <h:outputText value="Información Adicional:" style="font-weight:bold; margin-bottom:5px;" />
+                                <p:outputPanel style="display:flex; width:100%; gap:5px;" layout="block">
+                                    <p:inputText id="info_adicional"
+                                                 value="#{cobroRp.liquidacion.infAdicionalProf}"
+                                                 style="flex:1;"
+                                                 onkeypress="if (event.keyCode == 13) {
+                                                             return false;
+                                                         }" />
+
+                                    <p:commandButton icon="pi pi-pencil"
+                                                     process="@this info_adicional"
+                                                     title="Actualizar Cambios"
+                                                     actionListener="#{cobroRp.updateInformacionAdicionalLiq()}"
+                                                     style="flex-shrink:0;" />
+                                </p:outputPanel>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                        <h:panelGrid styleClass="noBorder" columns="2">
+                            <p:outputLabel value="Solicitud:" rendered="#{cobroRp.liquidacion.ingresado}"/>
+                            <p:outputLabel value="ORDEN JUDICIAL (2 DIAS PARA ENTREGA)" style="font-weight: bold;font-size: 15px;" rendered="#{cobroRp.liquidacion.ingresado}"/>
+                        </h:panelGrid>
+                        <br></br>
+                        <p:dataTable value="#{cobroRp.liquidacion.regpLiquidacionDetallesCollection}" var="det" style="text-align: center;"
+                                     scrollable="true" scrollHeight="200">
+                            <p:column headerText="Contrato">#{det.acto.nombre}</p:column>
+                            <p:column headerText="Base Imponible" width="100">#{det.baseImponible}</p:column>
+                            <p:column headerText="Valor Uni." width="100">#{det.valorUnitario}</p:column>
+                            <p:column headerText="Cantidad" width="100">#{det.cantidad}</p:column>
+                            <p:column headerText="Adicional" width="100">#{det.recargo}</p:column>
+                            <p:column headerText="Exo." width="100">#{det.descuento}</p:column>
+                            <p:column headerText="Valor Total" width="100">#{det.valorTotal}</p:column>
+                        </p:dataTable>
+                        <br></br>
+                        <h:panelGrid styleClass="noBorder" columns="6">
+                            Adicional:
+                            <p:outputLabel value="$ #{cobroRp.liquidacion.adicional}" style="font-weight: bold;font-size: 15px;color: #0033FF;"/>
+                            Desc.Ley:
+                            <p:outputLabel value="$ #{cobroRp.liquidacion.descuentoValor}" style="font-weight: bold;font-size: 15px;color: #0033FF;"/>
+                            Total a Cancelar:
+                            <p:outputLabel value="$ #{cobroRp.liquidacion.totalPagar}" style="font-weight: bold;font-size: 15px;color: #0033FF;"/>
+                        </h:panelGrid>
+                        <center>
+                            <p:panel id="botonesExonerados" rendered="#{!cobroRp.liquidacion.generaFactura}">
+                                <p:commandButton value="Procesar" actionListener="#{cobroRp.cancelarLiquidacion()}" update="formProcesar,mainForm" icon="ui-icon-print" style="font-size: 14px;">
+                                </p:commandButton><p:spacer width="25"/>                        
+                            </p:panel>
+                            <p:commandButton value="Cancelar" oncomplete="PF('dlgProcesar').hide();" 
+                                             icon="pi pi-ban" style="font-size: 14px;"/>
+                        </center>
+                    </p:tab>
+                    <p:tab title="Detalle Pago" rendered="#{cobroRp.liquidacion.generaFactura}">
+                        <p:fieldset legend="Datos Proforma" style="float: left; width: 49%">
+                            <h:panelGrid styleClass="noBorder" style="width: 100%;" columns="3">
+                                <h:panelGroup>
+                                    <p:outputLabel value="# Tramite:" /> <br></br>
+                                    <p:outputLabel value="#{cobroRp.liquidacion.numTramiteRp}" style="font-weight: bolder;font-size: 14px;"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Fecha Proforma:" /> <br></br>
+                                    <p:outputLabel value="#{cobroRp.liquidacion.fechaCreacion}" style="font-weight: bolder;font-size: 14px;">
+                                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                                    </p:outputLabel>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Valor a Cobrar:" /> <br></br>
+                                    <p:outputLabel value="#{cobroRp.liquidacion.totalPagar}" style="font-weight: bolder;font-size: 14px;"/>
+                                </h:panelGroup>
+                            </h:panelGrid>
+                        </p:fieldset>
+                        <p:fieldset legend="Datos del Cliente" style="float: right; width: 49%;">
+                            <h:panelGrid style="width: 100%;" columns="2">
+                                <h:panelGroup>
+                                    <p:outputLabel value="Identificación:" /> <br></br>
+                                    <p:outputLabel value="#{cobroRp.liquidacion.beneficiario.ciRuc}" style="font-weight: bold; font-size: 14px;"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Nombres" /> <br></br>
+                                    <p:outputLabel value="#{cobroRp.liquidacion.beneficiario.nombreCompleto}" style="font-weight: bold; font-size: 14px;"/>
+                                </h:panelGroup>
+                            </h:panelGrid>
+                        </p:fieldset>
+                        <p:fieldset legend="Detalle de Cobro">
+                            <p:panelGrid id="detCobro" style="width: 100%;" styleClass="noBorder">
+                                <p:row>
+                                    <!-- comment 
+                                    <p:column style="width: 100px;"><p:outputLabel value="Efectivo" style="font-weight: bolder;"/></p:column>
+                                    <p:column style="width: 100px;"><p:inputText value="#{cobroRp.modelPago.valorTotalEfectivo}" readonly="true" size="8" style="font-weight: bolder; font-size: 14px;"
+                                                                                 onkeypress="if (event.keyCode == 13) {
+                                                                                             return false;
+                                                                                         }"/></p:column>-->
+                                    <p:column><p:outputLabel value="Tarjeta" style="font-weight: bolder;"/></p:column>
+                                    <p:column><p:inputText value="#{cobroRp.modelPago.valorTotalTarjetas}" readonly="true" size="8" style="font-weight: bolder; font-size: 14px;"
+                                                           onkeypress="if (event.keyCode == 13) {
+                                                                       return false;
+                                                                   }"/></p:column>
+                                    <p:column rowspan="6">
+                                        <p:tabView>
+                                            <p:tab title="1. TARJETA">
+                                                <p:panelGrid styleClass="ui-panelgrid-blank" style="font-weight: bolder;">
+                                                    <p:row>
+                                                        <p:column >
+                                                            <p:outputLabel value="Tipo"/><br/>
+                                                            <p:selectOneMenu value="#{cobroRp.modelPago.pagoTarjetaCredito.tipoTarjeta}" 
+                                                                             style="display: block; margin-top: 3px; min-width: 0px !important; width: 100px !important;">
+                                                                <f:selectItem itemLabel="Debito" itemValue="#{1}"/>
+                                                                <f:selectItem itemLabel="Corriente" itemValue="#{2}"/>
+                                                                <f:selectItem itemLabel="Diferido" itemValue="#{3}"/>
+                                                            </p:selectOneMenu>
+                                                        </p:column>
+                                                        <p:column style="width: 190px;">
+                                                            <p:outputLabel value="Tarjeta"/><br/>
+                                                            <p:selectOneMenu value="#{cobroRp.modelPago.pagoTarjetaCredito.banco}" converter="entityConverter" filter="true"
+                                                                             style="display: block; margin-top: 3px; min-width: 0px !important; width: 180px !important;"
+                                                                             filterMatchMode="contains">
+                                                                <f:attribute name="name" value="RenEntidadBancaria"/>
+                                                                <f:selectItem itemLabel="Seleccionar..." itemValue="# {null}"/>
+                                                                <f:selectItems value="#{cobroRp.tarjetas}" var="banco" itemLabel="#{banco.descripcion}" itemValue="#{banco}"/>
+                                                            </p:selectOneMenu>
+                                                        </p:column>
+                                                        <!-- comment 
+                                                        <p:column>
+                                                            <p:outputLabel value="Titular"/><br/>
+                                                            <p:inputText value="#{cobroRp.modelPago.pagoTarjetaCredito.nombreTitular}" size="14"
+                                                                         onkeypress="if (event.keyCode == 13) {
+                                                                                     return false;
+                                                                                 }"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="Lote"/><br/>
+                                                            <p:inputText value="#{cobroRp.modelPago.pagoTarjetaCredito.autorizacion}" size="14"
+                                                                         onkeypress="if (event.keyCode == 13) {
+                                                                                     return false;
+                                                                                 }"/>
+                                                        </p:column>
+                                                        -->
+                                                        <p:column style="width: 195px;">
+                                                            <p:outputLabel value="Referencia"/><br/>
+                                                            <p:inputText value="#{cobroRp.modelPago.pagoTarjetaCredito.baucher}" size="14" style="width: 180px;"
+                                                                         onkeypress="if (event.keyCode == 13) {
+                                                                                     return false;
+                                                                                 }"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="Valor"/><br/>
+                                                            <p:inputText type="number" value="#{cobroRp.modelPago.pagoTarjetaCredito.valor}" style="width: 90px;"
+                                                                         onkeypress="if (event.keyCode == 13) {
+                                                                                     return false;
+                                                                                 }"/>
+                                                        </p:column>
+                                                        <!--<p:column>
+                                                            <p:outputLabel value="# Tarjeta"/><br/>
+                                                            <p:inputText value="# {cobroRp.modelPago.pagoTarjetaCredito.numTarjeta}" size="14"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="Fecha Caduca"/><br/>
+                                                            <p:calendar value="# {cobroRp.modelPago.pagoTarjetaCredito.fechaCaducidad}" pattern="dd/MM/yyyy" size="10"/>
+                                                        </p:column>-->
+                                                        <p:column><br/><p:commandButton icon="pi pi-caret-down" actionListener="#{cobroRp.modelPago.agregarPago(2)}" 
+                                                                                        update="formProcesar:tabDetalle:detCobro"/></p:column>
+                                                    </p:row>
+                                                </p:panelGrid>
+                                                <p:dataTable id="dtTC" var="tc" value="#{cobroRp.modelPago.listPagoTarjetaCredito}" 
+                                                             style="margin-bottom:0;">
+
+                                                    <!--<p:column headerText="# Tarjeta"><h:outputText value="# {tc.numTarjeta}" /></p:column>-->
+                                                    <!--<p:column headerText="Fecha Caducidad"><h:outputText value="# {tc.fechaCaducidad}"><f:convertDateTime pattern="dd/MM/YYYY"/></h:outputText></p:column>-->
+                                                    <p:column headerText="Tipo" width="100">
+                                                        <h:outputText value="Debito" rendered="#{tc.tipoTarjeta eq 1}"/> 
+                                                        <h:outputText value="Corriente" rendered="#{tc.tipoTarjeta eq 2}"/> 
+                                                        <h:outputText value="Diferido" rendered="#{tc.tipoTarjeta eq 3}"/> 
+                                                    </p:column>
+                                                    <p:column headerText="Banco"><h:outputText value="#{tc.banco.descripcion}" /></p:column>
+                                                    <!-- comment 
+                                                    <p:column headerText="Titular"><h:outputText value="#{tc.nombreTitular}" /></p:column>
+                                                    <p:column headerText="Lote"><h:outputText value="#{tc.autorizacion}" /></p:column>
+                                                    -->
+                                                    <p:column headerText="Referencia" width="80"><h:outputText value="#{tc.baucher}" /></p:column>
+                                                    <p:column headerText="Valor" width="120">
+                                                        <h:outputText value="#{tc.valor}" ><f:convertNumber minFractionDigits="2"/></h:outputText>
+                                                    </p:column>
+                                                    <p:column headerText="Del" width="30">
+                                                        <p:commandLink actionListener="#{cobroRp.modelPago.eliminarPagoTC(tc)}" 
+                                                                       update="formProcesar:tabDetalle:detCobro">
+                                                            <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </p:tab>
+                                            <p:tab title="2. DEPOSITO" >
+
+                                                <p:panelGrid styleClass="ui-panelgrid-blank" style="font-weight: bolder;">
+                                                    <p:row>
+                                                        <p:column style="width: 153px;">
+                                                            <p:outputLabel value="Banco"/><br/>
+                                                            <p:selectOneMenu value="#{cobroRp.modelPago.pagoDeposito.banco}" converter="entityConverter" filter="true"
+                                                                             style="display: block; margin-top: 3px; min-width: 0px !important; width: 130px !important;" 
+                                                                             filterMatchMode="contains" >
+                                                                <f:attribute name="name" value="RenEntidadBancaria"/>
+                                                                <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}"/>
+                                                                <f:selectItems value="#{cobroRp.bancosDep}" var="banco" itemLabel="#{banco.descripcion}" itemValue="#{banco}"/>
+                                                            </p:selectOneMenu>
+                                                        </p:column>
+                                                        <p:column style="width: 195px;">
+                                                            <p:outputLabel value="Referencia"/><br/>
+                                                            <p:inputText value="#{cobroRp.modelPago.pagoDeposito.referencia}" size="14" style="width: 180px;"
+                                                                         onkeypress="if (event.keyCode == 13) {
+                                                                                     return false;
+                                                                                 }"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="Fecha"/><br/>
+                                                            <p:calendar value="#{cobroRp.modelPago.pagoDeposito.fecha}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy"
+                                                                        mask="true" navigator="true" 
+                                                                        onkeypress="if (event.keyCode == 13) {
+                                                                                    return false;
+                                                                                }"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="Valor"/><br/>
+                                                            <p:inputText type="number" value="#{cobroRp.modelPago.pagoDeposito.valor}" style="width: 90px;"
+                                                                         onkeypress="if (event.keyCode == 13) {
+                                                                                     return false;
+                                                                                 }"/>
+                                                        </p:column>
+
+                                                        <p:column><br/><p:commandButton icon="pi pi-caret-down" actionListener="#{cobroRp.modelPago.agregarPago(7)}" 
+                                                                                        update="formProcesar:tabDetalle:detCobro"/></p:column>
+                                                    </p:row>
+                                                </p:panelGrid>
+                                                <p:dataTable id="dtD" var="d" value="#{cobroRp.modelPago.listPagoDeposito}" style="margin-bottom:0;">
+                                                    <p:column headerText="Banco" ><h:outputText value="#{d.banco.descripcion}" /></p:column>
+                                                    <p:column headerText="Referencia" ><h:outputText value="#{d.referencia}" /></p:column>
+                                                    <p:column headerText="Fecha" ><h:outputText value="#{d.fecha}"><f:convertDateTime pattern="dd/MM/YYYY"/></h:outputText></p:column>
+                                                    <p:column headerText="Valor" width="120">
+                                                        <h:outputText value="#{d.valor}" ><f:convertNumber minFractionDigits="2"/></h:outputText>
+                                                    </p:column>
+                                                    <p:column headerText="Del" width="30">
+                                                        <p:commandLink actionListener="#{cobroRp.modelPago.eliminarPagoDeposito(d)}" 
+                                                                       update="formProcesar:tabDetalle:detCobro">
+                                                            <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </p:tab>
+                                            <p:tab title="3. TRANSFERENCIA">
+                                                <p:panelGrid styleClass="ui-panelgrid-blank" style="font-weight: bolder;">
+                                                    <p:row>
+                                                        <p:column style="width: 153px;">
+                                                            <p:outputLabel value="Banco"/><br/>
+                                                            <p:selectOneMenu value="#{cobroRp.modelPago.pagoTransferencia.banco}" converter="entityConverter" filter="true"
+                                                                             style="display: block; margin-top: 3px; min-width: 0px !important; width: 130px !important;" 
+                                                                             filterMatchMode="contains" >
+                                                                <f:attribute name="name" value="RenEntidadBancaria"/>
+                                                                <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}"/>
+                                                                <f:selectItems value="#{cobroRp.bancos}" var="banco" itemLabel="#{banco.descripcion}" itemValue="#{banco}"/>
+                                                            </p:selectOneMenu>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="# Transferencia"/><br/>
+                                                            <p:inputText value="#{cobroRp.modelPago.pagoTransferencia.numTransferencia}" 
+                                                                         maxlength="45" onkeypress="if (event.keyCode == 13) {
+                                                                                     return false;
+                                                                                 }"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="Fecha"/><br/>
+                                                            <p:calendar value="#{cobroRp.modelPago.pagoTransferencia.fecha}" pattern="dd/MM/yyyy" 
+                                                                        placeholder="dd/MM/yyyy" mask="true" navigator="true"
+                                                                        onkeypress="if (event.keyCode == 13) {
+                                                                                    return false;
+                                                                                }"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="Valor"/><br/>
+                                                            <p:inputText type="number" value="#{cobroRp.modelPago.pagoTransferencia.valor}" onkeypress="if (event.keyCode == 13) {
+                                                                        return false;
+                                                                    }"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value=""/><br/>
+                                                            <p:commandButton icon="pi pi-caret-down" actionListener="#{cobroRp.modelPago.agregarPago(5)}" 
+                                                                             update="formProcesar:tabDetalle:detCobro"/>
+                                                        </p:column>
+                                                    </p:row>
+                                                </p:panelGrid>
+                                                <p:dataTable id="dtT" var="t" value="#{cobroRp.modelPago.listPagoTransferencia}" style="margin-bottom:0; width: 750px;">
+                                                    <p:column headerText="Banco" style="width: 120px;"><h:outputText value="#{t.banco.descripcion}" /></p:column>
+                                                    <p:column headerText="# Transferencia" style="width: 155px;"><h:outputText value="#{t.numTransferencia}" /></p:column>
+                                                    <p:column headerText="Fecha" style="width: 145px;"><h:outputText value="#{t.fecha}"><f:convertDateTime pattern="dd/MM/YYYY"/></h:outputText></p:column>
+                                                    <p:column headerText="Valor">
+                                                        <h:outputText value="#{t.valor}" ><f:convertNumber minFractionDigits="2"/></h:outputText>
+                                                    </p:column>
+                                                    <p:column headerText="Del" width="30">
+                                                        <p:commandLink actionListener="#{cobroRp.modelPago.eliminarPagoTransferencia(t)}" update="formProcesar:tabDetalle:detCobro">
+                                                            <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </p:tab>
+                                            <p:tab title="4. CHEQUE">
+                                                <p:panelGrid styleClass="ui-panelgrid-blank" style="font-weight: bolder;">
+                                                    <p:row>
+                                                        <p:column>
+                                                            <p:outputLabel value="Banco"/><br/>
+                                                            <p:selectOneMenu value="#{cobroRp.modelPago.pagoCheque.banco}" converter="entityConverter" filter="true" 
+                                                                             style="display: block; margin-top: 3px; min-width: 0px !important; width: 120px !important;"
+                                                                             filterMatchMode="contains" >
+                                                                <f:attribute name="name" value="RenEntidadBancaria"/>
+                                                                <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}"/>
+                                                                <f:selectItems value="#{cobroRp.bancos}" var="banco" itemLabel="#{banco.descripcion}" itemValue="#{banco}"/>
+                                                            </p:selectOneMenu>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="# Cheque"/><br/>
+                                                            <p:inputText value="#{cobroRp.modelPago.pagoCheque.numCheque}"
+                                                                         onkeypress="if (event.keyCode == 13) {
+                                                                                     return false;
+                                                                                 }"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="# Cuenta"/><br/>
+                                                            <p:inputText value="#{cobroRp.modelPago.pagoCheque.numCuenta}"
+                                                                         onkeypress="if (event.keyCode == 13) {
+                                                                                     return false;
+                                                                                 }"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="Valor"/><br/>
+                                                            <p:inputText type="number" value="#{cobroRp.modelPago.pagoCheque.valor}"
+                                                                         onkeypress="if (event.keyCode == 13) {
+                                                                                     return false;
+                                                                                 }"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value=""/><br/>
+                                                            <p:commandButton icon="pi pi-caret-down" actionListener="#{cobroRp.modelPago.agregarPago(4)}" 
+                                                                             update="formProcesar:tabDetalle:detCobro"/>
+                                                        </p:column>
+                                                    </p:row>
+                                                </p:panelGrid>
+                                                <p:dataTable id="dtCh" var="ch" value="#{cobroRp.modelPago.listPagoCheque}" style="margin-bottom:0; width: 750px;">
+                                                    <p:column headerText="Banco" style="width: 100px;"><h:outputText value="#{ch.banco.descripcion}" /></p:column>
+                                                    <p:column headerText="# Cheque" style="width: 150px;"><h:outputText value="#{ch.numCheque}" /></p:column>
+                                                    <p:column headerText="# Cuenta" style="width: 150px;"><h:outputText value="#{ch.numCuenta}" /></p:column>
+                                                    <p:column headerText="Valor">
+                                                        <h:outputText value="#{ch.valor}" ><f:convertNumber minFractionDigits="2"/></h:outputText>
+                                                    </p:column>
+                                                    <p:column headerText="Del" width="30">
+                                                        <p:commandLink actionListener="#{cobroRp.modelPago.eliminarPagoCh(ch)}" update="formProcesar:tabDetalle:detCobro">
+                                                            <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </p:tab>
+                                            <p:tab title="5. NOTA DE CREDITO" >
+                                                <p:panelGrid styleClass="ui-panelgrid-blank" style="font-weight: bolder;">
+                                                    <p:row>
+                                                        <p:column>
+                                                            <p:outputLabel value="# Nota Credito"/><br/>
+                                                            <p:inputText value="#{cobroRp.modelPago.pagoNotaCredio.numCredito}" 
+                                                                         onkeypress="if (event.keyCode == 13) {
+                                                                                     return false;
+                                                                                 }"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="Fecha"/><br/>
+                                                            <p:calendar value="#{cobroRp.modelPago.pagoNotaCredio.fecha}" pattern="dd/MM/yyyy"
+                                                                      placeholder="dd/MM/yyyy" mask="true" navigator="true"/>
+                                                        </p:column>
+                                                        <p:column>
+                                                            <p:outputLabel value="Valor"/><br/>
+                                                            <p:inputText type="number" value="#{cobroRp.modelPago.pagoNotaCredio.valor}"
+                                                                         onkeypress="if (event.keyCode == 13) {
+                                                                                     return false;
+                                                                                 }"/>
+                                                        </p:column>
+                                                        <p:column><p:commandButton icon="pi pi-caret-down" actionListener="#{cobroRp.modelPago.agregarPago(3)}" 
+                                                                                   update="formProcesar:tabDetalle:detCobro"/></p:column>
+                                                    </p:row>
+                                                </p:panelGrid>
+                                                <p:dataTable id="dtNC" var="nc" value="#{cobroRp.modelPago.listPagoNotaCredio}" style="text-align: center; width: 750px;">
+                                                    <p:column headerText="# Nota Credito" style="width: 145px;"><h:outputText value="#{nc.numCredito}" /></p:column>
+                                                    <p:column headerText="Fecha" style="width: 150px;"><h:outputText value="#{nc.fecha}" ><f:convertDateTime pattern="dd/MM/YYYY"/></h:outputText></p:column>
+                                                    <p:column headerText="Valor">
+                                                        <h:outputText value="#{nc.valor}"><f:convertNumber minFractionDigits="2"/></h:outputText>
+                                                    </p:column>
+                                                    <p:column headerText="Del" width="30">
+                                                        <p:commandLink actionListener="#{cobroRp.modelPago.eliminarPagoNC(nc)}" update="formProcesar:tabDetalle:detCobro">
+                                                            <p:graphicImage value="/resources/icons/delete.png" height="16"/>   
+                                                        </p:commandLink>
+                                                    </p:column>
+                                                </p:dataTable>
+                                            </p:tab>
+                                            <!-- comment 
+                                            <p:tab title="1. EFECTIVO">
+                                                <p:panelGrid columns="2" styleClass="ui-panelgrid-blank" style="font-weight: bolder;">
+                                                    <p:outputLabel value="Valor Recibido"/>
+                                                    <p:inputText value="#{cobroRp.modelPago.valorRecibido}" style="font-weight: bolder; font-size: 12px;"
+                                                                 onkeypress="if (event.keyCode == 13) {
+                                                                             return false;
+                                                                         }">
+                                                        <p:ajax event="blur" listener="#{cobroRp.modelPago.calcularEfectivo()}" update="formProcesar:tabDetalle:detCobro" process="@all"/>
+                                                    </p:inputText>
+                                                    <p:outputLabel value="Valor a Cobrar"/>
+                                                    <p:inputText value="#{cobroRp.modelPago.valorCobrar}" readonly="true" style="font-weight: bolder; font-size: 12px;"
+                                                                 onkeypress="if (event.keyCode == 13) {
+                                                                             return false;
+                                                                         }"/>
+                                                    <p:outputLabel value="Cambio"/><p:inputText value="#{cobroRp.modelPago.valorCambio}" readonly="true" style="font-weight: bolder; font-size: 12px;"
+                                                                                                onkeypress="if (event.keyCode == 13) {
+                                                                                                            return false;
+                                                                                                        }"/>
+                                                </p:panelGrid>
+                                            </p:tab>
+                                            
+                                            <p:tab title="6. OTROS VALORES" rendered="false">
+                                                <h:panelGrid columns="2" styleClass="ui-panelgrid-blank" style="font-weight: bolder;">
+                                                    <p:outputLabel value="Valor: "/>
+                                                    <p:inputText value="#{cobroRp.modelPago.valorTotalOtros}" style="font-weight: bolder; font-size: 12px;" 
+                                                                 onkeypress="if (event.keyCode == 13) {
+                                                                             return false;
+                                                                         }">
+                                                        <p:ajax event="blur" listener="#{cobroRp.modelPago.calcularOtrosValores()}" 
+                                                                update="formProcesar:tabDetalle:detCobro" process="@all"/>
+                                                    </p:inputText>
+                                                </h:panelGrid>
+                                            </p:tab>
+                                            -->
+                                        </p:tabView>
+                                    </p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column><p:outputLabel value="Deposito" style="font-weight: bolder;"/></p:column>
+                                    <p:column><p:inputText value="#{cobroRp.modelPago.valorTotalDeposito}" readonly="true" size="8" style="font-weight: bolder; font-size: 14px;"
+                                                           onkeypress="if (event.keyCode == 13) {
+                                                                       return false;
+                                                                   }"/></p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column><p:outputLabel value="Transferencia" style="font-weight: bolder;"/></p:column>
+                                    <p:column><p:inputText value="#{cobroRp.modelPago.valorTotalTransferencias}" readonly="true" size="8" style="font-weight: bolder; font-size: 14px;"
+                                                           onkeypress="if (event.keyCode == 13) {
+                                                                       return false;
+                                                                   }"/></p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column><p:outputLabel value="Cheque" style="font-weight: bolder;"/></p:column>
+                                    <p:column><p:inputText value="#{cobroRp.modelPago.valorTotalCheques}" readonly="true" size="8" style="font-weight: bolder; font-size: 14px;" 
+                                                           onkeypress="if (event.keyCode == 13) {
+                                                                       return false;
+                                                                   }"/></p:column>
+                                </p:row>
+                                <p:row>
+                                    <p:column><p:outputLabel value="Notas Credito" style="font-weight: bolder;"/></p:column>
+                                    <p:column><p:inputText value="#{cobroRp.modelPago.valorTotalNotasCredito}" readonly="true" size="8" style="font-weight: bolder; font-size: 14px;" 
+                                                           onkeypress="if (event.keyCode == 13) {
+                                                                       return false;
+                                                                   }"/></p:column>
+                                </p:row>
+
+                                <!-- comment 
+                                <p:row>
+                                    <p:column><p:outputLabel value="Tarjeta" style="font-weight: bolder;"/></p:column>
+                                    <p:column><p:inputText value="#{cobroRp.modelPago.valorTotalTarjetas}" readonly="true" size="8" style="font-weight: bolder; font-size: 14px;"
+                                                           onkeypress="if (event.keyCode == 13) {
+                                                                       return false;
+                                                                   }"/></p:column>
+                                </p:row>
+                                <p:row rendered="false">
+                                    <p:column><p:outputLabel value="Otros" style="font-weight: bolder;"/></p:column>
+                                    <p:column><p:inputText value="#{cobroRp.modelPago.valorTotalOtros}" readonly="true" size="8" style="font-weight: bolder; font-size: 14px;"
+                                                           onkeypress="if (event.keyCode == 13) {
+                                                                       return false;
+                                                                   }"/></p:column>
+                                </p:row>
+                                -->
+
+
+                                <p:row>
+                                    <p:column><p:outputLabel value="TOTAL" style="font-weight: bolder;"/></p:column>
+                                    <p:column><p:inputText value="#{cobroRp.modelPago.valorTotal}" readonly="true" size="8" style="font-weight: bolder; font-size: 14px; color: red;"/></p:column>
+                                </p:row>
+                            </p:panelGrid>           
+                        </p:fieldset>
+                        <p:panel id="botones">
+                            <center>
+                                <p:commandButton value="Procesar"  actionListener="#{cobroRp.cancelarLiquidacion()}" 
+                                                 update="formProcesar,mainForm" icon="pi pi-print" style="font-size: 14px;">
+                                </p:commandButton><p:spacer width="25"/>                        
+                                <p:commandButton value="Cancelar"  oncomplete="PF('dlgProcesar').hide();" icon="pi pi-ban" 
+                                                 style="font-size: 14px;"/>
+                            </center>
+                        </p:panel>
+                    </p:tab>
+                    <p:tab title="Detalle Contrato">
+                        <div class="card">
+                            <p:dataTable var="det"
+                                         value="#{cobroRp.liquidacion.regpLiquidacionDetallesCollection}"
+                                         style="width:100%">
+                                <p:columnGroup type="header">
+                                    <p:row>
+                                        <p:column colspan="3" headerText="Acto"/>
+                                    </p:row>
+                                </p:columnGroup>
+                                <p:column>
+                                    <h:outputText value="#{det.acto.nombre}" style="font-weight:bold;" />
+                                </p:column>
+                                <p:column colspan="2">
+                                    <p:dataTable var="inter"
+                                                 value="#{det.regpIntervinientesCollection}"
+                                                 style="width:100%; border: none;">
+
+                                        <p:column headerText="Interviniente/s">
+                                            <h:outputText 
+                                                value="#{empty inter.ente.apellidos and empty inter.ente.nombres ? ( empty inter.ente.razonSocial ? inter.ente.nombreComercial : inter.ente.razonSocial) : inter.ente.apellidos.concat(' ').concat(inter.ente.nombres)}" />
+                                        </p:column>
+                                        <p:column headerText="Papel">
+                                            <h:outputText value="#{inter.papel.papel}" />
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                        <br></br>
+                        <center>
+                            <p:commandButton value="Cancelar" oncomplete="PF('dlgProcesar').hide();" 
+                                             icon="pi pi-ban" style="font-size: 14px;"/>
+                        </center>
+                    </p:tab>
+                </p:tabView>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgDocumento" widgetVar="dlgDocs" header="Reemplazar Documento Habilitante" modal="true" width="500" height="300" 
+                  resizable="false" position="center" closable="true" closeOnEscape="true">
+            <h:form id="formDocs">
+                <p:panelGrid styleClass="noBorder" style="margin: 0 auto;width: 100%;" columns="1">
+                    <p:outputLabel value="ESPERE A QUE LA VENTANA SE CIERRE!!!" style="font-weight: bolder;color: #0033FF;font-size: 14px;"/>
+                    <p:outputLabel value="Tramite: #{cobroRp.historico.numTramite}" style="font-weight: bolder;font-size: 14px;"/>
+                    <p:outputLabel value="Fecha Ingreso: #{cobroRp.historico.fechaIngreso}" style="font-weight: bolder;font-size: 14px;"/>
+                    <p:fileUpload listener="#{cobroRp.handleUpload}" 
+                                  mode="advanced" 
+                                  fileLimit="1" 
+                                  dragDropSupport="false" 
+                                  sizeLimit="10000000000" 
+                                  label="Seleccionar" 
+                                  uploadLabel="Subir" 
+                                  style="width: auto;" 
+                                  cancelLabel="Cancelar" 
+                                  allowTypes="/(\.|\/)(pdf)$/" />
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dglEstudioJuridico" widgetVar="estudioJuridico" header="Estudio Juridico" resizable="false" modal="true">
+            <h:form id="formEstudioJuridico">
+                <p:panelGrid styleClass="noBorder">
+                    <p:row>
+                        <p:column>
+                            <p:outputLabel value="Nombre:" style="font-weight: bolder;font-size: 12px"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputText value="#{cobroRp.estudioJuridicoNuevo.valor}" size="40" maxlength="50"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="2">
+                            <center><p:commandButton value="Guardar" icon="ui-icon-check" styleClass="btnStyle" actionListener="#{cobroRp.guardarEstudioJuridico()}"/></center>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog> 
+        
+        <p:dialog widgetVar="dlgReenvioComp" header="Reenviar Comprobante" modal="true" width="600" 
+                  resizable="false" position="center">
+            <h:form id="formEnvioCompMail">
+                <h:panelGroup>
+                    <p:outputLabel value="Nro. Trámite:" style="font-weight: bold; font-size: 18px;color: #00a9e7"/>
+                    <p:spacer width="20" height="1"/>
+                    <p:outputLabel value="#{cobroRp.liquidacion.numTramiteRp}" style="font-weight: bold; font-size: 18px;"/><br/>
+                    <p:outputLabel value="Factura:" style="font-weight: bold; font-size: 18px;color: #00a9e7"/>
+                    <p:spacer width="20" height="1"/>
+                    <p:outputLabel value="#{cobroRp.liquidacion.solicitante.nombreCompleto}" style="font-weight: bold; font-size: 18px;"/>    
+                </h:panelGroup>
+                <h:panelGrid columns="1" style="width: 100%;text-align: center;">
+                    <p:outputLabel value="Confirmar Correo:" style="font-weight: bolder;font-size: 16px"/>
+                    <p:inputText value="#{cobroRp.liquidacion.correoTramite}" style="width: 100%" maxlength="99"/>
+                    <p:spacer width="1"/>
+                    <p:commandButton value="Reenviar" icon="pi pi-send" actionListener="#{cobroRp.continuarCobro()}" />
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgUsuarioAsignado" header="ASIGNACION DE TRAMITE" modal="true" 
+                  resizable="false" position="center" closable="false" closeOnEscape="false">
+            <h:form id="formUserAsignado">
+                <h:panelGrid columns="1" style="text-align: center;font-weight: bolder;">
+                    <p:outputLabel value="USUARIO ASIGNADO:" style="font-size: 16px;"/>
+                    <p:outputLabel value="#{cobroRp.liquidacion.inscriptor.usuario}" 
+                                   style="font-size: 30px;color: #0033FF"/>   
+                    <p:commandButton value="ACEPTAR" icon="pi pi-user" 
+                                     actionListener="#{cobroRp.continuarCobro()}">
+                    </p:commandButton>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

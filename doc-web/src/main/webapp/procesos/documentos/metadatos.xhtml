@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/templateDocs.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html" 
+                xmlns:poue="http://primefaces.org/ui/extensions"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+
+    <ui:define name="top"><h3>Formatos</h3></ui:define>
+    <ui:define name="title">Formatos de archivos</ui:define>
+    <ui:define name="content">
+
+        <h:form id="formMain"  prependId="false">
+            <center>
+                <h2> Formatos de archivos </h2>
+            </center>
+
+            <h:panelGrid id="pnlFormulario" columns="2" columnClasses="twenty-five-percent, seventy-five-percent">
+                <h:panelGroup>
+                    <h:panelGrid id="pnlDatosFormato" columns="1" style="width: 80%">
+                        <f:facet name="header">
+                            <center>
+                                <p:outputLabel value="Datos del formato" style="font-weight: bolder"/>
+                            </center>
+                        </f:facet>
+                        <h:panelGroup></h:panelGroup>
+                        <h:panelGroup></h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Descripción del formato" style="font-weight: bolder" /><br/>
+                            <p:inputText value="#{formatoMB.formato.nombre}" style="width: 100%"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Extensión del formato" style="font-weight: bolder" /><br/>
+                            <p:inputText value="#{formatoMB.formato.extension}" style="width: 100%" />    
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Formato" style="font-weight: bolder" /><br/>
+                            <p:inputText value="#{formatoMB.formato.formato}" style="width: 100%"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Contenido" style="font-weight: bolder" /><br/>
+                            <p:selectOneMenu  value="#{formatoMB.formato.tipoContenido}" style="width: 100%">
+                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItem itemLabel="text/plain" itemValue="text/plain" />
+                                <f:selectItem itemLabel="application/octet-stream"  itemValue="application/octet-stream"/>
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Conversión" style="font-weight: bolder" /><br/>
+                            <p:selectOneMenu  value="#{formatoMB.formato.conversion}" style="width: 100%">
+                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}" noSelectionOption="true" />
+                                <f:selectItem itemLabel="NINGUNA" itemValue="NINGUNA" />
+                                <f:selectItem itemLabel="CONVERSION DE ARCHIVO A IMAGEN" itemValue="CONVERSION_ARCHIVO_IMAGEN" />
+                                <f:selectItem itemLabel="CONVERSION DE IMAGEN"  itemValue="CONVERSION_IMAGEN"/>
+                            </p:selectOneMenu>
+                            <br/>    
+                        </h:panelGroup>
+                        <f:facet name="footer" >
+                            <center>
+                                <br/>
+                                <p:commandButton value="Grabar formato" icon="fa fa-save" 
+                                                 actionListener="#{formatoMB.guardarFormato()}" process="pnlDatosFormato" update="pnlFormulario"  /> 
+                            </center>    
+                        </f:facet>
+
+                    </h:panelGrid>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:dataTable id="dtDatos" reflow="true" paginator="true" lazy="true" rows="10" 
+                                 rowsPerPageTemplate="10,20,30" 
+                                 rowIndexVar="i" 
+                                 filterEvent="enter"
+                                 
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 value="#{formatoMB.lazy}" var="data" 
+                                 emptyMessage="No se encontró ningún formato"  
+                                 paginatorPosition="bottom" >
+                        <p:column headerText="***" width="20">
+                            <p:outputLabel value="#{i + 1}" />
+                        </p:column>
+                        <p:column headerText="Fecha" width="70">
+                            <p:outputLabel value="#{data.fecha}">
+                                <f:convertDateTime pattern="dd-MM-yyyy HH:mm" />
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Desripción" width="150">
+                            <p:outputLabel value="#{data.nombre}" />
+                        </p:column>
+                        <p:column headerText="Formato">
+                            <p:outputLabel value="Extensión:" style="font-weight: bolder"/><p:outputLabel value="#{data.extension}" /><br/>
+                            <p:outputLabel value="Formato: " style="font-weight: bolder"/><p:outputLabel value="#{data.formato}" /><br/>
+                            <p:outputLabel value="Contenido: " style="font-weight: bolder" /><p:outputLabel value="#{data.tipoContenido}" /><br/>
+                            <p:outputLabel value="Conversión: " style="font-weight: bolder"/><p:outputLabel value="#{data.conversion}" />
+                        </p:column>
+                        <p:column headerText="Acciones" width="100" >
+                            <center>
+                                <p:commandButton
+                                    actionListener="#{formatoMB.editarFormato(data)}" 
+                                    update="pnlDatosFormato" process="dtDatos" 
+                                    styleClass="edit" style="margin-right: 10px" 
+                                    icon="pi pi-pencil"
+                                    value="Editar"
+                                    title="Editar formato #{data.nombre}">
+                                </p:commandButton>
+                            </center>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGroup>
+
+            </h:panelGrid>
+
+
+        </h:form>
+
+
+
+    </ui:define>
+</ui:composition>

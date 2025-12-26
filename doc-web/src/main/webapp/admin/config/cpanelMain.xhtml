@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+
+    <ui:define name="top"><h3>Panel de Control</h3></ui:define>
+    <ui:define name="title">Panel de Control</ui:define>
+    <ui:define name="content">
+        <h2> Panel de Control </h2>
+        <h:form>
+            <center>
+                <p:panelGrid columns="3" layout="grid" styleClass="ui-panelgrid-blank">
+                    <h:panelGroup style="border-color: #252525; border-width: 1px; ">
+
+                        <p:commandLink title="Actualizar memoria Caché" actionListener="#{cPanelMain.iniciarMenu()}">
+                            <p:graphicImage value="/resources/icons/format-indent-more.png" style="width: 135px; height: 125px;" />
+                        </p:commandLink><br/>
+                        <p:outputLabel value="Actualizar Menú" style="font-size: 14px; font-weight: bold; padding: 0px; "/>
+                    </h:panelGroup>
+
+                    <h:panelGroup style="border-color: #252525; border-width: 1px; ">
+
+                        <p:commandLink title="Permisos de Roles sobre los menús" action="menuRol.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/kmenuedit.png" style="width: 135px; height: 125px;"/>
+                        </p:commandLink><br/>
+                        <p:outputLabel value="Modificar Menú" style="font-size: 14px; font-weight: bold; padding: 0px; "/>
+                    </h:panelGroup>
+
+                    <h:panelGroup style="border-color: #252525; border-width: 1px; ">
+
+                        <p:commandLink title="Mantenimiento de Usuarios, Roles y Depts." action="/admin/manage/usersList.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/roles.png" style="width: 135px; height: 125px;"/>
+                        </p:commandLink><br/>
+                        <p:outputLabel value="Usuarios, Roles y Depts" style="font-size: 14px; font-weight: bold; padding: 0px; "/>
+                    </h:panelGroup>
+                </p:panelGrid>
+            </center>
+        </h:form>
+    </ui:define>
+</ui:composition>

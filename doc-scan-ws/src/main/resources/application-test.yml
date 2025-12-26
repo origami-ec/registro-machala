@@ -1,0 +1,24 @@
+app:
+  nombre: ORIGAMIGT
+  origamiGT: http://192.168.4.30:8713
+  paramVisor: u$erSGD2022
+  imagenDoc: http://127.0.0.1:8712/bcbg/api/firmaElectronica/docImagen/
+  rutaArchivos: C:/archivos/firmasElectronicas/
+  archivosPCLocal: C:/archivos/documentos/
+  imagenesPCLocal: C:/archivos/imagenes/
+  ext: .p12
+  keyFiles: 12345
+
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 5
+    leaseExpirationDurationInSeconds: 3
+    appname: FIRMAEC-ZERVICES
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+
+logging:
+  file:
+    name: origami-firma.log
+

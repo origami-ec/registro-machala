@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="cuadreCajaPorUsuario" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="0" bottomMargin="0" uuid="44c41430-ab03-4fa9-995f-d6837b1f4bd8">
+	<property name="ireport.zoom" value="1.5394743546921212"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="48"/>
+	<style name="ANULADA" mode="Opaque" forecolor="#000000" backcolor="#FF9999"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="DESDE" class="java.lang.String"/>
+	<parameter name="HASTA" class="java.lang.String"/>
+	<parameter name="HASTA_STRING" class="java.lang.String"/>
+	<parameter name="USUARIO" class="java.lang.Long"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\Anyelo\\Desktop\\NetBeansProjects\\rpp\\src\\main\\webapp\\reportes\\diarios\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="IMG_URL" class="java.lang.String"/>
+	<parameter name="TESORERA" class="java.lang.String"/>
+	<parameter name="COORDINADORA" class="java.lang.String"/>
+	<parameter name="CONTADORA" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT usu.id, usu.usuario, coalesce(en.apellidos,'')||' '||coalesce(en.nombres,'') AS funcionario, sum(pa.valor) as total
+FROM financiero.ren_pago pa
+left join app.acl_user usu on usu.id = pa.cajero
+left join app.cat_ente en on en.id  = usu.ente
+where pa.fecha_pago BETWEEN
+TO_TIMESTAMP($P{DESDE}, 'DD/MM/YYYY HH24:MI')::timestamp without time zone
+AND TO_TIMESTAMP($P{HASTA}, 'DD/MM/YYYY HH24:MI')::timestamp without time zone
+group by usu.id, usu.usuario, en.apellidos, en.nombres
+ORDER BY 3]]>
+	</queryString>
+	<field name="id" class="java.lang.Long"/>
+	<field name="usuario" class="java.lang.String"/>
+	<field name="funcionario" class="java.lang.String"/>
+	<field name="total" class="java.math.BigDecimal"/>
+	<variable name="TOTAL_INGRESOS" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{total}]]></variableExpression>
+	</variable>
+	<group name="grp_recaudador">
+		<groupExpression><![CDATA[$F{id}]]></groupExpression>
+		<groupHeader>
+			<band height="27">
+				<staticText>
+					<reportElement x="0" y="0" width="78" height="20" uuid="8e40b99f-1d35-4c0b-9737-cde4dd2169c2"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[RECAUDADOR:]]></text>
+				</staticText>
+				<textField>
+					<reportElement x="78" y="0" width="361" height="20" uuid="233f9dc7-29b6-47b3-a17b-40081ebd052d"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{funcionario}]]></textFieldExpression>
+				</textField>
+				<line>
+					<reportElement x="0" y="0" width="555" height="1" uuid="271bddce-da8c-4519-a932-75dce3af26a8"/>
+				</line>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="29">
+				<staticText>
+					<reportElement x="364" y="1" width="50" height="20" uuid="a6531e60-9c72-462a-9848-435d7d07f116"/>
+					<textElement>
+						<font isBold="true"/>
+					</textElement>
+					<text><![CDATA[TOTAL:]]></text>
+				</staticText>
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="414" y="1" width="100" height="20" uuid="bb492c2d-06ff-4220-8272-15e414011eb6"/>
+					<textFieldExpression><![CDATA[$F{total}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band height="842" splitType="Stretch">
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="0" y="0" width="555" height="842" uuid="3f5a2fb4-5602-4d58-8afa-d6109889858f"/>
+				<imageExpression><![CDATA[$P{IMG_URL}]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<pageHeader>
+		<band height="50"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="114">
+			<staticText>
+				<reportElement style="negrita" x="4" y="45" width="551" height="22" uuid="20ce27e1-57a0-421a-97c7-54a3302db764"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="false"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE RECAUDACIÓN POR USUARIO]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="50" y="83" width="124" height="14" uuid="0eb3cd59-2287-4329-b7d2-1be1531868d8"/>
+				<textFieldExpression><![CDATA[$P{HASTA_STRING}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="50" y="69" width="124" height="14" uuid="634c41f6-8a42-4bb1-8589-b8e1c9b82aee"/>
+				<textFieldExpression><![CDATA[$P{DESDE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="6" y="69" width="40" height="14" uuid="2535145b-8625-498c-9484-e429c12b69a4"/>
+				<text><![CDATA[Desde:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="6" y="83" width="40" height="14" uuid="270e8d2c-d486-423c-8af1-ac64a9ad480b"/>
+				<text><![CDATA[Hasta:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy HH:mm:ss">
+				<reportElement x="318" y="69" width="146" height="14" uuid="2fecf96a-a9ee-4a49-9154-dc4487b3f1b8"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="200" y="69" width="114" height="14" uuid="eeec1bbe-33b2-41a7-9e59-9bc5a94d8e0e"/>
+				<text><![CDATA[Fecha de Impresión:]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="60" splitType="Stretch">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="555" height="45" uuid="de9b5c56-f31e-418b-8356-60e0088b1d3b"/>
+				<subreportParameter name="DESDE">
+					<subreportParameterExpression><![CDATA[$P{DESDE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="HASTA">
+					<subreportParameterExpression><![CDATA[$P{HASTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="USUARIO">
+					<subreportParameterExpression><![CDATA[$F{id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "cuadrecajaSubRepoPorUsu.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="76" splitType="Prevent">
+			<textField>
+				<reportElement x="483" y="25" width="38" height="16" uuid="8103c524-5467-4837-a5b8-e89f98e75c07"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pág. "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="521" y="25" width="34" height="16" uuid="fdbeb83d-340b-48e5-a4e7-395ad488ce20"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="112" y="27" width="118" height="14" uuid="941b0e7b-9a5f-4e52-8fac-94744c6515e5"/>
+				<text><![CDATA[Fecha de Impresión:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy HH:mm:ss">
+				<reportElement x="230" y="27" width="150" height="14" uuid="00baf40a-8f5b-4d9b-8c01-1fedd64f2acb"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="200" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="8" y="119" width="269" height="16" isPrintWhenDetailOverflows="true" uuid="435fd6bd-2541-4cd3-8988-dc95a1b58b28"/>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["GENERADO POR"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="negrita" stretchType="RelativeToTallestObject" x="8" y="135" width="269" height="60" isPrintWhenDetailOverflows="true" uuid="5d782448-b489-402b-a7b0-bc719292d430"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$P{TESORERA}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="286" y="119" width="256" height="16" isPrintWhenDetailOverflows="true" uuid="01ca3a4a-7d89-4ac1-b200-33c99f343d77"/>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["RECIBIDO POR"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="negrita" stretchType="RelativeToTallestObject" x="286" y="135" width="256" height="60" isPrintWhenDetailOverflows="true" uuid="0149c34f-38f3-48e9-9ba0-566d43653311"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom"/>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" x="461" y="78" width="80" height="14" uuid="6b2ad5cb-3238-4ae3-8bee-afe08b00c9ed"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[TOTAL INGRESOS]]></text>
+			</staticText>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="false">
+				<reportElement x="461" y="92" width="80" height="17" isPrintWhenDetailOverflows="true" uuid="ad43d69e-29cc-413f-a4b9-3df8f33d9f00"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$V{TOTAL_INGRESOS}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

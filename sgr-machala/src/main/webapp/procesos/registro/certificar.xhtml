@@ -1,0 +1,440 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">
+        <style type="text/css">
+            .tipo-cero {
+                color: #192a37 !important;
+            }
+            .tipo-uno {
+                background-color: #FDE7B3 !important;
+                color: #192a37 !important;
+            }
+            .tipo-dos {
+                background-color: #E5BEB5 !important;
+                color: #192a37 !important;
+            }
+            .tipo-tres {
+                color: red !important;
+            }
+        </style>
+        <h:form id="mainForm">
+            <h2><center>#{certificar.taskDataByTaskID.name} - Trámite No #{certificar.tt.tramite.numTramite}</center></h2>
+            <p:outputLabel value="#{certificar.advertencias}" class="FontBold icon-lock" escape="false"
+                           rendered="#{certificar.advertencias.length() > 0}"
+                           style="color: darkred; text-transform: uppercase; font-size: 20px;" /><br/>
+            <!-- CERTIFICADO DE NO POSEER BIENES / FICHA PERSONAL PROPIEDAD -->
+            <p:panel header="#{certificar.certificado.claseCertificado}" rendered="#{certificar.render eq 1}">
+                <h:panelGrid columns="2" style="font-weight: bolder;margin: 0 auto; width: 80%;" 
+                             columnClasses="ui-g-12 ui-md-4, ui-g-12 ui-md-8">
+                    A NOMBRE DE:
+                    <p:inputText value="#{certificar.certificado.linderosRegistrales}" size="50" />
+                    CI/RUC/PAS.:
+                    <p:inputText value="#{certificar.certificado.beneficiario}" size="50"/>
+                    SOLICITANTE:
+                    <p:inputText value="#{certificar.certificado.nombreSolicitante}" size="50" 
+                                 style="text-transform: uppercase;" />
+                    MOTIVO:
+                    <p:inputText value="#{certificar.certificado.usoDocumento}"  style="text-transform: uppercase; width: 100%;"/>
+                </h:panelGrid><br/>
+                <center>
+                    <p:commandButton value="Guardar Documento" actionListener="#{certificar.guardarCertificadoNoBienes()}" 
+                                     icon="pi pi-save"/>
+                    <p:spacer width="20" height="1"/>
+                    <p:commandButton value="Marcar como Realizado" actionListener="#{certificar.completarSubTarea()}" 
+                                     icon="pi pi-check" style="background-color: darkgoldenrod;"/>
+                </center>
+            </p:panel>
+
+            <!-- CERTIFICADO DE SOLVENCIA / HISTORIA DE DOMINIO -->
+            <p:panel id="pnlCertificado" header="#{certificar.certificado.claseCertificado}" rendered="#{certificar.render eq 2}">
+                <p:fieldset legend="INFORMACIÓN DE LA FICHA REGISTRAL" >
+                    <h:panelGrid style="width: 100%;">
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Nº FICHA:" style="font-weight: bolder; font-size: 14px;"/>
+                                <p:spacer width="20" height="1"/>
+                                <p:inputText value="#{certificar.numFicha}"/>
+                                <p:spacer width="20" height="1"/>
+                                <p:commandButton value="Buscar Ficha" icon="pi pi-search" 
+                                                 actionListener="#{certificar.buscarFichaRegistral()}"/>
+                            </p:column>
+                            <p:column>
+                                <p:commandButton value="Limpiar Pantalla" icon="pi pi-trash" style="float: right;" 
+                                                 actionListener="#{certificar.borrarListas()}" update="mainForm:pnlCertificado">
+                                    <p:confirm header="Seguro de borrar todo?" message="Utilizar esta opción con cuidado." 
+                                               icon="pi pi-exclamation-triangle" />
+                                </p:commandButton>
+                            </p:column>
+                        </p:row>
+                    </h:panelGrid>
+                    <p:panel header="DESCRIPCIÓN DEL BIEN">
+                        <p:inputTextarea value="#{certificar.certificado.descripcionBien}" style="width: 100%;" rows="3" 
+                                         autoResize="false" readonly="true"/>
+                    </p:panel>
+                    <p:panel header="LINDEROS REGISTRALES">
+                        <p:inputTextarea value="#{certificar.certificado.linderosRegistrales}" style="width: 100%;" rows="6" 
+                                         autoResize="false" readonly="true" rendered="true"/>
+                        <p:dataTable id="dtLinderos" value="#{certificar.ficha.regFichaLinderosCollection}" rendered="false"
+                                     scrollable="true" scrollHeight="240" lazy="false" var="lin" rowIndexVar="rowIndex" reflow="true" >
+                            <p:column headerText="Tipo" width="40">
+                                <p:outputLabel value="#{lin.tipo.descripcion}" />
+                            </p:column>
+                            <p:column headerText="Lindero">
+                                <p:outputLabel value="#{lin.linderante}" />
+                            </p:column>
+                            <p:column headerText="Longitud" width="150">
+                                <p:outputLabel value="CON: #{lin.longitud} MTS." rendered="#{lin.longitud gt 0}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>
+                    <p:dataTable id="dtPropS" value="#{certificar.propietarios}" var="props" scrollable="true" scrollHeight="100" 
+                                 rowIndexVar="indexP" emptyMessage="Sin Propietarios." resizableColumns="true" rendered="true">
+                        <f:facet name="header">PROPIETARIOS DEL BIEN INMUEBLE</f:facet>
+                        <p:column headerText="No" width="20">
+                            #{indexP+1}
+                        </p:column>
+                        <p:column headerText="CI/RUC/PAS">
+                            <p:outputLabel value="#{props.documento}"/>
+                        </p:column>
+                        <p:column headerText="NOMBRES">
+                            <p:outputLabel value="#{props.nombres}"/>
+                        </p:column>
+                        <p:column headerText="Del." width="20">
+                            <p:commandButton icon="pi pi-trash" actionListener="#{certificar.eliminarProp(indexP)}" 
+                                             update="mainForm:pnlCertificado" style="background-color: orangered;">
+                                <p:confirm header="Confirmacion" message="Seguro eliminar este elemento?" 
+                                           icon="pi pi-exclamation-triangle" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                    <p:dataTable id="dtHistoriaS" value="#{certificar.historia}" var="movs" scrollable="true" scrollHeight="200" 
+                                 rowIndexVar="index" emptyMessage="Sin Movimientos." resizableColumns="true" 
+                                 rowStyleClass="#{movs.movimiento.acto.isCancelacion() ? 'tipo-tres' : movs.movimiento.libro.tipo == 1 ? 'tipo-uno' : movs.movimiento.libro.tipo == 2 ? 'tipo-dos' : 'tipo-cero'}">
+                        <f:facet name="header">HISTORIA DE DOMINIO</f:facet>
+                        <p:column headerText="No" width="20">
+                            #{index+1}
+                        </p:column>
+                        <p:column headerText="Libro">
+                            <p:outputLabel value="#{movs.movimiento.libro.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Acto">
+                            <p:outputLabel value="#{movs.movimiento.acto.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Observacion">
+                            <p:outputLabel id="obMov" value="#{movs.movimiento.observacion}"/>
+                            <p:tooltip for="obMov" value="#{movs.movimiento.observacion}" position="top" />
+                        </p:column>
+                        <p:column headerText="Repertorio" width="80">
+                            <p:outputLabel value="#{movs.movimiento.numRepertorio}"/>
+                        </p:column>
+                        <p:column headerText="Inscripcion" width="80">
+                            <p:outputLabel value="#{movs.movimiento.numInscripcion}"/>
+                        </p:column>
+                        <p:column headerText="Fech.Insc." width="80">
+                            <p:outputLabel value="#{movs.movimiento.fechaInscripcion}"><f:convertDateTime pattern="dd/MM/yyyy"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Sec." width="30">
+                            <p:outputLabel value="#{movs.movimiento.indice}"/>
+                        </p:column>
+                        <p:column headerText="Del." width="20">
+                            <p:commandButton icon="pi pi-trash" style="background-color: orangered;" update="mainForm:pnlCertificado" 
+                                             actionListener="#{certificar.eliminarMovimiento(index)}" >
+                                <p:confirm header="Confirmacion" message="Seguro eliminar este elemento?" 
+                                           icon="pi pi-exclamation-triangle" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                </p:fieldset>
+                <p:fieldset legend="DATOS ADICIONALES">
+                    <h:panelGrid columns="1" rendered="false">
+                        <p:outputLabel value="SOLVENCIA:" style="font-weight: bolder; font-size: 14px;"/>
+                        <p:selectOneRadio value="#{certificar.contenido}" layout="responsive" columns="1" converter="entityConverter">
+                            <f:selectItems value="#{certificar.contenidos}" var="con" itemLabel="#{con.valor}" itemValue="#{con}" />
+                            <p:ajax event="change" listener="#{certificar.updateSolvencia()}" update="pnlCertificado"/>
+                        </p:selectOneRadio>
+                        <p:inputTextarea value="#{certificar.solvencia}" rows="3" autoResize="true" style="width: 100%;"/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <p:outputLabel value="CANTIDAD GRAV.:" style="font-weight: bolder; font-size: 14px;"/>
+                        <p:inputText value="#{certificar.certificado.cantidadGravamenes}" size="70" readonly="true"/>
+                        <p:outputLabel value="SOLICITANTE:" style="font-weight: bolder; font-size: 14px;"/>
+                        <p:inputText value="#{certificar.certificado.nombreSolicitante}" size="70" style="text-transform: uppercase;"/>
+                        <p:outputLabel value="MOTIVO SOLICITUD:" style="font-weight: bolder; font-size: 14px;"/>
+                        <p:inputText value="#{certificar.certificado.usoDocumento}" size="70" style="text-transform: uppercase;"/>
+                    </h:panelGrid>
+                </p:fieldset><br/>
+                <h:panelGrid columns="3" style="margin: 0 auto;">
+                    <p:commandButton value="Guardar Documento" actionListener="#{certificar.guardarCertificadoConficha()}" 
+                                     icon="pi pi-save"/>
+                    <p:spacer width="20" height="1"/>
+                    <p:commandButton value="Marcar como Realizado" actionListener="#{certificar.completarSubTarea()}" 
+                                     icon="pi pi-check" style="background-color: darkgoldenrod;"/>
+                </h:panelGrid>
+            </p:panel>
+
+            <!-- CERTIFICADOS MERCANTIL / FICHA MERCANTIL -->
+            <p:panel id="pnlMercantil" header="#{certificar.certificado.claseCertificado}" rendered="#{certificar.render eq 3}">
+                <p:fieldset legend="INFORMACIÓN DE LA FICHA REGISTRAL" >
+                    <h:panelGrid style="width: 100%;">
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Tipo Ficha:" style="font-weight: bolder; font-size: 14px;"/> 
+                                <p:spacer width="20" height="1"/>
+                                <p:selectOneMenu value="#{certificar.tipoFicha}" converter="entityConverter" 
+                                                 style="margin-top: 3px; min-width: 0px !important; width: 200px !important;">
+                                    <f:selectItems value="#{certificar.tiposFichas}" var="tf" itemLabel="#{tf.nombre}" itemValue="#{est}" />
+                                </p:selectOneMenu>
+                            </p:column>
+                            <p:column>
+                                <p:spacer width="50" height="1"/>
+                                <p:outputLabel value="No FICHA:" style="font-weight: bolder; font-size: 14px;"/>
+                                <p:spacer width="20" height="1"/>
+                                <p:inputText value="#{certificar.numFicha}"/>
+                                <p:spacer width="20" height="1"/>
+                                <p:commandButton value="Buscar Ficha" styleClass="btnStyle" icon="fa fa-institution" 
+                                                 actionListener="#{certificar.buscarFichaMercantil()}"/>
+                            </p:column>
+                            <p:column>
+                                <p:commandButton value="Borrar Listas" styleClass="btnStyle" icon="fa fa-trash" style="float: right;" 
+                                                 actionListener="#{certificar.borrarListas()}" update="mainForm:pnlMercantil">
+                                    <p:confirm header="Seguro de borrar todo?" message="Utilizar esta opción con cuidado." icon="ui-icon-alert" />
+                                </p:commandButton>
+                            </p:column>
+                        </p:row>
+                    </h:panelGrid>
+                    <p:panel header="DESCRIPCIÓN DE LA FICHA">
+                        <p:inputTextarea value="#{certificar.certificado.linderosRegistrales}" style="width: 100%;" rows="8" 
+                                         autoResize="false" readonly="true"/>
+                    </p:panel>
+                    <p:dataTable id="dtHistoriaM" value="#{certificar.historia}" var="movs" scrollable="true" scrollHeight="100" 
+                                 rowIndexVar="index" emptyMessage="Sin Movimientos." resizableColumns="true">
+                        <f:facet name="header">Movimientos Registrales</f:facet>
+                        <p:column headerText="No" width="20">
+                            #{index+1}
+                        </p:column>
+                        <p:column headerText="Libro">
+                            <p:outputLabel value="#{movs.movimiento.libro.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Acto">
+                            <p:outputLabel value="#{movs.movimiento.acto.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Observacion">
+                            <p:outputLabel id="obMov" value="#{movs.movimiento.observacion}"/>
+                            <p:tooltip for="obMov" value="#{movs.movimiento.observacion}" position="top" />
+                        </p:column>
+                        <p:column headerText="Repertorio" width="80">
+                            <p:outputLabel value="#{movs.movimiento.numRepertorio}"/>
+                        </p:column>
+                        <p:column headerText="Inscripcion" width="80">
+                            <p:outputLabel value="#{movs.movimiento.numInscripcion}"/>
+                        </p:column>
+                        <p:column headerText="Fech.Insc." width="80">
+                            <p:outputLabel value="#{movs.movimiento.fechaInscripcion}"><f:convertDateTime pattern="dd/MM/yyyy"/></p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Sec." width="30">
+                            <p:outputLabel value="#{movs.movimiento.indice}"/>
+                        </p:column>
+                        <p:column headerText="Del." width="20">
+                            <p:commandLink actionListener="#{certificar.eliminarMovimiento(index)}" update="mainForm:pnlMercantil">
+                                <p:graphicImage value="/resources/icons/delete.png" height="16"/>
+                                <p:confirm header="Confirmacion" message="Seguro eliminar este elemento?" icon="ui-icon-alert" />
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:fieldset>
+                <p:fieldset legend="DATOS ADICIONALES">
+                    <!--<h:panelGrid columns="1">
+                        <p:outputLabel value="SOLVENCIA:" style="font-weight: bolder; font-size: 14px;"/>
+                        <p:selectOneRadio value="# {certificar.contenido}" layout="responsive" columns="1" converter="entityConverter">
+                            <f:selectItems value="# {certificar.contenidos}" var="con" itemLabel="# {con.valor}" itemValue="# {con}" />
+                            <p:ajax event="change" listener="# {certificar.updateSolvencia()}" update="pnlCertificado"/>
+                        </p:selectOneRadio>
+                        <p:inputTextarea value="# {certificar.solvencia}" rows="3" autoResize="true" style="width: 100%;"/>
+                    </h:panelGrid>-->
+                    <h:panelGrid columns="2">
+                        <p:outputLabel value="SOLICITANTE:" style="font-weight: bolder; font-size: 14px;"/>
+                        <p:inputText value="#{certificar.certificado.nombreSolicitante}" size="70" style="text-transform: uppercase;"/>
+                        <p:outputLabel value="MOTIVO SOLICITUD:" style="font-weight: bolder; font-size: 14px;"/>
+                        <p:inputText value="#{certificar.certificado.usoDocumento}" size="70" style="text-transform: uppercase;"/>
+                    </h:panelGrid>
+                </p:fieldset>
+                <h:panelGrid columns="3" style="margin: 0 auto;">
+                    <p:commandButton value="Guardar" actionListener="#{certificar.guardarCertificadoMercantil()}" styleClass="btnStyle" icon="fa fa-bolt"/>
+                    <p:spacer width="20" height="1"/>
+                    <p:commandButton value="Realizar Tarea" actionListener="#{certificar.completarSubTarea()}" styleClass="btnStyle" icon="fa fa-calendar"/>
+                </h:panelGrid>
+            </p:panel>
+
+            <!-- COPIA DE RAZON DE INSCRIPCION -->
+            <p:panel id="pnlRazon" header="#{certificar.certificado.claseCertificado}" rendered="#{certificar.render eq 4}">
+                <center>
+                    <p:commandButton value="Buscar Inscripción" icon="pi pi-search"  
+                                     actionListener="#{certificar.showDlgWith('/resources/dialog/dlglazymov')}">
+                        <p:ajax event="dialogReturn" listener="#{certificar.selectObjectMov}" update="pnlRazon"/>
+                    </p:commandButton>
+                </center><br/>
+                <p:dataTable id="dtHistoriaC" value="#{certificar.historia}" var="movsr" scrollable="true" scrollHeight="200" 
+                             rowIndexVar="indexR" emptyMessage="Sin Movimientos." resizableColumns="true">
+                    <f:facet name="header">Movimientos Registrales</f:facet>
+                    <p:column headerText="No" width="20">
+                        #{indexR+1}
+                    </p:column>
+                    <p:column headerText="Libro">
+                        <p:outputLabel value="#{movsr.movimiento.libro.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Acto">
+                        <p:outputLabel value="#{movsr.movimiento.acto.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Observacion">
+                        <p:outputLabel id="obMovR" value="#{movsr.movimiento.observacion}"/>
+                        <p:tooltip for="obMovR" value="#{movsr.movimiento.observacion}" position="top" />
+                    </p:column>
+                    <p:column headerText="Repertorio" width="80">
+                        <p:outputLabel value="#{movsr.movimiento.numRepertorio}"/>
+                    </p:column>
+                    <p:column headerText="Inscripcion" width="80">
+                        <p:outputLabel value="#{movsr.movimiento.numInscripcion}"/>
+                    </p:column>
+                    <p:column headerText="Fech.Insc." width="80">
+                        <p:outputLabel value="#{movsr.movimiento.fechaInscripcion}"><f:convertDateTime pattern="dd/MM/yyyy"/></p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Sec." width="30">
+                        <p:outputLabel value="#{movsr.movimiento.indice}"/>
+                    </p:column>
+                    <p:column headerText="Del." width="20">
+                        <p:commandLink actionListener="#{certificar.eliminarMovimiento(indexR)}" update="mainForm:pnlRazon">
+                            <p:graphicImage value="/resources/icons/delete.png" height="16"/>
+                            <p:confirm header="Confirmacion" message="Seguro eliminar este elemento?" icon="ui-icon-alert" />
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+                <h:panelGrid columns="1">
+                    <p:spacer width="1" height="10"/>
+                    <p:outputLabel value="SOLVENCIA:" style="font-weight: bolder; font-size: 14px;"/>
+                    <p:inputTextarea value="#{certificar.certificado.observacion}" rows="10" cols="130" scrollHeight="250" autoResize="false"/>
+                </h:panelGrid>
+                <h:panelGrid columns="2">
+                    <p:outputLabel value="SOLICITANTE:" style="font-weight: bolder; font-size: 14px;"/>
+                    <p:inputText value="#{certificar.certificado.nombreSolicitante}" size="70" style="text-transform: uppercase;"/>
+                    <p:outputLabel value="MOTIVO SOLICITUD:" style="font-weight: bolder; font-size: 14px;"/>
+                    <p:inputText value="#{certificar.certificado.usoDocumento}" size="70" style="text-transform: uppercase;"/>
+                </h:panelGrid>
+                <br/>
+                <center>
+                    <p:commandButton value="Guardar Documento" actionListener="#{certificar.guardarCertificadoRazon()}" 
+                                     icon="pi pi-save"/>
+                    <p:spacer width="20" height="1"/>
+                    <p:commandButton value="Marcar como Realizado" actionListener="#{certificar.completarSubTarea()}" 
+                                     icon="pi pi-check" style="background-color: darkgoldenrod;"/>
+                </center>
+            </p:panel>
+
+            <!-- CERTIFICADOS DE WORD -->
+            <p:panel header="#{certificar.certificado.claseCertificado}" rendered="#{certificar.render eq 5}">
+                <h:panelGrid columns="2" style="font-weight: bolder;" columnClasses="ui-g-12 ui-md-4, ui-g-12 ui-md-8">
+                    SOLICITANTE:
+                    <p:inputText value="#{certificar.certificado.nombreSolicitante}" size="60" style="text-transform: uppercase;"/>
+                    MOTIVO:
+                    <p:inputText value="#{certificar.certificado.usoDocumento}" size="60" style="text-transform: uppercase;"/>
+                </h:panelGrid>
+                <br/>
+                <h:panelGrid columns="1" style="width: 80%;margin: 0 auto;" >
+                    <p:outputLabel value="TITULO CERTIFICADO:" style="font-weight: bolder;"/>
+                    <p:inputText value="#{certificar.certificado.descripcionBien}" style="width: 100%;"/>
+                    <p:commandButton value="Borrar Contenido" actionListener="#{certificar.borrarContenido()}" 
+                                     icon="pi pi-trash" style="background-color: darkred;float: right;"/>
+                    <p:outputLabel value="CONTENIDO DE DOCUMENTO:" style="font-weight: bolder;"/>
+                    <!--<p:inputTextarea value="# {certificar.certificado.observacion}" rows="14" cols="130" scrollHeight="250" autoResize="false"/>-->
+                    <p:textEditor value="#{certificar.certificado.observacion}" style="width: 100%;" allowLinks="false" 
+                                  height="250" allowImages="false" secure="false" >
+                        <f:facet name="toolbar">
+                            <span class="ql-formats">
+                                <button class="ql-bold" title="Negrita"></button>
+                                <button class="ql-italic" title="Cursiva"></button>
+                                <button class="ql-underline" title="Subrayado"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-list" value="ordered" title="Numeración"></button>
+                                <button class="ql-list" value="bullet" title="Viñeta"></button>
+                                <!--<button class="ql-indent" value="-1" title="Disminuir Sangría"></button>-->
+                                <!--<button class="ql-indent" value="+1" title="Aumentar Sangría"></button>-->
+                            </span>
+                            <!--<span class="ql-formats">
+                                <button class="ql-align" value="center"></button>
+                                <button class="ql-align" value="right"></button>
+                                <button class="ql-align" value="justify"></button>
+                            </span>-->
+                        </f:facet>
+                    </p:textEditor>
+                </h:panelGrid><br/>
+                <center>
+                    <p:commandButton value="Guardar Documento" actionListener="#{certificar.guardarCertificadoGeneral()}" 
+                                     icon="pi pi-save"/>
+                    <p:spacer width="20" height="1"/>
+                    <p:commandButton value="Marcar como Realizado" actionListener="#{certificar.completarSubTarea()}" 
+                                     icon="pi pi-check" style="background-color: darkgoldenrod;"/>
+                </center>
+            </p:panel>
+
+            <p:confirmDialog global="true">
+                <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+        </h:form>
+
+        <p:dialog header="Movimientos Registrales" widgetVar="dlgMovimientos" modal="true" width="800">
+            <h:form id="frmMovs">
+                <h:panelGrid columns="2" style="width: 100%;">
+                    <p:outputLabel value="Ficha Registral Nº #{certificar.ficha.numFicha}" style="font-weight: bolder;font-size: 16px;"/>
+                    <p:commandButton value="Cargar Movimientos" actionListener="#{certificar.agregarAllMovs()}" 
+                                     style="float: right;" icon="pi pi-history"/>
+                </h:panelGrid>
+                <p:dataTable id="dtMov" value="#{certificar.movimientos}" scrollable="true" scrollHeight="300"
+                             var="mov" rowIndexVar="rowIndex" style="text-align: center;" resizableColumns="true"
+                             selection="#{certificar.temps}" rowKey="#{mov.id}"
+                             rowStyleClass="#{mov.acto.isCancelacion() ? 'tipo-tres' : mov.libro.tipo == 1 ? 'tipo-uno' : mov.libro.tipo == 2 ? 'tipo-dos' : 'tipo-cero'}">
+                    <p:column selectionMode="multiple" width="20"/>
+                    <p:column headerText="No" width="20">
+                        #{rowIndex + 1}
+                    </p:column>
+                    <p:column headerText="Libro">
+                        <p:outputLabel value="#{mov.libro.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Acto">
+                        <p:outputLabel value="#{mov.acto.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Repertorio" width="70">
+                        <p:outputLabel value="#{mov.numRepertorio}"/>
+                    </p:column>
+                    <p:column headerText="Inscripcion" width="70" sortBy="#{mov.numInscripcion}">
+                        <p:outputLabel value="#{mov.numInscripcion}"/>
+                    </p:column>
+                    <p:column headerText="Fec.Insc." width="70" sortBy="#{mov.fechaInscripcion}">
+                        <p:outputLabel value="#{mov.fechaInscripcion}" >
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Sec." width="30">
+                        <p:outputLabel value="#{mov.indice}"/>
+                    </p:column>
+                    <p:column headerText="Observacion" width="120">
+                        <p:outputLabel id="obMov" value="#{mov.observacion}"/>
+                        <p:tooltip for="obMov" value="#{mov.observacion}" position="top" />
+                    </p:column>
+                    <!--<p:column headerText="**" width="30">
+                        <p:commandLink actionListener="# {certificar.agregarHistoria(mov)}">
+                            <p:graphicImage value="/resources/icons/ir.png" height="16"/>   
+                        </p:commandLink>
+                    </p:column>-->
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

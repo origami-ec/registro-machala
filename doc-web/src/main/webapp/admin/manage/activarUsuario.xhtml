@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+            <link rel="shortcut icon" type="image/jpg"  href="#{request.contextPath}/resources/paradise-layout/images/logo.ico" />
+        </f:facet>
+        <title>Activación de Usuario</title>
+    </h:head>
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{activarUsuarioMB.doPreRenderView()}"/>
+        <f:viewParam name="code" value="#{activarUsuarioMB.code}"/>
+    </f:metadata>
+    <h:body styleClass="login-body">
+        <h:form id="frmMaim">
+            <div class="login-panel p-grid">
+                <div class="p-col-12 logo-container">
+                    <p:graphicImage  name="images/tramites_banner.png" style="width: 100%"
+                                     library="paradise-layout"/><br/>
+                    <!--                    <p:graphicImage  name="images/login/logo_municipio01.png" style="width: 10%; height: 50px"
+                                                         library="paradise-layout"/><br/>-->
+                    <!--<p:outputLabel value="Lojapp" style="float: right; color: #223b73; font-size: 22px"/>-->
+                </div>
+                <div class="p-col-12">
+                    <center><h2>Ingreso de Contraseña</h2></center>
+                    <p:outputLabel value="Contraseña" class="FontBold" />
+                    <div class="input-wrapper">
+                        <p:password value="#{activarUsuarioMB.pass}" 
+                                    id="pass1" feedback="true"
+                                    promptLabel="Por favor, ingrese contraseña" strongLabel="Fuerte"
+                                    weakLabel="Débil" goodLabel="Buena">
+                        </p:password>
+                        <i class="pi pi-lock" />
+                    </div>
+                </div>
+                <div class="p-col-12">
+                    <p:outputLabel value="Confirme Contraseña" class="FontBold" />
+                    <div class="input-wrapper">
+                        <p:password value="#{activarUsuarioMB.passConfirm}" 
+                                    id="pass2" feedback="true" 
+                                    promptLabel="Por favor, ingrese contraseña" strongLabel="Fuerte"
+                                    weakLabel="Débil" goodLabel="Buena">
+                        </p:password>
+                        <i class="pi pi-lock" />
+                    </div>
+                </div>
+
+                <div class="p-col-12 button-container">
+                    <p:commandButton value="Aceptar" icon="fa fa-user" actionListener="#{activarUsuarioMB.save()}" 
+                                     update="frmMaim" process="frmMaim" style="font-weight: bold; margin-bottom: 16px"
+                                     styleClass="blue-btn raised-btn"/>
+
+                    <!--                    <p:commandButton id="btnLogIn" value="Acceder" icon="fa fa-user" 
+                                                         action="# {login.doLogin()}"
+                                                         style="font-weight: bold; margin-bottom: 16px"
+                                                         styleClass="blue-btn raised-btn" />-->
+                </div>
+            </div>
+        </h:form>
+        <p:dialog showHeader="false" widgetVar="dlgConfirm" 
+                  modal="true" resizable="false" position="center">
+            <h:form id="formConfirm">
+                <center>
+                    <p:outputLabel value="Usuario #{activarUsuarioMB.user.user}
+                                   activado con éxito 😁" style="font-size: 14px; font-weight: bold" />
+                </center>
+                <br></br>
+                <center>
+                    <p:commandButton value="Aceptar" 
+                                     actionListener="#{activarUsuarioMB.confirmDialog()}" 
+                                     oncomplete="PF('dlgInfoUserPass').hide();"/>
+                </center>
+            </h:form>
+        </p:dialog>
+    </h:body>
+    <h:outputStylesheet name="css/primeicons.css" library="paradise-layout" />
+    <h:outputStylesheet name="css/primeflex.min.css" library="paradise-layout" />
+    <h:outputStylesheet name="css/layout-#{guestPreferences.layout}.css" library="paradise-layout" />
+
+</html>

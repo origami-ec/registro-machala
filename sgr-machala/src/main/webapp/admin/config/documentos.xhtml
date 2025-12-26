@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core">
+    <ui:define name="title">Documentación SIGERI</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h1>DOCUMENTACIÓN SIGERI</h1></center> 
+            <br/><br/>
+            <p:panelGrid style="width: 100%;">
+                <f:facet name="header">
+                    <p:row>
+                        <p:column style="background-color: skyblue;">
+                            ID
+                        </p:column>
+                        <p:column style="background-color: skyblue;">
+                            NOMBRE DEL DOCUMENTO
+                        </p:column>
+                        <p:column style="background-color: skyblue;">
+                            DESCRIPCIÓN DEL DOCUMENTO
+                        </p:column>
+                        <p:column style="background-color: skyblue;">
+                            NOMBRE DEL ARCHIVO
+                        </p:column>
+                        <p:column style="background-color: skyblue;">
+                            EXTENSIÓN
+                        </p:column>
+                        <p:column style="background-color: skyblue;">
+                            VERSIÓN
+                        </p:column>
+                        <p:column style="background-color: skyblue;">
+                            TAMAÑO
+                        </p:column>
+                        <p:column style="background-color: skyblue;">
+                            DESCARGA
+                        </p:column>
+                    </p:row>
+                </f:facet>
+                <p:row>
+                    <p:column>
+                        1
+                    </p:column>
+                    <p:column>
+                        MANUAL DE USUARIO DEL SISTEMA REGISTRAL
+                    </p:column>
+                    <p:column>
+                        Manual de Usuario del SIGERI (Sistema de Gestión Registral Integral) by ORIGAMI - SMARTGOB
+                    </p:column>
+                    <p:column>
+                        MUSR_GADIMCD_2025_v1_0
+                    </p:column>
+                    <p:column>
+                        PDF
+                    </p:column>
+                    <p:column>
+                        1.0
+                    </p:column>
+                    <p:column>
+                        6.21 MB
+                    </p:column>
+                    <p:column style="text-align: center;">
+                        <p:commandLink actionListener="#{documentosRp.visualizarDocumento('MUSR_GADIMCD_2025_v1_0')}">
+                            <i class="pi pi-download" style="font-size: 1.5em; margin-right: 5px;color: darkred;"></i>
+                        </p:commandLink>
+                    </p:column>
+                </p:row>
+            </p:panelGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>

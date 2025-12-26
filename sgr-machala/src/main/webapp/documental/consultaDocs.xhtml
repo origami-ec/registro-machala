@@ -1,0 +1,235 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+                xmlns:poue="http://primefaces.org/ui/extensions">
+    <ui:define name="title">Integración Documental</ui:define>
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{consultaDocs.doPreRenderView()}"/>
+        <f:viewParam name="repertorio" value="#{consultaDocs.repertorio}" />
+        <f:viewParam name="fecha" value="#{consultaDocs.fecha}" />
+    </f:metadata>
+    <ui:define name="content">
+        <center><h3 style="font-weight: bolder;">INTEGRACIÓN DOCUMENTAL</h3></center>
+        <h:form id="mainForm">
+            <h:panelGrid columns="7" style="margin: 0 auto;font-weight: bolder;" rendered="#{consultaDocs.consultar}">
+                <h:panelGroup>
+                    Nro. Repertorio:<br/>
+                    <p:inputNumber value="#{consultaDocs.consulta.numeroRepertorio}" decimalPlaces="0" thousandSeparator="" />
+                </h:panelGroup>
+                <p:spacer width="20"/>
+                <h:panelGroup>
+                    Año Repertorio:<br/>
+                    <p:inputNumber value="#{consultaDocs.consulta.anioRepertorio}" decimalPlaces="0" thousandSeparator="" />
+                </h:panelGroup>
+                <p:spacer width="20"/>
+                <h:panelGroup>
+                    Nro. Inscripción:<br/>
+                    <p:inputNumber value="#{consultaDocs.consulta.numeroInscripcion}" decimalPlaces="0" thousandSeparator="" />
+                </h:panelGroup>
+                <p:spacer width="20"/>
+                <h:panelGroup>
+                    Fecha Inscripción:<br/>
+                    <p:calendar value="#{consultaDocs.fechaConsulta}" pattern="dd-MM-yyyy" 
+                                placeholder="dd-MM-yyyy" mask="dd-MM-yyyy" navigator="true" locale="es" />
+                </h:panelGroup>
+
+                <h:panelGroup>
+                    Libro:<br/>
+                    <p:inputText value="#{consultaDocs.consulta.libro}"/>
+                </h:panelGroup>
+                <p:spacer width="20"/>
+                <h:panelGroup>
+                    Nro. Tomo:<br/>
+                    <p:inputText value="#{consultaDocs.consulta.tomo}"/>
+                </h:panelGroup>
+                <p:spacer width="20"/>
+                <h:panelGroup>
+                    Identificación 1:<br/>
+                    <p:inputText value="#{consultaDocs.consulta.identificacion1}"/>
+                </h:panelGroup>
+                <p:spacer width="20"/>
+                <h:panelGroup>
+                    Identificación 2:<br/>
+                    <p:inputText value="#{consultaDocs.consulta.identificacion2}"/>
+                </h:panelGroup>
+            </h:panelGrid>
+            <h:panelGrid style="margin: 0 auto;" columns="1" rendered="#{consultaDocs.consultar}">
+                <p:commandButton value="Consultar" icon="pi pi-search" update="dtConsultas" 
+                                 actionListener="#{consultaDocs.realizarBusqueda()}"/>
+            </h:panelGrid>
+            <p:dataTable id="dtConsultas" paginator="true" lazy="false" rows="20" var="model" 
+                         value="#{consultaDocs.respuesta.listaItemRespuestaRPMDTO}" >
+                <p:column headerText="Nro.Inscripción" sortBy="#{model.numeroInscripcion}" width="120">
+                    <p:outputLabel value="#{model.numeroInscripcion}"/>
+                </p:column>
+                <p:column headerText="Fecha Inscripción" width="120">
+                    <p:outputLabel value="#{model.fechaInscripcion}"/>
+                </p:column>
+                <p:column headerText="Nro.Repertorio" sortBy="#{model.numeroRepertorio}" width="120">
+                    <p:outputLabel value="#{model.numeroRepertorio}"/>
+                </p:column>
+                <p:column headerText="Fecha Repertorio" width="120">
+                    <p:outputLabel value="#{model.fechaRepertorio}"/>
+                </p:column>
+                <p:column headerText="Libro">
+                    <p:outputLabel value="#{model.libro}"/>
+                </p:column>
+                <p:column headerText="Acto">
+                    <p:outputLabel value="#{model.acto}"/>
+                </p:column>
+                <p:column headerText="***" width="120">
+                    <p:commandButton icon="pi pi-folder" style="background-color: darkcyan;" title="Visualizar Información" 
+                                     actionListener="#{consultaDocs.selectModel(model)}"/>
+                    <p:spacer width="10"/>
+                    <p:commandButton icon="pi pi-download" style="background-color: darkgoldenrod;" title="Descargar Digitalización" 
+                                     actionListener="#{consultaDocs.descargarDocumento(model)}"/>
+                    <p:spacer width="10"/>
+                    <p:commandButton icon="pi pi-file-pdf" style="background-color: orangered;" title="Visualizar Documento" 
+                                     actionListener="#{consultaDocs.visualizarDocumento(model)}"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog id="dlgConsulta" header="INDEXACIÓN" widgetVar="dlgConsulta" position="top" 
+                  resizable="false" closeOnEscape="true" width="760" modal="true" >
+            <h:form id="formConsulta">
+                <h:panelGrid columns="4" style="font-weight: bolder;width: 100%">
+
+                    <h:panelGroup>
+                        Nro. Repertorio:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.numeroRepertorio}" readonly="true"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Fecha Repertorio:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.fechaRepertorio}" readonly="true"/>
+                    </h:panelGroup> 
+                    <h:panelGroup>
+                        Nro. Inscripción:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.numeroInscripcion}" readonly="true"/>
+                    </h:panelGroup> 
+                    <h:panelGroup>
+                        Fecha Repertorio:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.fechaInscripcion}" readonly="true"/>
+                    </h:panelGroup> 
+
+                    <h:panelGroup>
+                        Libro:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.libro}" readonly="true"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Acto-Contrato:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.acto}" readonly="true"/>
+                    </h:panelGroup> 
+                    <h:panelGroup>
+                        Tomo:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.tomo}" readonly="true"/>
+                    </h:panelGroup> 
+                    <h:panelGroup>
+                        Notaría:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.notaria}" readonly="true"/>
+                    </h:panelGroup> 
+
+                    <h:panelGroup>
+                        Cantón Notaría:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.cantonNotaria}" readonly="true"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Fecha Otorgamiento:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.fechaOtorgamiento}" readonly="true"/>
+                    </h:panelGroup> 
+                    <h:panelGroup>
+                        Nro. Ficha:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.numeroFicha}" readonly="true"/>
+                    </h:panelGroup> 
+                    <h:panelGroup>
+                        Código Catastral:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.codigoCatastral}" readonly="true"/>
+                    </h:panelGroup> 
+
+                    <h:panelGroup>
+                        Parroquia:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.parroquia}" readonly="true"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Avalúo Escritura:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.avaluoEscritura}" readonly="true"/>
+                    </h:panelGroup> 
+                    <h:panelGroup>
+                        Avalúo Catastro:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.avaluoCatastro}" readonly="true"/>
+                    </h:panelGroup> 
+                    <h:panelGroup>
+                        Área Total:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.areaTotal}" readonly="true"/>
+                    </h:panelGroup> 
+
+                </h:panelGrid>
+                <h:panelGrid columns="2" style="font-weight: bolder;width: 100%">
+
+                    <h:panelGroup>
+                        Lindero Norte:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.linderoNorte}" readonly="true" style="width: 98%;"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Lindero Sur:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.linderoSur}" readonly="true" style="width: 98%;"/>
+                    </h:panelGroup> 
+
+                    <h:panelGroup>
+                        Lindero Este:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.linderoEste}" readonly="true" style="width: 98%;"/>
+                    </h:panelGroup> 
+                    <h:panelGroup>
+                        Lindero Oeste:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.linderoOeste}" readonly="true" style="width: 98%;"/>
+                    </h:panelGroup> 
+
+                </h:panelGrid>
+                <h:panelGrid columns="3" style="font-weight: bolder;width: 100%">
+
+                    <h:panelGroup>
+                        Papel 1:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.papel1}" readonly="true"/>
+                    </h:panelGroup> 
+                    <h:panelGroup>
+                        Identificación 1:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.identificacion1}" readonly="true"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Nombres 1:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.nombres1}" readonly="true" size="50"/>
+                    </h:panelGroup> 
+                    
+                    <h:panelGroup>
+                        Papel 2:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.papel2}" readonly="true"/>
+                    </h:panelGroup> 
+                    <h:panelGroup>
+                        Identificación 2:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.identificacion2}" readonly="true"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Nombres 2:<br/>
+                        <p:inputText value="#{consultaDocs.yuraModel.nombres2}" readonly="true" size="50"/>
+                    </h:panelGroup>
+                    
+                </h:panelGrid>
+
+                <!--<poue:documentViewer height="500" url="# {consultaDocs.yuraModel.urlDescargaDocumento}"/>-->
+            </h:form>
+        </p:dialog>
+        
+        <p:dialog id="dlgVisor" header="VISOR DOCUMENTOS" widgetVar="dlgVisor" position="top" 
+                  resizable="false" closeOnEscape="true" width="760" modal="true" >
+            <h:form id="formVisor">
+                <poue:documentViewer height="500" url="#{consultaDocs.yuraModel.urlDescargaDocumento}"/>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

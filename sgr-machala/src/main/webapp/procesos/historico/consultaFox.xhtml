@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Consulta Fox</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h3 style="font-weight: bolder;" >CONSULTA HISTORICO</h3></center>
+            <h:panelGrid columns="10" >
+                <p:outputLabel value="Libro: " style="font-weight: bolder;font-size: 14px;" />
+                <p:selectOneMenu value="#{consultaFox.flag1}" >
+                    <f:selectItem itemLabel="Seleccionar" itemValue="#{0}" />
+                    <f:selectItem itemLabel="DEMANDAS" itemValue="#{1}" />
+                    <f:selectItem itemLabel="MERCANTIL" itemValue="#{2}" />
+                    <f:selectItem itemLabel="MINERO" itemValue="#{3}" />
+                    <f:selectItem itemLabel="PRENDAS" itemValue="#{4}" />
+                    <f:selectItem itemLabel="PRENDAS BNF" itemValue="#{5}" />
+                    <!--<f:selectItem itemLabel="PROPIEDADES 1940-1969" itemValue="# {6}" />-->
+                    <!--<f:selectItem itemLabel="PROPIEDADES 1970-1992" itemValue="# {7}" />-->
+                    <!--<f:selectItem itemLabel="PROPIEDADES 1993-1998" itemValue="# {8}" />-->
+                    <!--<f:selectItem itemLabel="PROPIEDADES 1998-2001" itemValue="# {9}" />-->
+                    <!--<f:selectItem itemLabel="PROPIEDADES 2002-2005" itemValue="# {10}" />-->
+                    <!--<f:selectItem itemLabel="PROPIEDADES 2006-2011" itemValue="# {11}" />-->
+                    <f:selectItem itemLabel="PROHIBICIONES" itemValue="#{12}" />
+                    <f:selectItem itemLabel="SENTENCIAS" itemValue="#{13}" />
+                    <f:selectItem itemLabel="PROPIEDADES" itemValue="#{14}" />
+                    <p:ajax update="dtConsulta" />
+                </p:selectOneMenu>
+                <p:spacer width="20" height="1" />
+                <p:outputLabel value="Tipo: " style="font-weight: bolder;font-size: 14px;" />
+                <p:selectOneMenu value="#{consultaFox.flag2}" >
+                    <f:selectItem itemLabel="Seleccionar" itemValue="#{0}" />
+                    <f:selectItem itemLabel="COMPRADOR/DEUDOR/ACTOR" itemValue="#{1}" />
+                    <f:selectItem itemLabel="VENDEDOR/ACREEDOR/DEMANDADO" itemValue="#{2}" />
+                </p:selectOneMenu>
+                <p:spacer width="20" height="1" />
+                <p:outputLabel value="Nombres: " style="font-weight: bolder;font-size: 14px;" />
+                <p:inputText size="50" value="#{consultaFox.nombres}" />
+                <p:spacer width="20" height="1" />
+                <p:commandButton value="Buscar" icon="pi pi-search" actionListener="#{consultaFox.consultarNombres()}" update="dtConsulta" />
+            </h:panelGrid>
+            <p:dataTable id="dtConsulta" paginator="true" rows="10" rowsPerPageTemplate="10,20,30" rowIndexVar="indexInd" 
+                         currentPageReportTemplate="Mostrando {startRecord}-{endRecord} de {totalRecords} registros" filterEvent="enter"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         value="#{consultaFox.consulta}" var="ac" emptyMessage="No se encontraron resultados." >
+                <p:column headerText="Comprador/Deudor/Actor" rendered="#{consultaFox.flag1 ne 12}" >
+                    <h:outputText value="#{ac.deudor}"/>
+                </p:column>
+                <p:column headerText="Vendedor/Acreedor/Demandado" rendered="#{consultaFox.flag1 ne 12}" >
+                    <h:outputText value="#{ac.acreedor}"/>
+                </p:column>
+                <p:column headerText="Anio" width="80" rendered="#{consultaFox.flag1 ne 12}">
+                    <h:outputText value="#{ac.anio}"/>
+                </p:column>
+                <p:column headerText="Partida" width="80" rendered="#{consultaFox.flag1 ne 12}">
+                    <h:outputText value="#{ac.partida}"/>
+                </p:column>
+                <p:column headerText="Actor" rendered="#{consultaFox.flag1 eq 12}">
+                    <h:outputText value="#{ac.deudor}"/>
+                </p:column>
+                <p:column headerText="Demandado" rendered="#{consultaFox.flag1 eq 12}">
+                    <h:outputText value="#{ac.acreedor}"/>
+                </p:column>
+                <p:column headerText="Fecha" rendered="#{consultaFox.flag1 eq 12}">
+                    <h:outputText value="#{ac.fecha}"/>
+                </p:column>
+                <p:column headerText="Observacion" >
+                    <h:outputText value="#{ac.observacion}"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </ui:define>
+</ui:composition>

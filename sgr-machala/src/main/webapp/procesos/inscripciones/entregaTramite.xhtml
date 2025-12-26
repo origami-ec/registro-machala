@@ -1,0 +1,166 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="content">
+        <h:outputScript name="firma_2.js" library="js" />
+        <h:form id="mainForm">
+            <h2><center>#{entregaTramite.taskDataByTaskID.name} - Trámite No #{entregaTramite.ht.numTramite}</center></h2>
+            <!--<h:panelGrid columns="2" style="font-size: 16px;font-weight: bolder;">
+                <p:outputLabel value="Nombre Tarea:" style="font-weight: bolder;color: #005f9c"/>
+                # {entregaTramite.taskDataByTaskID.name}
+                <p:outputLabel value="No Tramite:" style="font-weight: bolder;color: #005f9c"/>
+                # {entregaTramite.ht.numTramite}
+                <p:outputLabel value="C.I./R.U.C.:" style="font-weight: bolder;color: #005f9c"/>
+                <p:outputLabel value="# {entregaTramite.liquidacion.solicitante.ciRuc}" style="font-weight: bolder;"/>
+                <p:outputLabel value="Nombre Cliente:" style="font-weight: bolder;color: #005f9c"/>
+                <p:outputLabel value="# {entregaTramite.liquidacion.solicitante.nombreCompleto}"
+                               style="text-transform: uppercase;font-weight: bolder;"/>
+            </h:panelGrid>
+            <br></br>-->
+            <p:tabView id="mainTab">
+                <p:tab title="Datos de Usuario">
+                    <br></br>
+                    <h:panelGrid id="panelSolicitante" styleClass="noBorder" style="font-weight: bolder;">
+                        <h:panelGroup>
+                            Identificación:<br></br>
+                            <p:inputText value="#{entregaTramite.solicitante.ciRuc}"
+                                         size="46" placeholder="Ingrese numero de Identificacion"
+                                         readonly="#{entregaTramite.solicitante.id ne null}"
+                                         onkeyup="if (event.keyCode == 13) {
+                                                     buscar();
+                                                     return false;
+                                                 }" 
+                                         onkeypress="if (event.keyCode == 13) {
+                                                     return false;
+                                                 }"/>    
+                            <p:spacer width="10" />
+                            <p:commandButton icon="pi pi-search" title="Buscar" actionListener="#{entregaTramite.buscar()}">
+                                <p:ajax event="dialogReturn" listener="#{entregaTramite.selectObject}" update="mainForm:mainTab:panelSolicitante"/>
+                            </p:commandButton>
+                            <p:remoteCommand name="buscar" actionListener="#{entregaTramite.buscar()}" update="mainForm:mainTab:panelSolicitante"/>
+                            <p:spacer width="10" />
+                            <p:commandButton icon="pi pi-trash" title="Limpiar" update="panelSolicitante" 
+                                             actionListener="#{entregaTramite.limpiarDatosSolicitante()}" >
+                            </p:commandButton>
+                            <p:spacer width="10" />
+                            <p:selectBooleanCheckbox value="#{entregaTramite.retiraDocumentoEsSolicitante}" >
+                                <p:ajax update="panelSolicitante" listener="#{entregaTramite.actualizarBeneficiarioEsSolicitante()}" />
+                            </p:selectBooleanCheckbox>
+
+
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Nombres:" style="font-weight: bolder"/><br></br>
+                            <p:inputText value="#{entregaTramite.solicitante.nombreCompleto}" size="80" readonly="true"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Dirección:" style="font-weight: bolder"/><br></br>
+                            <p:inputText value="#{entregaTramite.solicitante.direccion}" size="80" readonly="true"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Correo:" style="font-weight: bolder"/><br></br>    
+                            <p:inputText value="#{entregaTramite.solicitante.correo1}" size="80" readonly="true"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Teléfono:" style="font-weight: bolder"/><br></br>
+                            <p:inputText value="#{entregaTramite.solicitante.telefono1}" size="80" readonly="true"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Observación:" style="font-weight: bolder;"/><br/>
+                            <p:inputTextarea rows="7" cols="80" value="#{entregaTramite.observacion}"/>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                    <br></br>
+                    <center>
+                        <p:commandButton id="btnFirmaSolicitante" value="Firma de quien Retira" icon="pi pi-pencil" immediate="true"
+                                         oncomplete="PF('dlgFirmaSolicitante').show()" 
+                                         style="font-size: 16px;background-color: darkgoldenrod;"/>
+                        <p:spacer width="40" height="1"/>
+                        <p:commandButton value="Completar Tarea" icon="pi pi-thumbs-up" style="font-size: 16px;"
+                                         actionListener="#{entregaTramite.completarTarea()}">
+                        </p:commandButton>
+                    </center>
+                </p:tab>
+                <p:tab title="Información de Proforma">
+                    <h:panelGrid columns="2" style="font-size: 16px;">
+                        <p:outputLabel value="C.I./R.U.C.:" style="font-weight: bolder;color: #005f9c"/>
+                        <p:outputLabel value="#{entregaTramite.liquidacion.solicitante.ciRuc}" style="font-weight: bolder;"/>
+                        <p:outputLabel value="Nombre Cliente:" style="font-weight: bolder;color: #005f9c"/>
+                        <p:outputLabel value="#{entregaTramite.liquidacion.solicitante.nombreCompleto}"
+                                       style="text-transform: uppercase;font-weight: bolder;"/>
+                    </h:panelGrid>
+                    <p:dataTable value="#{entregaTramite.liquidacion.regpLiquidacionDetallesCollection}" var="det" 
+                                 reflow="true" style="text-align: center" emptyMessage="Sin observaciones..."
+                                 scrollable="true" scrollHeight="300">
+                        <p:column headerText="Contrato">
+                            <h:outputText value="#{det.acto.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Avaluo" width="100">
+                            <h:outputText value="#{det.avaluo}"/>
+                        </p:column>
+                        <p:column headerText="Cuantia" width="100">
+                            <h:outputText value="#{det.cuantia}"/>
+                        </p:column>
+                        <p:column headerText="Exoneracion" width="150">
+                            <h:outputText value="#{det.exoneracion.concepto}"/>
+                        </p:column>
+                        <p:column headerText="Pago" width="150">
+                            <h:outputText value="#{det.valorTotal}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Observaciones" >
+                    <br></br>
+                    <center>
+                        <p:dataTable value="#{entregaTramite.observacionesTramites}" var="obs" >
+                            <p:column headerText="Fecha" >
+                                #{obs.fecCre}
+                            </p:column>
+                            <p:column headerText="Tarea" >
+                                #{obs.tarea}
+                            </p:column>
+                            <p:column headerText="Usuario" >
+                                #{obs.userCre}
+                            </p:column>
+                            <p:column headerText="Observación" >
+                                #{obs.observacion}
+                            </p:column>
+                        </p:dataTable>
+                    </center>
+                    <br></br>
+
+                </p:tab>
+            </p:tabView>
+        </h:form>
+
+        <p:dialog id="dlgFirmaSolicitante" widgetVar="dlgFirmaSolicitante" modal="true" showHeader="false">
+            <h:form>
+                <center>
+                    <p:outputLabel value="Firma Digital" style="font-weight: bolder; font-size: 14px"/>
+                    <br></br>
+                    <br></br>
+                    <canvas id="cnv" name="cnv" width="500" height="100" style="background-color: #000;"></canvas>
+                    <br></br>
+                    <br></br>
+                    <p:commandButton value="Firmar" icon="pi pi-pencil"  onclick="StartSign()" 
+                                     style="background-color: darkgoldenrod;"/>
+                    <p:spacer width="10"/>
+                    <p:commandButton value="Guardar" icon="pi pi-save" oncomplete="PF('dlgFirmaSolicitante').hide()" 
+                                     style="background-color: darkcyan;"/>
+                    <p:spacer width="10"/>
+                    <p:commandButton value="Cancelar" icon="pi pi-ban" oncomplete="PF('dlgFirmaSolicitante').hide()" 
+                                     style="background-color: orangered;"/>
+                </center>
+                <textarea style="display: none" name="dataFirma" id="dataFirma" ></textarea>
+                <p:remoteCommand name="firmaSolicitante" actionListener="#{entregaTramite.firmaSolicitante()}" />
+                <br></br>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

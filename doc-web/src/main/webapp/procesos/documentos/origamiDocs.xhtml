@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/templateDocs.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html" 
+                xmlns:poue="http://primefaces.org/ui/extensions"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+
+    <ui:define name="top"><h3>OrigamiDocs</h3></ui:define>
+    <ui:define name="title">OrigamiDocs</ui:define>
+    <ui:define name="content">
+        <center>
+            <h2> OrigamiDocs </h2>
+        </center>
+        <h:form id="formMain" > 
+            <center>
+                <p:panelGrid columns="3" layout="grid" styleClass="ui-panelgrid-blank">
+                    <h:panelGroup style="border-color: #252525; border-width: 1px; ">
+
+                        <h:commandLink title="Bandeja de tareas"  action="/procesos/dashBoard.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/home.png" style="width: 135px; height: 125px;" />
+                        </h:commandLink><br/>
+                        <p:outputLabel value="Bandeja de tareas" style="font-size: 14px; font-weight: bold; padding: 0px; margin-top: 10px !important; color: black "/>
+                    </h:panelGroup>
+
+                    <h:panelGroup style="border-color: #252525; border-width: 1px; "> 
+                        <h:commandLink title="Cargar archivos"  action="/procesos/documentos/archivos.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/subir-archivos.png" style="width: 135px; height: 125px;" />
+                        </h:commandLink><br/>
+                        <p:outputLabel value="Cargar archivos" style="font-size: 14px; font-weight: bold; padding: 0px; color: black "/>
+                    </h:panelGroup> 
+                    <h:panelGroup style="border-color: #252525; border-width: 1px; ">
+                        <h:commandLink title="Cargar archivos masivos"  action="/procesos/documentos/archivosMasivos.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/upload-file.png" style="width: 135px; height: 125px;" />
+                        </h:commandLink><br/>
+                        <p:outputLabel value="Cargar archivos masivos" style="font-size: 14px; font-weight: bold; padding: 0px; color: black "/>
+                    </h:panelGroup>
+                    <h:panelGroup></h:panelGroup>
+                    <h:panelGroup></h:panelGroup>
+                    <h:panelGroup></h:panelGroup>
+                    <h:panelGroup></h:panelGroup>
+                    <h:panelGroup></h:panelGroup>
+                    <h:panelGroup></h:panelGroup>
+                    <h:panelGroup style="border-color: #252525; border-width: 1px; ">
+                        <h:commandLink title="Archivos escaneados"  action="/procesos/documentos/archivosScan.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/folder.png" style="width: 135px; height: 125px;" />
+                        </h:commandLink><br/>
+                        <p:outputLabel value="Archivos escaneados" style="font-size: 14px; font-weight: bold; padding: 0px; color: black "/>
+                    </h:panelGroup>
+                    <h:panelGroup style="border-color: #252525; border-width: 1px; margin-top: 20px">
+                        <h:commandLink title="Mis documentos"  action="/procesos/documentos/misDocumentos.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/documents.png" style="width: 135px; height: 125px;" />
+                        </h:commandLink><br/>
+                        <p:outputLabel value="Mis documentos" style="font-size: 14px; font-weight: bold; padding: 0px; color: black "/>
+                    </h:panelGroup>
+
+                    <h:panelGroup style="border-color: #252525; border-width: 1px; margin-top: 20px">
+                        <h:commandLink title="Formulario de indexación"  action="/procesos/documentos/indexacion.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/indexacion.png" style="width: 135px; height: 125px;" />
+                        </h:commandLink><br/>
+                        <p:outputLabel value="Formulario de " style="font-size: 14px; font-weight: bold; padding: 0px; color: black "/><br/>
+                        <p:outputLabel value="indexación" style="font-size: 14px; font-weight: bold; padding: 0px; color: black "/>
+                    </h:panelGroup>
+
+
+                    <h:panelGroup></h:panelGroup>
+                    <h:panelGroup></h:panelGroup>
+                    <h:panelGroup></h:panelGroup>
+                    <h:panelGroup></h:panelGroup>
+                    <h:panelGroup></h:panelGroup>
+                    <h:panelGroup></h:panelGroup>
+                    <h:panelGroup style="border-color: #252525; border-width: 1px; margin-top: 20px">
+                        <h:commandLink title="Archivos firmados"  action="/procesos/documentos/documentosFirmados.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/archivo_firmado.png" style="width: 135px; height: 125px;" />
+                        </h:commandLink><br/>
+                        <p:outputLabel value="Archivos firmados" style="font-size: 14px; font-weight: bold; padding: 0px; color: black "/>
+                    </h:panelGroup>
+                    
+                      <h:panelGroup style="border-color: #252525; border-width: 1px; margin-top: 20px">
+                        <h:commandLink title="Tesauro"  action="/procesos/documentos/tesauro.xhtml?faces-redirect=true">
+                            <p:graphicImage value="/resources/icons/book.png" style="width: 135px; height: 125px;" />
+                        </h:commandLink><br/>
+                        <p:outputLabel value="Tesauro" style="font-size: 14px; font-weight: bold; padding: 0px; color: black "/>
+                    </h:panelGroup>
+
+                </p:panelGrid>
+            </center>
+        </h:form>
+
+
+    </ui:define>
+</ui:composition>

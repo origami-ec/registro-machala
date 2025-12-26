@@ -1,0 +1,45 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co"
+                xmlns="http://www.w3.org/1999/xhtml">
+    <ui:define name="title">Administración de Departamentos</ui:define>
+    <ui:define name="content">
+        <h:form id="formDeps" prependId="false">
+            <center><h2>Departamentos</h2></center>
+            <br/>
+
+
+            <p:commandButton value="Sincronizar departamentos" title="Sincronizar departamentos" icon="fa fa-refresh"  
+                             styleClass="rounded-button" actionListener="#{departamentoMB.sincronizarDepartamentos()}"
+                             update="formDeps"  /> 
+
+            <br/>
+            <br/>
+            <p:dataTable id="dtModulos" value="#{departamentoMB.listDepartamentos}" var="mod1"  
+                         widgetVar="dtModulos" rowIndexVar="i"
+                         rows="10" reflow="true" paginator="true" rowsPerPageTemplate="10,50" 
+                         paginatorPosition="bottom" filterEvent="enter" emptyMessage="No existen registros"  
+                         style="font-size: 12px; width: 70%; margin: auto" rowKey="#{mod1.id}">
+
+                <p:column headerText="Departamento" filterBy="#{mod1.nombre}" filterMatchMode="contains">
+                    <p:outputLabel value="#{mod1.nombre}" />
+                </p:column>
+                <p:column headerText="Estado" width="100">
+                    <h:outputText value="ACTIVO" rendered="#{mod1.estado}"/>
+                    <h:outputText value="INACTIVO" rendered="#{!mod1.estado}"/>
+                </p:column>
+
+
+            </p:dataTable>
+            <br/>
+
+        </h:form>
+
+
+    </ui:define>
+</ui:composition>

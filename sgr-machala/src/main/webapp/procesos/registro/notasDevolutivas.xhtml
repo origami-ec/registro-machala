@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Negativas y Devolutivas</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2>NEGATIVAS Y DEVOLUTIVAS INGRESADAS</h2></center>
+            <p:dataTable paginator="true" lazy="true" rows="15" rowsPerPageTemplate="15,30,50" 
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords}"
+                         value="#{notasDevolutivasRpIngresadas.notaDevolutivas}" var="notaDevolutiva" 
+                         emptyMessage="No se encontró Fichas" filterEvent="enter">
+                <p:column headerText="Nro de Trámite" filterBy="#{notaDevolutiva.tramite.numTramite}" width="80">
+                    #{notaDevolutiva.tramite.numTramite}
+                </p:column>
+                <p:column headerText="Nro Documento" filterBy="#{notaDevolutiva.numNotaDevolutiva}" width="80">
+                    #{notaDevolutiva.numNotaDevolutiva}
+                </p:column>
+                <p:column headerText="Fecha de Creación" width="100">
+                    <h:outputText value="#{notaDevolutiva.fechaIngreso}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Apellidos" filterBy="#{notaDevolutiva.para.apellidos}" rendered="false">
+                    #{notaDevolutiva.para.apellidos}
+                </p:column>
+                <p:column headerText="Nombres" filterBy="#{notaDevolutiva.para.nombres}" rendered="false">
+                    #{notaDevolutiva.para.nombres}
+                </p:column>
+                <p:column headerText="Asunto" filterBy="#{notaDevolutiva.asunto}" >
+                    #{notaDevolutiva.asunto}
+                </p:column>
+                <p:column headerText="Tipo de Trámite" width="100">
+                    #{notaDevolutiva.tramite.tipoTramite.descripcion}
+                </p:column>
+                <p:column headerText="Elaborado por" width="80">
+                    #{notaDevolutiva.elaborado}
+                </p:column>
+                <p:column headerText="Fecha de Retiro" width="100">
+                    <h:outputText value="#{notaDevolutiva.fechaRetiro}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Fecha de Reingreso" width="100">
+                    <h:outputText value="#{notaDevolutiva.fechaReingreso}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Estado" width="60" rendered="false">
+                    <p:outputLabel value="GENERADA" rendered="#{notaDevolutiva.documento eq null}"/>
+                    <p:outputLabel value="FIRMADA" rendered="#{notaDevolutiva.documento ne null}"/>
+                </p:column>
+                <p:column headerText="Opciones" width="150">
+                    <p:commandButton actionListener="#{notasDevolutivasRpIngresadas.editarNotaDevolutiva(notaDevolutiva)}" 
+                                     title="Editar Contenido de la Devolutiva" icon="pi pi-pencil" />
+                    <p:spacer width="5" />
+                    <p:commandButton actionListener="#{notasDevolutivasRpIngresadas.generarDevolutiva(notaDevolutiva)}" 
+                                     title="Generar Documento Actualizado" icon="pi pi-file" style="background-color: darkkhaki;" />
+                    <p:spacer width="5" />
+                    <p:commandButton actionListener="#{notasDevolutivasRpIngresadas.reenviarCorreoDevolutiva(notaDevolutiva)}" 
+                                     title="Firmar y Enviar Documento Actualizado" icon="pi pi-send" 
+                                     style="background-color: darkolivegreen;" />
+                    <p:spacer width="5" />
+                    <p:commandButton actionListener="#{notasDevolutivasRpIngresadas.imprimirNotaDevolutiva(notaDevolutiva)}" 
+                                     title="Descargar Devolutiva Firmada" icon="pi pi-file-pdf" style="background-color: orangered;" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog id="dlgNotaDevolutiva" header="Nota Devolutiva" widgetVar="dlgNotaDevolutiva" width="750" 
+                  modal="true" closable="true" closeOnEscape="true" >
+            <h:form id="frmNota">
+                <center>
+                    <!--<h:outputLabel value="Nota Devolutiva: " style="color: green !important; font-size: 20px; font-weight: bolder"/>-->
+                    <p:outputLabel value="#{notasDevolutivasRpIngresadas.notaDevolutiva.asunto}" 
+                                   style="color: darkblue !important; font-size: 20px; font-weight: bolder"/>
+                    <p:outputLabel value=" - Nro. Documento: " 
+                                   style="color: darkblue !important; font-size: 20px; font-weight: bolder"/>
+                    <p:outputLabel value="#{notasDevolutivasRpIngresadas.notaDevolutiva.numNotaDevolutiva}" 
+                                   style="color: darkblue !important; font-size: 20px; font-weight: bolder"/>
+                </center>
+                <h:panelGrid  columns="1" style="font-size: 16px;">
+                    <p:textEditor widgetVar="editorNotaDevolutiva" secure="false"
+                                  value="#{notasDevolutivasRpIngresadas.notaDevolutiva.detalle}"     
+                                  style="margin-bottom:10px; width: 670px; height: 350px; " 
+                                  placeholder="Escriba aquí el contenido de la Nota Devolutiva">
+                        <f:facet name="toolbar">
+                            <span class="ql-formats">
+                                <button class="ql-bold" title="Negrita"></button>
+                                <button class="ql-italic" title="Cursiva"></button>
+                                <button class="ql-underline" title="Subrayado"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-list" value="ordered" title="Numeración"></button>
+                                <button class="ql-list" value="bullet" title="Viñeta"></button>
+                                <!--<button class="ql-indent" value="-1" title="Disminuir Sangría"></button>-->
+                                <!--<button class="ql-indent" value="+1" title="Aumentar Sangría"></button>-->
+                            </span>
+                            <!--<span class="ql-formats">
+                                <button class="ql-align" value="center"></button>
+                                <button class="ql-align" value="right"></button>
+                                <button class="ql-align" value="justify"></button>
+                            </span>-->
+                        </f:facet>
+                    </p:textEditor>
+                </h:panelGrid><br/><br/><br/>
+                <h:panelGrid style="margin: 0 auto;" columns="1">
+                    <p:commandButton value="Guardar Cambios" icon="pi pi-save" 
+                                     actionListener="#{notasDevolutivasRpIngresadas.actualizarDetalleNotaDevolutiva()}"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

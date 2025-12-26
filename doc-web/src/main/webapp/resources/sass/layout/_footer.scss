@@ -1,0 +1,30 @@
+.layout-footer {
+    background-color: #ffffff;
+    padding: 16px 24px;
+    @include flex();
+    @include flex-justify-between();
+    @include flex-align-center();
+
+    img {
+        width: 100px;
+    }
+    
+    a {
+        color: #7d8286;
+        font-size: 24px;
+        margin-left: 12px;
+        @include transition(color $transitionDuration);
+
+        &:hover {
+            color: $primaryColor;
+        }
+    }
+}
+
+@media (max-width: $tabletBreakpoint) {
+    .layout-wrapper {
+        .layout-footer {
+            margin-left: 0;
+        }
+    }
+}

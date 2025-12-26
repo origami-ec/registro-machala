@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+
+    <ui:define name="top"><h3>Validar Documento</h3></ui:define>
+    <ui:define name="title">Validar Documento</ui:define>
+    <ui:define name="content">
+        <center>
+            <h2> Validar Documento </h2>
+        </center>
+        <h:form>
+
+
+            <p:panelGrid id="pnlDocumento" columns="2" styleClass="ui-panelgrid-blank" columnClasses="fifty-percent, fifty-percent" style="width: 100% !important">
+                <h:panelGroup >
+                    <p:fieldset legend="Documento electrónico">
+                        <p:outputLabel value="Debe subir un archivo en PDF para poder validar su autenticidad:" style="font-weight: bold; font-size: 12px" /><br/>
+                        <p:outputLabel value="#{validarDocumentoMB.firmaElectronica.archivo}" class="Fs15" /><br/>
+                        <p:fileUpload listener="#{validarDocumentoMB.handleFileUpload}"  accept="pdf"
+                                      skinSimple="true" allowTypes="/(\.|\/)(pdf)$/i" mode="advanced" dragDropSupport="false" 
+                                      fileLimit="1" update="pnlDocumento"
+                                      label="Buscar" uploadLabel="Subir" cancelLabel="Cancelar"  previewWidth="20"   />
+                        <br/>
+                        <center>
+                            <p:commandButton value="Validar" actionListener="#{validarDocumentoMB.validarDocumento()}" icon="fa fa-check" style="width: auto;" update="pnlDocumento" />
+                        </center>
+
+                    </p:fieldset>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:fieldset legend="Información de la firma electrónica">
+                        <h:panelGroup rendered="#{validarDocumentoMB.validar}">
+                            <p:outputLabel value="Estado" /><br/>
+                            <p:outputLabel value="#{validarDocumentoMB.documento.error}" style="font-weight: bolder" />
+                        </h:panelGroup>
+                        
+                        
+                        <p:dataGrid  value="#{validarDocumentoMB.documento.certificados}" var="certificado" 
+                                     rendered="#{validarDocumentoMB.validar}"
+                                     columns="1" layout="grid" emptyMessage="No existen certificados relacionados"
+                                     rows="1" paginator="true" id="cars"
+                                     paginatorPosition="bottom"
+                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,15"
+                                     >
+                            <p:panel header="Certificado" >
+                                <h:panelGrid columns="2" style="width:100%">
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Información de Firmante" /><br/>
+                                        <p:outputLabel value="#{certificado.informacionFirmante}" style="font-weight: bolder" />
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Entidad Certificadora" /><br/>
+                                        <p:outputLabel value="#{certificado.informacionEntidadCertificadora}" style="font-weight: bolder"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Válido desde" /><br/>
+                                        <p:outputLabel value="#{certificado.validoDesde}" style="font-weight: bolder" >
+                                            <f:convertDateTime pattern="dd-MM-yyyy HH:mm:ss" />
+                                        </p:outputLabel>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Válido hasta" /><br/>
+                                        <p:outputLabel value="#{certificado.validoHasta}" style="font-weight: bolder" >
+                                            <f:convertDateTime pattern="dd-MM-yyyy HH:mm:ss" />
+                                        </p:outputLabel>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Generado" /><br/>
+                                        <p:outputLabel value="#{certificado.generado}" >
+                                            <f:convertDateTime pattern="dd-MM-yyyy HH:mm:ss" />
+                                        </p:outputLabel>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Validado" /><br/>
+                                        <p:outputLabel value="SI" rendered="#{certificado.validado}" style="font-weight: bolder" />
+                                        <p:outputLabel value="NO" rendered="#{!certificado.validado}" style="font-weight: bolder" />
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Uso" /><br/>
+                                        <p:outputLabel value="#{certificado.clavesUso}" style="font-weight: bolder" />
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Validación del certificado en las fecha de vigencia" /><br/>
+                                        <p:outputLabel value="SI" rendered="#{certificado.validado}" style="font-weight: bolder" />
+                                        <p:outputLabel value="NO" rendered="#{!certificado.validado}" style="font-weight: bolder" />
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Identificación" /><br/>
+                                        <p:outputLabel value="#{certificado.datosUsuario.cedula}" style="font-weight: bolder" />
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Nombres" /><br/>
+                                        <p:outputLabel value="#{certificado.datosUsuario.nombre}" style="font-weight: bolder" />
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Apellidos" /><br/>
+                                        <p:outputLabel value="#{certificado.datosUsuario.apellido}" style="font-weight: bolder" />
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Institución" /><br/>
+                                        <p:outputLabel value="#{certificado.datosUsuario.institucion}" style="font-weight: bolder" />
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Cargo" /><br/>
+                                        <p:outputLabel value="#{certificado.datosUsuario.cargo}" style="font-weight: bolder" />
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Serial" /><br/>
+                                        <p:outputLabel value="#{certificado.datosUsuario.serial}" style="font-weight: bolder" />
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Entidad Certificadora" /><br/>
+                                        <p:outputLabel value="#{certificado.datosUsuario.entidadCertificadora}" style="font-weight: bolder" />
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Integridad de la Firma" /><br/>
+                                        <p:outputLabel value="SI" rendered="#{certificado.firmaVerificada}" style="font-weight: bolder" />
+                                        <p:outputLabel value="NO" rendered="#{!certificado.firmaVerificada}" style="font-weight: bolder" />
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Razón del Documento" /><br/>
+                                        <p:outputLabel value="#{certificado.motivoDocumento}" style="font-weight: bolder" />
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Localización del Documento" /><br/>
+                                        <p:outputLabel value="#{certificado.localizacionDocumento}" style="font-weight: bolder"/>
+                                    </h:panelGroup>
+                                </h:panelGrid>
+                            </p:panel>
+                        </p:dataGrid>
+                    </p:fieldset>
+                </h:panelGroup>
+            </p:panelGrid>
+
+        </h:form>
+
+    </ui:define>
+</ui:composition>

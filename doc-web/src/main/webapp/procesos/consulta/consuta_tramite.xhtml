@@ -1,0 +1,249 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+    <ui:define name="title">Consulta Trámite</ui:define>
+    <ui:define name="content">
+        <style type="text/css">
+            .old {
+                background-color: #E7D0E7 !important;
+                background-image: none !important;
+                color: #000000 !important;
+            }
+        </style>
+        <h:form id="formMain" prependId="false">
+            <center>
+                <div class="p-col-12 p-md-12">
+                    <h5>Consulta Trámite</h5>
+                    <h:panelGroup id="consulta" >
+                        <h:panelGrid id="pnlDatosTramite" columns="2" style="width: 100%; font-weight: bold" 
+                                     columnClasses="fifty-percent, fifty-percent" >
+                            <p:tabView>
+                                <p:tab title="Datos de Solicitante">
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Puede realizar la consulta por número
+                                                       de identificación o por Nombre de Solicitante"  
+                                                       style="font-weight: bolder;font-size: 0.8vw;
+                                                       color: #00a5c9" /><br/><br/>
+                                    </h:panelGroup>
+                                    <h:panelGrid columns="3">
+                                        <h:panelGroup id="panelTramite">
+                                            <p:outputLabel for="identificacion" value="Identificación" style="font-weight: bolder" /><br/>
+                                            <div class="ui-inputgroup">
+                                                <p:inputText id="identificacion" value="#{consultaTramiteController.identificacion}" />
+                                                <p:commandButton title="Solicitante" icon="fa fa-search"
+                                                                 update="formSolicitantes,identificacion" 
+                                                                 actionListener="#{consultaTramiteController.loadLazySolicitante()}"
+                                                                 styleClass="green-button button-group">
+                                                </p:commandButton>
+                                            </div>
+                                            <p:outputLabel for="nombre" value="Nombre Solicitante(Opcional)" style="font-weight: bolder" /><br/>
+                                            <p:inputText id="nombre" value="#{consultaTramiteController.nombreUsuario}"/>
+                                            <h:panelGrid columns="2">
+                                                <p:outputLabel for="fecha" value="Fecha Inicio" style="font-weight: bolder" /><br></br>
+                                                <p:calendar id="fecha" value="#{consultaTramiteController.fechaInicio}"
+                                                            navigator="true" pattern="yyyy-MM-dd"/><br/>
+                                                <p:outputLabel for="fechaFin" value="Fecha Fin" style="font-weight: bolder" /><br></br>
+                                                <p:calendar id="fechaFin" value="#{consultaTramiteController.fechaFin}"
+                                                            navigator="true" pattern="yyyy-MM-dd"/>
+                                            </h:panelGrid>
+                                        </h:panelGroup>
+                                        <h:panelGroup id="panelPendientes">
+                                            <p:outputLabel for="estado" value="Estado Trámite" style="font-weight: bolder" />
+                                            <p:selectOneRadio id="estado" value="#{consultaTramiteController.estadoTramite}"
+                                                              layout="grid" columns="1" styleClass="grid-radio"> 
+                                                <f:selectItem itemLabel="Pendientes" itemValue="#{false}"/>
+                                                <f:selectItem itemLabel="Finalizadas" itemValue="#{true}"/>
+                                            </p:selectOneRadio>
+                                        </h:panelGroup>
+                                        <h:panelGroup id="panelButton">
+                                            <center>
+                                                <p:commandButton value="Consultar" icon="fa fa-save" 
+                                                                 update="pnelInformacion,panelButton"
+                                                                 style=" margin-top: 10px "
+                                                                 actionListener="#{consultaTramiteController.search()}" />
+                                                <p:commandButton id="buttonCancel" value="Cancelar" icon="fa fa-trash" 
+                                                                 rendered="#{consultaTramiteController.renderedButton}"
+                                                                 update="formMain"
+                                                                 process="@this"
+                                                                 style=" margin-top: 10px; margin-left: 10px"
+                                                                 actionListener="#{consultaTramiteController.loadModel()}" />
+                                            </center>
+                                        </h:panelGroup>
+                                    </h:panelGrid>
+                                </p:tab>
+                                <p:tab title="Datos de Funcionario" id="tabFuncionario">
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Puede realizar la consulta por nombre de Usuario Asignado"  
+                                                       style="font-weight: bolder;font-size: 0.8vw;
+                                                       color: #00a5c9" /><br/><br/>
+                                    </h:panelGroup>
+                                    <h:panelGrid columns="3">
+                                        <h:panelGroup id="panelTramiteFuncionario">
+                                            <p:outputLabel for="nombreUsuario" value="Usuario Funcionario" style="font-weight: bolder" /><br/>
+                                            <div class="ui-inputgroup">
+                                                <p:inputText id="nombreUsuario" value="#{consultaTramiteController.nombreUsuarioFuncionario}"/>
+                                                <p:commandButton title="Usuarios Funcionarios" icon="fa fa-search"
+                                                                 update="formFuncionario,nombreUsuario" actionListener="#{consultaTramiteController.loadLazyUsuario()}"
+                                                                 styleClass="green-button button-group">
+                                                </p:commandButton>
+                                            </div>
+                                            <h:panelGrid columns="1">
+                                                <p:outputLabel for="fechaTramite" value="Fecha Inicio" style="font-weight: bolder" />
+                                                <p:calendar id="fechaTramite" value="#{consultaTramiteController.fechaInicioFuncionario}"
+                                                            navigator="true" pattern="yyyy-MM-dd"/>
+                                                <p:outputLabel for="fechaTramiteFin" value="Fecha Fin" style="font-weight: bolder" />
+                                                <p:calendar id="fechaTramiteFin" value="#{consultaTramiteController.fechaFinFuncionario}"
+                                                            navigator="true" pattern="yyyy-MM-dd"/>
+                                            </h:panelGrid>
+                                        </h:panelGroup>
+                                        <h:panelGroup id="panelPendientesTramite">
+                                            <p:outputLabel for="estadoTramite" value="Estado Trámite" style="font-weight: bolder" />
+                                            <p:selectOneRadio id="estadoTramite" value="#{consultaTramiteController.estadoTramiteFuncionario}"
+                                                              layout="grid" columns="1" styleClass="grid-radio"> 
+                                                <f:selectItem itemLabel="Pendientes" itemValue="#{false}"/>
+                                                <f:selectItem itemLabel="Finalizadas" itemValue="#{true}"/>
+                                            </p:selectOneRadio>
+                                        </h:panelGroup>
+                                        <h:panelGroup id="panelButtonTramite">
+                                            <center>
+                                                <p:commandButton value="Consultar" icon="fa fa-save" 
+                                                                 update="pnelInformacion,panelButtonTramite"
+                                                                 style=" margin-top: 10px "
+                                                                 actionListener="#{consultaTramiteController.searchTramiteFuncionario()}" />
+                                                <p:commandButton id="buttonCancelTramite" value="Cancelar" icon="fa fa-trash" 
+                                                                 rendered="#{consultaTramiteController.renderedButtonFuncionario}"
+                                                                 update="formMain"
+                                                                 process="@this"
+                                                                 style=" margin-top: 10px; margin-left: 10px"
+                                                                 actionListener="#{consultaTramiteController.loadDataFuncionario()}" />
+                                            </center>
+                                        </h:panelGroup>
+                                    </h:panelGrid>
+                                </p:tab>
+                            </p:tabView>
+                            <p:fieldset  id="pnelInformacion" legend="Datos de Trámite" style="font-weight: bold; width: 100% !important">
+                                <p:dataTable id="dataTarea" widgetVar="dataTarea" paginator="true" 
+                                             value="#{consultaTramiteController.lazyTareas}"
+                                             var="tarea" lazy="true" rowIndexVar="indexInd" resizableColumns="true"
+                                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} 
+                                             {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                             rows="10" rowsPerPageTemplate="10,20,50" 
+                                             emptyMessage="No existen datos." 
+                                             paginatorPosition="bottom"
+                                             tableStyle="table-layout:auto">
+                                    <p:column headerText="No." style="text-align: center">
+                                        <h:outputText value="#{indexInd+1}" />
+                                    </p:column>
+                                    <p:column headerText="No. Trámite" filterBy="#{tarea.codigo}" style="text-align: center">
+                                        <p:outputLabel value="#{tarea.codigo}" />
+                                    </p:column>
+                                    <p:column headerText="Tarea">
+                                        <p:outputLabel value="#{tarea.name_}" />
+                                    </p:column>
+                                    <p:column headerText="Fecha Ingreso">
+                                        <p:outputLabel value="#{tarea.fechaIngreso}">
+                                            <f:convertDateTime pattern="yyyy/MM/dd HH:mm"/>
+                                        </p:outputLabel>
+                                    </p:column>
+                                    <p:column headerText="Fecha Entrega">
+                                        <p:outputLabel value="#{tarea.fechaEntrega}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                                        </p:outputLabel>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:fieldset>
+                        </h:panelGrid>
+                    </h:panelGroup>
+                </div>
+            </center> 
+        </h:form>
+        <p:dialog showHeader="false" widgetVar="dialogFuncionarios" closeOnEscape="true"
+                  modal="true" resizable="false" position="center">
+            <h:form id="formFuncionario">
+                <center>
+                    <p:outputLabel value="Funcionarios" style="font-size: 14px; font-weight: bold" />
+                </center>
+                <br></br>
+                <h:panelGrid styleClass="noBorder" columns="1">
+                    <p:dataTable id="dtuser" reflow="true" paginator="true" lazy="true" rows="10" 
+                                 rowsPerPageTemplate="10" filterEvent="enter"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 paginatorPosition="bottom"
+                                 value="#{consultaTramiteController.usuarios}" var="user" 
+                                 emptyMessage="No se encontró ningún Item" style="text-align: center;"
+                                 tableStyle="table-layout:auto">
+                        <p:column headerText="Usuario" 
+                                  filterBy="#{user.user}" sortBy="#{user.user}">
+                            <h:outputText value="#{user.user}" />
+                        </p:column>
+                        <p:column headerText="Apellidos"  filterBy="#{user.ente.apellidos}" 
+                                  sortBy="#{user.ente.apellidos}">
+                            <h:outputText value="#{user.ente.apellidos}" />
+                        </p:column>
+                        <p:column headerText="Nombres" 
+                                  filterBy="#{user.ente.nombres}">
+                            <h:outputText value="#{user.ente.nombres}" />
+                        </p:column>
+                        <p:column headerText="Estado">
+                            <p:outputLabel value="Activo" rendered="#{user.ente!=null and user.sisEnabled}"/>
+                            <p:outputLabel value="Inactivo" rendered="#{user.ente!=null and !user.sisEnabled}" />
+                        </p:column>
+                        <p:column headerText="Acciones" >
+                            <center>
+                                <p:commandLink actionListener="#{consultaTramiteController.selectUserFuncionario(user)}"
+                                               title="Seleccionar">
+                                    <i class="fa fa-crosshairs" style="font-size: 1.2em; margin-right: 5px;"></i>
+                                </p:commandLink>
+                            </center>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+        <p:dialog showHeader="false" widgetVar="dialogSolicitantes" closeOnEscape="true"
+                  modal="true" resizable="false" position="center">
+            <h:form id="formSolicitantes">
+                <center>
+                    <p:outputLabel value="Solicitantes" style="font-size: 14px; font-weight: bold" />
+                </center>
+                <br></br>
+                <h:panelGrid styleClass="noBorder" columns="1">
+                    <p:dataTable id="dtentes" reflow="true" paginator="true" lazy="true" rows="10" 
+                                 rowsPerPageTemplate="10" 
+                                 filterEvent="enter"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 value="#{consultaTramiteController.catEntes}" var="persona" 
+                                 emptyMessage="No se encontró ningún Item" style="text-align: center;"
+                                 paginatorPosition="bottom" tableStyle="table-layout:auto">
+                        <p:column headerText="C.I./R.U.C." filterBy="#{persona.identificacion}" >
+                            <h:outputText value="#{persona.ciRuc}"/>
+                        </p:column>
+                        <p:column headerText="Nombres / Razón Social" filterBy="#{persona.nombrerazonsocial}" >
+                            <h:outputText value="#{persona.nombres}" rendered="#{persona.esPersona}"/>
+                            <h:outputText value="#{persona.razonSocial}" rendered="#{!persona.esPersona}"/>
+                        </p:column>
+                        <p:column headerText="Apellidos / Nombre Comercial" filterBy="#{persona.apellidonombrecomercial}">
+                            <h:outputText value="#{persona.apellidos}" rendered="#{persona.esPersona}"/>
+                            <h:outputText value="#{persona.nombreComercial}" rendered="#{!persona.esPersona}"/>
+                        </p:column>
+                        <p:column headerText="Tipo" >
+                            <h:outputText value="N" rendered="#{persona.esPersona}"/>
+                            <h:outputText value="J" rendered="#{!persona.esPersona}"/>
+                        </p:column>
+                        <p:column headerText="Acción">
+                            <p:commandLink id="buttonSelect" styleClass="Seleccionar" 
+                                           actionListener="#{consultaTramiteController.selectSolicitante(persona)}">
+                                <i class="fa fa-crosshairs" style="font-size: 1.2em; margin-right: 5px;"></i>
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+    </ui:define>
+</ui:composition>

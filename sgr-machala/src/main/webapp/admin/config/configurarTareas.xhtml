@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:co="http://xmlns.jcp.org/jsf/composite/co">
+    <ui:define name="title">Configurar Tareas</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2 style="font-weight: bolder;">CONFIGURAR TAREAS</h2></center>
+            <p:fieldset legend="Buscar Tareas Tramite" >
+                <h:panelGrid columns="3" >
+                    <p:outputLabel value="Nro. Tramite: " style="font-weight: bolder;" />
+                    <p:inputNumber value="#{configurarTareas.tramite}" decimalPlaces="0" thousandSeparator="" />
+                    <p:commandButton value="Buscar" icon="pi pi-search" update="dtTareas" 
+                                     actionListener="#{configurarTareas.buscarTareas()}"/> 
+                </h:panelGrid>
+            </p:fieldset><br/>
+            <p:dataTable id="dtTareas" value="#{configurarTareas.tareas}" emptyMessage="Sin elementos." resizableColumns="true" 
+                         rowIndexVar="index" var="det" scrollable="true" >
+                <f:facet name="header">TAREAS DEL TRAMITE</f:facet>
+                <p:column headerText="Nº" width="30">#{index+1}</p:column>
+                <p:column headerText="Contrato">
+                    <p:outputLabel value="#{det.detalle.acto.nombre}"/>
+                </p:column>
+                <p:column headerText="Fecha Ingreso" width="150">
+                    <p:outputLabel value="#{det.fecha}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                </p:column>
+                <p:column headerText="Realizado" width="150">
+                    <p:outputLabel value="REALIZADO" rendered="#{det.realizado}" style="background-color: lightsalmon;" />
+                    <p:outputLabel value="NO REALIZADO" rendered="#{!det.realizado}" style="background-color: greenyellow;" />
+                </p:column>
+                <p:column headerText="Fecha Realizado" width="150">
+                    <p:outputLabel value="#{det.fechaFin}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                </p:column>
+                <p:column headerText="Estado" width="150">
+                    <p:outputLabel value="ACTIVO" rendered="#{det.estado}" style="background-color: greenyellow;" />
+                    <p:outputLabel value="INACTIVO" rendered="#{!det.estado}" style="background-color: lightsalmon;" />
+                </p:column>
+                <p:column headerText="***" width="60" style="text-align: center;">
+                    <p:commandButton icon="pi pi-refresh" disabled="#{det.realizado}" update="dtTareas" 
+                                     style="background-color: darkred;" title="Cambiar de Estado"
+                                     actionListener="#{configurarTareas.desactivarTarea(det)}" >
+                        <p:confirm header="Confirmación" message="Seguro desea cambiar el estado a la tarea?" 
+                                   icon="pi pi-exclamation-triangle" />
+                    </p:commandButton>
+                </p:column>
+            </p:dataTable>
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+            </p:confirmDialog> 
+        </h:form>
+    </ui:define>
+</ui:composition>

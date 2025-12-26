@@ -1,0 +1,169 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" template="/template/templateMeet.xhtml"
+                xmlns:p="http://primefaces.org/ui" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:poue="http://primefaces.org/ui/extensions" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+
+    <ui:define name="top">
+        <h3>Jitsi-Meet</h3>
+    </ui:define>
+    <ui:define name="title">Jitsi-Meet</ui:define>
+    <ui:define name="content">
+        <center>
+            <h2> Jitsi Meet </h2>
+        </center>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"/>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        <h:form id="formMain" prependId="false">
+            <!--<script src="recorder.js"></script>-->
+            <br/><br/>
+            <center>
+                <div class="container mt-3">
+                    <span><a id="download" style="display: none;"><button type="button" class="btn btn-primary mb-4"> Descargar</button></a></span>
+                    <button type="button" class="btn btn-danger" id="stop" >Parar grabación</button>
+                    <!--                    <button type="button" onclick="recordAudio()" class="btn btn-info">Record Audio</button>
+                                        <button type="button" onclick="recordVideo()" class="btn btn-info">Record Video</button>-->
+                    <button type="button" onclick="recordScreen()" class="btn btn-info">Grabar reunión</button>
+
+                </div>  
+                <p:panelGrid columns="1" layout="grid" styleClass="ui-panelgrid-blank">
+                    <br/>
+                    <br/> 
+                    <iframe allow="camera; microphone; fullscreen; display-capture; autoplay" src="#{meetingMB.url}" 
+                            style="height: 91vh; width: 96vw; border: 0px;"></iframe> 
+                    <!--                    <h:panelGroup style="border-color: #252525; border-width: 1px; ">
+                    
+                                            <a title="Entrar a una reunión" href="https://192.168.4.33:8443/" target="_blank">
+                                                <p:graphicImage value="/resources/icons/meet.png" style="width: 135px; height: 140px;" />
+                                            </a><br/>
+                                            <p:outputLabel value="Entrar a una reunión" style="font-size: 14px; font-weight: bold; padding: 0px; margin-top: 10px !important; color: black "/>
+                                        </h:panelGroup>-->
+
+                </p:panelGrid>
+            </center>
+
+            <script>
+                let shouldStop = false;
+                let stopped = false;
+                const videoElement = document.getElementsByTagName("video")[0];
+                const downloadLink = document.getElementById('download');
+                const stopButton = document.getElementById('stop');
+                function startRecord() {
+                $('.btn-info').prop('disabled', true);
+                $('#stop').prop('disabled', false);
+                $('#download').css('display', 'none')
+                }
+                function stopRecord() {
+                $('.btn-info').prop('disabled', false);
+                $('#stop').prop('disabled', true);
+                $('#download').css('display', 'block')
+                }
+                const audioRecordConstraints = {
+                echoCancellation: true
+                }
+
+                stopButton.addEventListener('click', function () {
+                shouldStop = true;
+                });
+                const handleRecord = function ({stream, mimeType}) {
+                startRecord()
+                        let recordedChunks = [];
+                stopped = false;
+                const mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.ondataavailable = function (e) {
+                if (e.data.size > 0) {
+                recordedChunks.push(e.data);
+                }
+
+                if (shouldStop === true &amp;&amp; stopped === false) {
+                mediaRecorder.stop();
+                stopped = true;
+                }
+                };
+                mediaRecorder.onstop = function () {
+                const blob = new Blob(recordedChunks, {
+                type: mimeType
+                });
+                //recordedChunks = []
+                //        const filename = window.prompt('Ingrese el nombre del archivo');
+                downloadLink.href = URL.createObjectURL(blob);
+                downloadLink.download = `${'ReunionBCBG'}.webm`;
+                stopRecord();
+                videoElement.srcObject = null;
+                };
+                mediaRecorder.start(200);
+                };
+                async function recordAudio() {
+                const mimeType = 'audio/webm';
+                shouldStop = false;
+                const stream = await navigator.mediaDevices.getUserMedia({audio: audioRecordConstraints});
+                handleRecord({stream, mimeType})
+                }
+
+                async function recordVideo() {
+                const mimeType = 'video/webm';
+                shouldStop = false;
+                const constraints = {
+                audio: {
+                "echoCancellation": true
+                },
+                        video: {
+                        "width": {
+                        "min": 640,
+                                "max": 1024
+                        },
+                                "height": {
+                                "min": 480,
+                                        "max": 768
+                                }
+                        }
+                };
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                videoElement.srcObject = stream;
+                handleRecord({stream, mimeType})
+                }
+
+                async function recordScreen() {
+                const mimeType = 'video/webm';
+                shouldStop = false;
+                const constraints = {
+                video: {
+                cursor: 'motion'
+                }
+                };
+                /*if (!(navigator.mediaDevices &amp;&amp; navigator.mediaDevices.getDisplayMedia)) {
+                return window.alert('La grabación no es compatible con su dispositivo!')
+                }*/
+                let stream = null;
+                const displayStream = await navigator.mediaDevices.getDisplayMedia({video: {cursor: "motion"}, audio: {'echoCancellation': true}});
+                if (window.confirm("Desea grabar el audio?")) {
+                const audioContext = new AudioContext();
+                const voiceStream = await navigator.mediaDevices.getUserMedia({audio: {'echoCancellation': true}, video: false});
+                const userAudio = audioContext.createMediaStreamSource(voiceStream);
+                const audioDestination = audioContext.createMediaStreamDestination();
+                userAudio.connect(audioDestination);
+                if (displayStream.getAudioTracks().length > 0) {
+                const displayAudio = audioContext.createMediaStreamSource(displayStream);
+                displayAudio.connect(audioDestination);
+                }
+
+                const tracks = [...displayStream.getVideoTracks(), ...audioDestination.stream.getTracks()]
+                        stream = new MediaStream(tracks);
+                handleRecord({stream, mimeType})
+                } else {
+                stream = displayStream;
+                handleRecord({stream, mimeType});
+                }
+                ;
+                videoElement.srcObject = stream;
+                }
+            </script>
+        </h:form>
+
+
+    </ui:define>
+</ui:composition>

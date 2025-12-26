@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:comp="http://xmlns.jcp.org/jsf/composite/dialog"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <center>
+        <p:outputLabel value="#{iniciarTramiteMB.departamento.nombre}" 
+                       style="font-size: 16px; font-weight: bolder" /> 
+        <br/>
+        <p:outputLabel value="#{iniciarTramiteMB.item.nombre}" 
+                       style="font-size: 16px; font-weight: bolder" /> 
+        <br/>
+        <p:outputLabel value="#{iniciarTramiteMB.historicoTramites.codigo}" 
+                       style="font-size: 16px; font-weight: bolder"/>
+    </center>
+    <br></br>
+    <p:fieldset legend="Requisitos">
+        <h:panelGrid  columns="1" style="width: 100%;"  columnClasses="thirty-percent, seventy-percent" >
+            <h:panelGrid  columns="2" style="width: 100%;"  columnClasses="fifty-percent, fifty-percent" >
+
+                <h:panelGroup>
+                    <p:outputLabel value="Campo de referencia:" style="font-weight: bold" /> <br></br>
+                    <p:inputText value="#{iniciarTramiteMB.campoReferencia}" style="text-transform: uppercase;width: 98%" /><br/>
+                    <p:outputLabel value="Asunto:"  style="font-weight: bold"/> <br></br>
+                    <p:inputTextarea cols="35" rows="6" placeholder="Ingrese un asunto" 
+                                     value="#{iniciarTramiteMB.asunto}" style="text-transform: uppercase;width: 100%"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:outputLabel value="Observación:"  style="font-weight: bold" /> <br></br>
+                    <p:inputTextarea cols="35" rows="9" placeholder="Ingrese una observación" 
+                                     value="#{iniciarTramiteMB.observacion}" style="text-transform: uppercase;width: 100%"/>
+                </h:panelGroup>
+            </h:panelGrid>
+            <br/>
+            <h:panelGroup>
+                <p:dataTable id="dtRequisitos"
+                             value="#{iniciarTramiteMB.requisitosModelList}" var="dato"
+                             widgetVar="dtDatos"  rowIndexVar="i" 
+                             emptyMessage="No existen registros"  style="font-size: 12px; ">
+                    <p:column headerText="**" width="7">
+                        <center> 
+                            <h:outputText value="#{i + 1}"/>
+                        </center>
+                    </p:column>
+                    <p:column headerText="Nombre">
+                        <h:outputText value="** " style="color: red" rendered="#{dato.serviciosRequisitos.requerido}"/>
+                        <h:outputText id="name" style="#{dato.serviciosRequisitos.requerido?'color: red;':'color: black;'}" value="#{dato.serviciosRequisitos.nombre} "/><br/>
+                        <p:dataList value="#{dato.file}" var="f" styleClass="ui-panelgrid-blank" emptyMessage="" rendered="#{not empty dato.file}">
+                            <h:outputText value="#{f.name}" style="color: green; font-weight: bolder" />
+                            <p:commandLink  actionListener="#{iniciarTramiteMB.getDownloadFile(f.absolutePath)}"  process="@this"
+                                            styleClass="edit" style="margin-right: 10px" title="Visualizar documento">
+                                <i class="fa fa-eye" style="font-size: 1.2em; margin-right: 5px; float: right"></i>
+                            </p:commandLink> 
+                        </p:dataList>
+
+                        <p:tooltip id="toolTipFades" for="name" value="#{dato.serviciosRequisitos.descripcion}"/>
+                    </p:column>
+                    <p:column headerText="Requerido" width="65">
+                        <h:outputText style="#{dato.serviciosRequisitos.requerido?'color: red;':'color: black;'}" value="#{dato.serviciosRequisitos.requerido? 'Sí':'No'}"/>
+                    </p:column>
+                    <p:column headerText="Acciones" width="110">
+                        <center> 
+                            <p:commandButton title="Buscar archivo" icon="fa fa-search" 
+                                             styleClass="rounded-button text-button" 
+                                             actionListener="#{iniciarTramiteMB.abrirDlgBuscarDocs(dato)}" >
+                                <p:ajax event="dialogReturn" listener="#{iniciarTramiteMB.documentoSeleccionado}" 
+                                        process="@this"
+                                        update=":formMain:dtRequisitos"
+                                        />
+                            </p:commandButton>
+                            <p:spacer width="2"/>
+                            <p:commandButton title="Cargar archivo" icon="fa fa-upload" 
+                                             styleClass="rounded-button text-button" 
+                                             actionListener="#{iniciarTramiteMB.abrirDlgArchivos(dato)}" />
+                            <p:spacer width="2"/>
+                            <p:commandButton title="Borrar Archivo" icon="fa fa-trash" 
+                                             styleClass="rounded-button text-button" 
+                                             actionListener="#{iniciarTramiteMB.setFile(dato)}" 
+                                             update=":formMain:dtRequisitos" disabled="#{empty dato.file}" />
+                        </center>
+                    </p:column>
+                </p:dataTable>
+            </h:panelGroup><br/>
+<!--            <h:panelGroup>
+                <p:commandButton value="Anterior" icon="pi pi-chevron-left" 
+                                 actionListener="#{iniciarTramiteMB.mostrarPasoUno()}" 
+                                 update="@form" style="margin-top: 12px" 
+                                 styleClass="p-mr-2 p-mb-2" />
+            </h:panelGroup>
+            <h:panelGroup>
+                <p:commandButton value="Iniciar Trámite" icon="fa fa-play-circle"  
+                                 actionListener="#{iniciarTramiteMB.iniciarTramiteActiviti()}" 
+                                 process="@form"
+                                 style="width: auto; margin-top: 10px" styleClass="p-mr-2"/>
+            </h:panelGroup>-->
+        </h:panelGrid>
+
+    </p:fieldset>
+    <br></br><br></br>
+    <table>
+        <tr>
+            <td class="d1">
+                <p:commandButton value="Anterior" icon="pi pi-chevron-left" 
+                                 actionListener="#{iniciarTramiteMB.mostrarPasoUno()}" 
+                                 update="@form" style="margin-top: 12px" 
+                                 styleClass="p-mr-2 p-mb-2" />
+            </td> 
+            <td class="d3">
+                <p:commandButton value="Iniciar Trámite" icon="fa fa-play-circle"  
+                                 actionListener="#{iniciarTramiteMB.iniciarTramiteActiviti()}" 
+                                 process="@form"
+                                 style="width: auto; margin-top: 10px" styleClass="p-mr-2"/>
+
+            </td>
+        </tr>
+    </table>
+
+</html>
+

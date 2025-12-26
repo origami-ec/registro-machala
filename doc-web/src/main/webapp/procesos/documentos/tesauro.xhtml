@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/templateDocs.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html" 
+                xmlns:poue="http://primefaces.org/ui/extensions"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+
+    <ui:define name="top"><h3>Tesauro</h3></ui:define>
+    <ui:define name="title">Tesauro</ui:define>
+    <ui:define name="content">
+
+        <h:form id="formMain"  prependId="false">
+            <center>
+                <h2> Tesauro</h2>
+            </center>
+
+            <h:panelGrid id="pnlFormulario" columns="2" columnClasses="forty-percent, sixty-percent">
+                <h:panelGroup>
+                    <h:panelGrid id="pnlDatosFormato" columns="1" style="width: 90%">
+                        <f:facet name="header">
+                            <center>
+                                <p:outputLabel value="Diccionario de tesauro" style="font-weight: bolder"/>
+                            </center>
+                        </f:facet>
+                        <h:panelGroup>
+                            <p:outputLabel value="Palabra de búsqueda" style="font-weight: bolder" /><br/>
+                            <p:inputText value="#{tesauroMB.palabra}" style="width: 100%"/>
+                        </h:panelGroup>
+                        <h:panelGrid id="pnlDatosCampos" columns="2" style="width: 100%" columnClasses="fifty-percent, fifty-percent">
+                            <h:panelGroup></h:panelGroup>
+                            <h:panelGroup></h:panelGroup>                     
+                            <h:panelGroup >
+                                <p:outputLabel value="Sugerencias" style="font-weight: bolder" /><br/>
+                                <p:inputText value="#{tesauroMB.sugerencia}" style="width: 100%"/><br/><br/>                                 
+                                <center>
+                                    <p:commandButton value="Agregar sugerencia" icon="fa fa-plus" 
+                                                     styleClass="help-button rounded-button" actionListener="#{tesauroMB.agregarSugerencia()}"
+                                                     process="pnlDatosFormato" update="pnlDatosFormato"  /> 
+                                </center>
+                            </h:panelGroup>
+
+                            <h:panelGroup  > 
+                                <p:dataList var="cat" value="#{tesauroMB.sugerencias}" emptyMessage="No existen sugerencias">
+                                    #{cat}
+                                </p:dataList>
+                            </h:panelGroup>
+                            <h:panelGroup></h:panelGroup>
+                            <h:panelGroup></h:panelGroup> 
+                        </h:panelGrid>
+
+                        <br/>
+
+                         
+                        <br/>
+                        <f:facet name="footer">
+                            <center>
+                                <p:commandButton value="Grabar tesauro" title="Grabar tesauro" icon="fa fa-save"  
+                                                 styleClass="rounded-button" actionListener="#{tesauroMB.guardarTesauro()}"
+                                                 process="pnlDatosFormato" update="pnlDatosFormato, dtDatos"  /> 
+                            </center>
+                        </f:facet>
+
+                    </h:panelGrid>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:dataTable id="dtDatos" reflow="true" paginator="true" lazy="true" rows="10" 
+                                 rowsPerPageTemplate="10,20,30" 
+                                 rowIndexVar="i" 
+                                 filterEvent="enter"
+
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 value="#{tesauroMB.lazy}" var="data" 
+                                 emptyMessage="No se encontró ningún formato"  
+                                 paginatorPosition="bottom" >
+                        <p:column headerText="***" width="20">
+                            <p:outputLabel value="#{i + 1}" />
+                        </p:column>
+                        <p:column headerText="Fecha" width="70">
+                            <p:outputLabel value="#{data.fecha}" />
+                        </p:column>
+                        <p:column headerText="Desripción" width="150">
+                            <p:outputLabel value="#{data.palabra}" />
+                        </p:column> 
+                        <p:column headerText="Acciones" width="100" >
+                            <center> 
+                                <p:commandLink actionListener="#{tesauroMB.editarSugerencia(data)}"  
+                                               styleClass="edit" style="margin-right: 10px" title="Editar sugerencia"  update="pnlDatosFormato, dtDatos" >
+                                    <i class="fa fa-edit" style="font-size: 1.2em; margin-right: 5px;"></i>
+                                </p:commandLink>
+
+                                <p:commandLink actionListener="#{tesauroMB.eliminarSugerencias(data)}"  
+                                               style="margin-right: 10px" title="Eliminar sugerencia"  update="pnlDatosFormato, dtDatos" >
+                                    <i class="fa fa-trash" style="font-size: 1.2em; margin-right: 5px; color: red"></i>
+                                </p:commandLink>
+                            </center>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGroup>
+
+            </h:panelGrid>
+
+
+        </h:form>
+
+
+
+    </ui:define>
+</ui:composition>

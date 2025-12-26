@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ActaDetallePartes" language="groovy" pageWidth="435" pageHeight="842" columnWidth="435" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="d4915fc9-25e9-4211-953b-b8f8cd7f67a2">
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="P_MOVIMIENTO" class="java.lang.Long"/>
+	<queryString>
+		<![CDATA[select pa.papel, mc.cedula, mc.nombres as nomb, mc.estado, mc.tipo_interviniente,
+int.nombre as nombres, int.ced_ruc, c.nombre as domicilio
+from app.reg_movimiento m
+left join app.reg_movimiento_cliente mc on(m.id=mc.movimiento)
+left join app.reg_ente_interviniente int on(mc.ente_interv=int.id)
+left join app.reg_papel pa on(pa.id=mc.papel)
+left join app.reg_domicilio c on (mc.domicilio=c.id)
+where m.id=$P{P_MOVIMIENTO}
+order by 1, 5]]>
+	</queryString>
+	<field name="papel" class="java.lang.String"/>
+	<field name="cedula" class="java.lang.String"/>
+	<field name="nomb" class="java.lang.String"/>
+	<field name="estado" class="java.lang.String"/>
+	<field name="tipo_interviniente" class="java.lang.Integer"/>
+	<field name="nombres" class="java.lang.String"/>
+	<field name="ced_ruc" class="java.lang.String"/>
+	<field name="domicilio" class="java.lang.String"/>
+	<title>
+		<band height="21" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="140" y="0" width="164" height="21" backcolor="#CCCCCC" uuid="db957fcb-4951-40a6-b55c-0f43352895dc"/>
+				<box leftPadding="0">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Apellidos, Nombres y/o Razón
+Social]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="70" y="0" width="70" height="21" backcolor="#CCCCCC" uuid="13c84ec1-5329-4ce6-9576-0a054ecdbd73"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Cédula/RUC]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="0" width="70" height="21" isPrintWhenDetailOverflows="true" backcolor="#CCCCCC" uuid="15bd74f9-1e15-4f63-aa6e-0df9048e9ee9"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Persona]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="365" y="0" width="70" height="21" backcolor="#CCCCCC" uuid="48e7f4c1-46fe-4240-924d-1c3e65cb0dcc"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Domicilio]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="305" y="0" width="60" height="21" backcolor="#CCCCCC" uuid="d5cadd7e-f643-4ed4-a4a2-00a31c263615"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Estado]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="10" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="70" y="0" width="70" height="10" isPrintWhenDetailOverflows="true" uuid="dc8c4b0b-6831-4657-8619-fbb346de05f5"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{ced_ruc}.length() > 14  ? "**********" : $F{ced_ruc}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="70" height="10" isPrintWhenDetailOverflows="true" uuid="0a9f3e09-26b2-4489-a13b-b2eea2299e97"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{papel}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="305" y="0" width="60" height="10" isPrintWhenDetailOverflows="true" uuid="c86c0373-fc26-4b3f-9173-79c2b78d3872"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{estado} != null ? $F{estado} : ""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="365" y="0" width="70" height="10" uuid="b491fdee-e6c1-4334-b459-d2e46142fe21"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{domicilio}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="140" y="0" width="164" height="10" isPrintWhenDetailOverflows="true" uuid="6928a6ab-195f-40fc-a3c9-079aba2319a5"/>
+				<box>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombres}.toUpperCase() +
+($F{nomb} != null && !$F{nomb}.isEmpty() ? ($F{tipo_interviniente} == 2 ? "\n- Representante: " + $F{nomb} : "\n- Cónyuge: " + $F{nomb}) : "")]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

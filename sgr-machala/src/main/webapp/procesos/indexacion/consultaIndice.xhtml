@@ -1,0 +1,643 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:co="http://xmlns.jcp.org/jsf/composite/co"
+    xmlns:poue="http://primefaces.org/ui/extensions">
+    <ui:define name="title">Ingreso de Datos Masivos</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <h:panelGroup layout="block" style="width: 100%;">
+                <p:tabView id="tabConsultas" style="width: 49%; float: left; " activeIndex="#{consultaIndice.tabIndex}" cache="false" prependId="false">
+                    <p:tab title="Indices" class="Wid100" >
+                        <p:panelGrid styleClass="noBorder panelGrid" style="border:none;margin:0 auto;width:100% !important;"
+                                     columns="3" class="ui-grid ui-grid-responsive" layout="grid" >
+                            <co:inputText label="CI/RUC:" value="#{consultaIndice.documento}"/>
+                            <co:inputText label="Nombres:" value="#{consultaIndice.nombre}"/>
+                            <co:inputDate label="Fec.Insc.(Desde):" value="#{consultaIndice.desde}" maxdate="sysdate"/>
+                            <co:inputDate label="Fec.Insc.(Hasta):" value="#{consultaIndice.hasta}" maxdate="sysdate"/>
+                            <co:inputText label="Acto:" value="#{consultaIndice.contrato}"/>
+                            <co:inputNumber label="Repertorio:" value="#{consultaIndice.repertorio}" decimalPlaces="0"/>
+                            <co:inputNumber label="Año Inscr.:" value="#{consultaIndice.anio}" decimalPlaces="0"/>
+                            <co:inputNumber label="No Inscr.:" value="#{consultaIndice.inscripcion}" decimalPlaces="0"/>
+                        </p:panelGrid>
+                        <div style="text-align: center" >
+                            <p:commandButton value="Buscar Indices" actionListener="#{consultaIndice.buscarClientes()}"
+                                             styleClass="btnStyle" icon="ui-icon-search" update="mainForm:docsMov"/>
+                            <p:commandButton value="Generar Reporte" actionListener="#{consultaIndice.reporteIndices()}"
+                                             styleClass="btnStyle" icon="ui-icon-document" rendered="false"/>
+                        </div>
+                        <p:dataTable id="dtIndices" paginator="true" lazy="true" rows="100" rowsPerPageTemplate="100,200,300" filterEvent="enter" scrollable="true"
+                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     value="#{consultaIndice.mcl}" var="ind" emptyMessage="No se encontro ningun indice..." resizableColumns="true" scrollHeight="430"
+                                     rowIndexVar="indexInd" selectionMode="single" selection="#{consultaIndice.rmc}" rowKey="#{ind.id}" paginatorPosition="top"
+                                     style="font-weight: 9" >
+                            <p:ajax event="rowSelect" listener="#{consultaIndice.showDlgIndice()}" update="mainForm:docsMov"/>
+                            <p:column headerText="Opciones" width="20">
+                                <p:commandButton icon="fa fa-info" actionListener="#{consultaIndice.showDlgMovCliSelect(ind)}" update="mainForm:tabConsultas,mainForm:docsMov" />
+                                <!--<b:commandButton icon-pulse="fa fa-info" actionListener="# {consultaIndice.showDlgMovSelect(ind)}" update="mainForm:tabConsultas" />-->
+                            </p:column>
+                            <p:column headerText="No" width="20">
+                                <h:outputText value="#{indexInd+1}" />
+                            </p:column>
+                            <p:column headerText="CI/RUC" width="100" filterBy="#{ind.enteInterv.cedRuc}">
+                                <h:outputText id="cedRucInterv" value="#{ind.enteInterv.cedRuc}" />
+                                <p:tooltip for="cedRucInterv" >
+                                    <p:panelGrid columns="1">
+                                        <co:inputText label="Libro" value="#{ind.movimiento.libro.nombre}" readonly="true" />
+                                        <co:inputText label="Acto" value="#{ind.movimiento.acto.nombre}" readonly="true" />
+                                        <co:inputText label="No. Repertorio" value="#{ind.movimiento.numRepertorio}" readonly="true" />
+                                        <co:inputDate label="Fecha Repertorio" value="#{ind.movimiento.fechaRepertorio}" readonly="true" />
+                                        <co:inputText label="No. Inscripcion" value="#{ind.movimiento.numInscripcion}" readonly="true" />
+                                        <co:inputText label="Fecha Inscripcion" value="#{ind.movimiento.fechaInscripcion}" readonly="true" />
+                                        <!--<co:inputText label="Id:" value="#{ind.movimiento.id}" />-->
+                                    </p:panelGrid>
+                                </p:tooltip>
+                            </p:column>
+                            <p:column headerText="Nombre" width="250" filterBy="#{ind.enteInterv.nombre}">
+                                <h:outputText value="#{ind.enteInterv.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Libro" width="180" filterBy="#{ind.movimiento.libro.nombre}">
+                                <h:outputText value="#{ind.movimiento.libro.nombre}" title="Acto: #{ind.movimiento.acto.nombre}"/>
+                            </p:column>
+                            <p:column headerText="No Rep." width="50" filterBy="#{ind.movimiento.numRepertorio}">
+                                <h:outputText value="#{ind.movimiento.numRepertorio}"/>
+                            </p:column>
+                            <p:column headerText="No Ins." width="50" filterBy="#{ind.movimiento.numInscripcion}">
+                                <h:outputText value="#{ind.movimiento.numInscripcion}"/>
+                            </p:column>
+                            <p:column headerText="Fecha Ins." width="140">
+                                <h:outputText value="#{ind.movimiento.fechaInscripcion}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                            </p:column>
+                            <p:column headerText="Contratante" width="150" >
+                                <h:outputText value="#{ind.papel.papel}"/>
+                            </p:column>
+                            <p:column headerText="No Ficha" width="100">
+                                <h:outputText value="#{consultaIndice.getFihasIndice(ind.movimiento.id)}"/>
+                            </p:column>
+                            <p:column headerText="Fecha Rep." width="140">
+                                <h:outputText value="#{ind.movimiento.fechaRepertorio}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Datos del movimiento"  >
+                        <p:fieldset legend="Datos de la Inscripcion">
+                            <p:panelGrid styleClass="noBorder" style="width: 100%;font-size: 12px;font-weight: bolder;" columns="3" >
+                                <co:inputText label="Num.Rep.:" value="#{consultaIndice.movimiento.numRepertorio}" readonly="true"/>
+                                <co:inputDate label="Fecha Rep.:" value="#{consultaIndice.movimiento.fechaRepertorio}" maxdate="sysdate"/>
+                                <co:inputText label="Num.Inscrip.:" value="#{consultaIndice.movimiento.numInscripcion}" readonly="true"/>
+                                <co:inputDate label="Fec. Inscrip.:" value="#{consultaIndice.movimiento.fechaInscripcion}" readonly="true" maxdate="sysdate"/>
+                                <co:inputText label="Libro:" value="#{consultaIndice.movimiento.libro.nombre}" readonly="true" />
+                                <co:inputText label="Acto:" value="#{consultaIndice.movimiento.acto.nombre}" readonly="true" />
+                                <co:inputText label="Tomo:" value="#{consultaIndice.movimiento.numTomo}" />
+                                <co:inputText label="Folio Inicio:" value="#{consultaIndice.movimiento.folioInicio}" />
+                                <co:inputText label="Folio Fin:" value="#{consultaIndice.movimiento.folioFin}" />
+                                <!--<co:inputText label="Estado/Mov:" value="# {consultaIndice.movimiento.estado}" readonly="true" />-->
+                            </p:panelGrid>
+                        </p:fieldset>
+                        <p:fieldset legend="Datos de escritura" rendered="#{consultaIndice.movimiento.id ne null}">
+                            <p:panelGrid styleClass="noBorder" style="width: 100%;font-size: 12px;font-weight: bolder;" columns="3" >
+                                <!--                                <co:inputSelect label="Canton:" value="# {consultaIndice.movimiento.domicilio}" lazy="true"
+                                                                                catalogo="# {consultaIndice.domicilios}" var="can1" itemLabel="# {can1.nombre}" itemValue="# {can1}" />-->
+                                <co:inputTextButton label="Canton:" value="#{consultaIndice.movimiento.domicilio.nombre}"
+                                                    iconButton="ui-icon-search" actionListenerButton="#{consultaIndice.showDlg('/resources/dialog/dlglazyDomicilios')}"
+                                                    isAjaxButton="true" listenerAjaxButton="#{consultaIndice.selectObjectM}" />
+
+                                <co:inputDate label="Fech/Otorg.:" value="#{consultaIndice.movimiento.fechaOto}" maxdate="sysdate"/>
+                                <co:inputSelectBoolean label="Inscripcion Realizada por Orden Judicial:" value="#{consultaIndice.movimiento.ordJud}"/>
+                                <co:inputText label="Escri/Juicio/Resolu:" value="#{consultaIndice.movimiento.escritJuicProvResolucion}" readonly="false" />
+                                <co:inputDate label="Fech.Resolucion:" value="#{consultaIndice.movimiento.fechaResolucion}" maxdate="sysdate" />
+                                <co:inputTextButton label="Not./Juz.:" value="#{consultaIndice.movimiento.enteJudicial.nombre}" id="notJues"
+                                                    iconButton="ui-icon-search" actionListenerButton="#{consultaIndice.showDlg('/resources/dialog/dlglazynotarias')}" isAjaxButton="true"
+                                                    listenerAjaxButton="#{consultaIndice.selectObject}" required="false" />
+                            </p:panelGrid>
+                        </p:fieldset>
+                        <p:tabView id="tbvDatosMov">
+                            <p:tab title="Intervinientes">
+                                <div style="width: 100%;">
+                                    <p:commandButton icon="ui-icon-search" value="Buscar Interviniente" styleClass="btnStyle" style="float: left;"
+                                                     actionListener="#{consultaIndice.showDlg('/resources/dialog/dlglazyinterv')}">
+                                        <p:ajax event="dialogReturn" listener="#{consultaIndice.selectInterv}" update="tbvDatosMov:dtInterviniente"/>
+                                    </p:commandButton>
+                                </div>
+                                <br/>
+                                <br/>
+                                <p:dataTable id="dtInterviniente" emptyMessage="No hay datos para mostrar..." var="inter" scrollable="true"
+                                             value="#{consultaIndice.clientes}" scrollHeight="230" >
+                                    <p:column headerText="C.I/R.U.C" style="text-align: center" width="18%">
+                                        <p:outputLabel id="intCedRuc" value="#{inter.enteInterv.cedRuc}"/>
+                                        <p:tooltip for="intCedRuc" >
+                                            <co:inputText label="Domicilio:" value="#{inter.domicilio.nombre}" readonly="true"/>
+                                            <co:inputText label="Estado:" value="#{inter.estado}" readonly="true"/>
+                                            <co:inputText label="Relacion:" value="#{inter.nombres}" readonly="true"/>
+                                            <co:inputText label="Nacionalidad:" value="#{inter.enteInterv.nacionalidad.descripcion}" readonly="true"/>
+                                        </p:tooltip>
+                                    </p:column>
+                                    <p:column headerText="Nombre del Cliente" style="text-align: center" width="47%">
+                                        <p:outputLabel id="intNombres" value="#{inter.enteInterv.nombre}"/>
+                                        <p:tooltip for="intNombres" >
+                                            <co:inputText label="Domicilio:" value="#{inter.domicilio.nombre}" readonly="true"/>
+                                            <co:inputText label="Estado:" value="#{inter.estado}" readonly="true"/>
+                                            <co:inputText label="Relacion:" value="#{inter.nombres}" readonly="true"/>
+                                            <co:inputText label="Nacionalidad:" value="#{inter.enteInterv.nacionalidad.descripcion}" readonly="true"/>
+                                        </p:tooltip>
+                                    </p:column>
+                                    <p:column headerText="Papel" style="text-align: center" width="30%">
+                                        <p:outputLabel value="#{inter.papel.papel}"/>
+                                    </p:column>
+                                    <p:column headerText="Opciones" style="text-align: center" width="14%">
+                                        <p:commandButton icon="fa fa-edit" title="Editar Interviniente" actionListener="#{consultaIndice.editInterviniente(inter)}" >
+                                            <p:ajax event="dialogReturn" listener="#{consultaIndice.selectObject}" update="dtInterviniente"/>
+                                        </p:commandButton>
+                                        <!--<p:commandButton icon="fa fa-trash" title="Eliminar Interviniente" actionListener="# {consultaIndice.deleteMovCliente(inter)}" />-->
+                                    </p:column>
+                                </p:dataTable>
+                            </p:tab>
+                            <p:tab title="Bienes">
+                                <p:dataTable value="#{consultaIndice.fichas}" var="fich" style="width: 100%;text-align: center" scrollable="true"
+                                             scrollHeight="240" rowIndexVar="rowIndex" emptyMessage="No se encontraron elementos..."
+                                             resizableColumns="true" scrollWidth="725">
+                                    <p:column headerText="No" width="60">
+                                        #{rowIndex+1}
+                                    </p:column>
+                                    <p:column headerText="Num. Ficha" width="100">
+                                        <p:outputLabel value="#{fich.numFicha}"/>
+                                    </p:column>
+                                    <p:column headerText="Fec.Apertura" width="100">
+                                        <p:outputLabel value="#{fich.fechaApe}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </p:outputLabel>
+                                    </p:column>
+                                    <p:column headerText="Selec." width="50">
+                                        <p:commandLink actionListener="#{consultaIndice.showDlgFichaSelect(fich)}">
+                                            <p:graphicImage value="/resources/icons/abrir.png" height="16"/>
+                                        </p:commandLink>
+                                    </p:column>
+                                    <p:column headerText="Linderos" width="2500" style="text-align: left;">
+                                        <h:outputText value="#{fich.linderos}"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:tab>
+                            <p:tab title="Observacion">
+                                <p:inputTextarea value="#{consultaIndice.movimiento.observacion}" readonly="true"
+                                                 autoResize="false" scrollHeight="200" style="width: 100%; height: 250px"/>
+                            </p:tab>
+                            <p:tab title="Referencia(s)">
+                                <div style="float: right">
+                                    <p:commandButton icon="ui-icon-plus" value="Agregar Referencias Mov." styleClass="btnStyle" actionListener="#{consultaIndice.showDlg('/resources/dialog/dlglazymov')}">
+                                        <p:ajax event="dialogReturn" listener="#{consultaIndice.selectObject}" update="dtMovimientosReff"/>
+                                    </p:commandButton>
+                                </div>
+                                <div style="clear: both;width: 100%"/>
+                                <p:spacer width="0" height="5"/>
+                                <p:dataTable style="text-align: center;width: 100%" scrollable="true" scrollHeight="230" scrollWidth="1000" rowIndexVar="indexMovRef"
+                                             value="#{consultaIndice.movimiento.regMovimientoReferenciaCollection}" var="movRef"
+                                             emptyMessage="Movimiento sin referencia(s)." resizableColumns="true" id="dtMovimientosReff">
+                                    <p:column headerText="No" width="30">
+                                        #{indexMovRef+1}
+                                    </p:column>
+                                    <p:column headerText="Libro">
+                                        <p:outputLabel value="#{movRef.movimientoReferencia.libro.nombre}"/>
+                                    </p:column>
+                                    <p:column headerText="Acto">
+                                        <p:outputLabel value="#{movRef.movimientoReferencia.acto.nombre}"/>
+                                    </p:column>
+                                    <p:column headerText="Inscripcion" width="110">
+                                        <p:outputLabel value="#{movRef.movimientoReferencia.numInscripcion}"/>
+                                    </p:column>
+                                    <p:column headerText="Repertorio" width="100">
+                                        <p:outputLabel value="#{movRef.movimientoReferencia.numRepertorio}"/>
+                                    </p:column>
+                                    <p:column headerText="Folio" width="100">
+                                        <p:outputLabel value="#{movRef.movimientoReferencia.folioInicio}"/>
+                                    </p:column>
+                                    <p:column headerText="Fec.Inscripcion" width="110">
+                                        <p:outputLabel value="#{movRef.movimientoReferencia.fechaInscripcion}">
+                                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        </p:outputLabel>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:tab>
+                            <p:tab title="Marginaciones">
+                                <div style="text-align: right">
+                                    <p:commandButton icon="ui-icon-plus" value="Nueva Marginacion" styleClass="btnStyle" actionListener="#{consultaIndice.showDlgNewMarginacion()}"/>
+                                </div>
+                                <p:dataTable id="dtMarginacion" value="#{consultaIndice.marginaciones}" var="mg" emptyMessage="No se ha Agregado Ninguna Marginacion"
+                                             scrollable="true" scrollHeight="250" rowIndexVar="indMarg" style="text-align: center">
+                                    <p:column headerText="No" width="45">
+                                        #{indMarg+1}
+                                    </p:column>
+                                    <p:column headerText="Fecha" width="100">
+                                        <p:outputLabel value="#{mg.fechaIngreso}"><f:convertDateTime pattern="dd-MM-yyyy"/></p:outputLabel>
+                                    </p:column>
+                                    <p:column headerText="Marginacion" style="text-align: left;">
+                                        <p:outputLabel value="#{mg.observacion}"/>
+                                    </p:column>
+                                </p:dataTable>
+                            </p:tab>
+                        </p:tabView>
+                        <div style="text-align: center;">
+                            <p:commandButton value="Guardar" icon="fa fa-save" actionListener="#{consultaIndice.guardarMovimiento()}" update="mainForm:tabConsultas" />
+                        </div>
+                    </p:tab>
+                </p:tabView>
+                <div  style="margin-bottom:20px; width: 50%; float: right;">
+
+                    <p:dataTable id="docsMov" value="#{consultaIndice.blobs}" var="blob" paginator="true" rows="1" paginatorPosition="top"
+                                 paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                 lazy="false"  >
+                        <p:column headerText="Archivo" >
+                            <!--<p:outputLabel value="#{blob.fechaInscripcion}" class="Wid100" />-->
+                            <p:media value="/ImageServlet?idBlob=#{blob.idBLob}&amp;anio=#{blob.fechaInscripcion}#toolbar=0" player="pdf" width="100%" height="600" cache="false"  />
+                        </p:column>
+                    </p:dataTable>
+<!--                    <p:dataTable id="docsMov" value="#{consultaIndice.blobs}" var="blob" paginator="true" rows="1" paginatorPosition="top"
+             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+             lazy="false"  >
+    <p:column headerText="Page Number" >
+        <h:panelGroup>
+            <p:imageCropper value="#{consultaIndice.croppedImage}" image="/ImageServletPage?idBlob=# {blob.idBLob}&amp;anio=#{blob.fechaInscripcion}&amp;page=1"  />
+            <p:graphicImage value="/ImageServletPage?idBlob=#{blob.idBLob}&amp;anio=#{blob.fechaInscripcion}&amp;page=1" />
+            <p:commandButton value="Crop" action="#{consultaIndice.crop}" icon="pi pi-clone"/>
+        </h:panelGroup>
+    </p:column>
+</p:dataTable>-->
+                </div>
+            </h:panelGroup>
+        </h:form>
+
+        <p:dialog id="dlgObsvMarginacion" widgetVar="dlgMarginacion" header="Marginacion" modal="true" resizable="false" position="center">
+            <h:form id="formMarginacion">
+                <p:panelGrid styleClass="noBorder" columns="1" style="text-align: center">
+                    <p:inputTextarea value="#{consultaIndice.marg.observacion}" cols="60" rows="10" autoResize="false"/>
+                    <p:commandButton value="Agregar" styleClass="btnStyle" actionListener="#{consultaIndice.agregarMarginacion()}"/>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgMovimientos" header="Movimientos Registrales" widgetVar="dlgMovimientoRegistral" position="left,end"
+                  resizable="false" closeOnEscape="true" width="70%" height="20%"  >
+            <h:form id="formMovimientoRegistral">
+                <p:dataTable value="#{consultaIndice.movimientosInterv}" var="mc" emptyMessage="No se Encontro Ningun Movimiento Relacionado Con esta Persona"
+                             scrollable="true"  scrollHeight="240" style="width: 100%;text-align: center;" rowIndexVar="rowIndex">
+                    <p:column headerText="N°" width="30">
+                        #{rowIndex+1}
+                    </p:column>
+                    <p:column headerText="Libro">
+                        <p:outputLabel value="#{mc.movimiento.libro.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Num.Inscripcion" width="110">
+                        <p:outputLabel value="#{mc.movimiento.numInscripcion}"/>
+                    </p:column>
+                    <p:column headerText="Fec.Inscripcion" width="100">
+                        <p:outputLabel value="#{mc.movimiento.fechaInscripcion}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Acto">
+                        <p:outputLabel value="#{mc.movimiento.acto.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Folio" width="80">
+                        <p:outputLabel value="#{mc.movimiento.folioInicio}"/>
+                    </p:column>
+                    <p:column headerText="Repertorio" width="100">
+                        <p:outputLabel value="#{mc.movimiento.numRepertorio}"/>
+                    </p:column>
+                    <p:column headerText="Selec." width="50">
+                        <p:commandLink value=">>>>>" style="color: #0033FF;font-weight: bolder;"
+                                       actionListener="#{consultaIndice.showDlgMovSelect(mc.movimiento)}"/>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgFichas" header="Fichas Registrales" widgetVar="dlgFichasInterviniente" resizable="false" modal="true"
+                  closeOnEscape="true" width="60%">
+            <h:form id="formFichasInterviniente">
+                <p:panelGrid columns="4" styleClass="noBorder" style="font-weight: bolder;">
+                    CI/RUC:
+                    <p:outputLabel value="#{consultaIndice.select.cedRuc}"/>
+                    Nombre:
+                    <p:outputLabel value="#{consultaIndice.select.nombre}"/>
+                </p:panelGrid>
+                <p:dataTable value="#{consultaIndice.fichasInterv}" var="f" emptyMessage="No se Encontro Ningun Ficha"
+                             scrollable="true" scrollHeight="240" style="width: 100%;text-align: center" rowIndexVar="rowIndex">
+                    <p:column headerText="N°" width="30">
+                        #{rowIndex+1}
+                    </p:column>
+                    <p:column headerText="No Ficha" width="100">
+                        <h:outputText  value="#{f.numFicha}"/>
+                    </p:column>
+                    <p:column headerText="Sector">
+                        <h:outputText value="#{f.sector}"/>
+                    </p:column>
+                    <p:column headerText="Parroquia" width="200">
+                        <h:outputText value="#{f.parroquia.descripcion}"/>
+                    </p:column>
+                    <p:column headerText="Fec.Apertura" width="100">
+                        <h:outputText value="#{f.fechaApe}">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Selec." width="50">
+                        <p:commandLink actionListener="#{consultaIndice.showDlgFichaSelect(f)}" >
+                            <p:graphicImage value="/resources/icons/abrir.png" height="18"/>
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgInformacionFicha" header="Informacion: Ficha Registral" widgetVar="dlgFichaSelect" resizable="false" closeOnEscape="true" width="900" height="500" >
+            <h:form id="formFichaSelect">
+                <p:panelGrid styleClass="noBorder" style="font-weight: bolder;width: 100%;">
+                    <p:row>
+                        <p:column>
+                            Num.Ficha:
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel value="#{consultaIndice.ficha.numFicha}"/>
+                        </p:column>
+                        <p:column>
+                            Parroquia:
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel value="#{consultaIndice.ficha.parroquia.descripcion}"/>
+                        </p:column>
+                        <p:column>
+                            Fecha Apertura:
+                        </p:column>
+                        <p:column>
+                            <p:outputLabel value="#{consultaIndice.ficha.fechaApe}" >
+                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                            </p:outputLabel>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            Codigo Catastral:
+                        </p:column>
+                        <p:column colspan="4">
+                            <p:outputLabel value="#{consultaIndice.ficha.claveCatastral}"/>
+                        </p:column>
+                        <p:column style="text-align: right">
+                            <p:commandButton value="Bitacora" actionListener="#{consultaIndice.imprimirBitacoraFicha()}" styleClass="btnStyle" icon="ui-icon-document"/>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+                <p:tabView>
+                    <p:tab title="Linderos Registrales">
+                        <p:inputTextarea value="#{consultaIndice.ficha.linderos}" readonly="true" autoResize="false" scrollHeight="300" style="width: 100%;height: 350px;"/>
+                    </p:tab>
+                    <p:tab title="Movimientos Registrales">
+                        <p:dataTable value="#{consultaIndice.movimientosFichas}" var="mf" style="width: 100%;text-align: center"
+                                     scrollable="true" scrollHeight="300" rowIndexVar="rowIndex" resizableColumns="true">
+                            <p:column headerText="No" width="60">
+                                #{rowIndex+1}
+                            </p:column>
+                            <p:column headerText="Libro">
+                                <p:outputLabel value="#{mf.movimiento.libro.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Acto" >
+                                <p:outputLabel value="#{mf.movimiento.acto.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Inscripcion" width="100">
+                                <p:outputLabel value="#{mf.movimiento.numInscripcion}"/>
+                            </p:column>
+                            <p:column headerText="Repertorio" width="100">
+                                <p:outputLabel value="#{mf.movimiento.numRepertorio}"/>
+                            </p:column>
+                            <p:column headerText="Folio" width="100">
+                                <p:outputLabel value="#{mf.movimiento.folioInicio}"/>
+                            </p:column>
+                            <p:column headerText="Fec.Inscripc." width="100">
+                                <p:outputLabel value="#{mf.movimiento.fechaInscripcion}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Selec." width="50">
+                                <p:commandLink actionListener="#{consultaIndice.showDlgMovSelect(mf.movimiento)}">
+                                    <p:graphicImage value="/resources/icons/abrir.png" height="16"/>
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Propietarios">
+                        <p:dataTable value="#{consultaIndice.ficha.regFichaPropietariosCollection}" var="pro" style="text-align: center"
+                                     scrollable="true" scrollHeight="300" rowIndexVar="rowIndexProp" resizableColumns="true">
+                            <p:column headerText="No" width="60">
+                                #{rowIndexProp+1}
+                            </p:column>
+                            <p:column headerText="CI/RUC" width="150">
+                                <p:outputLabel value="#{pro.propietario.cedRuc}"/>
+                            </p:column>
+                            <p:column headerText="Nombre" >
+                                <p:outputLabel value="#{pro.propietario.nombre}"/>
+                            </p:column>
+                            <p:column headerText="En calidad de:" width="150">
+                                <p:outputLabel value="#{pro.calidad}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Estado">
+                        <p:inputTextarea value="#{consultaIndice.ficha.estado.valor}" readonly="true" autoResize="false" scrollHeight="300"
+                                         style="width: 100%;height: 350px;font-weight: bolder;color: #0033FF;font-size: 14px;"/>
+                    </p:tab>
+                    <p:tab title="Marginacion">
+                        <p:dataTable value="#{consultaIndice.ficha.regFichaMarginacionCollection}" var="marg" style="text-align: center"
+                                     scrollable="true" scrollHeight="300" rowIndexVar="index" resizableColumns="true">
+                            <p:column headerText="No" width="60">
+                                #{index+1}
+                            </p:column>
+                            <p:column headerText="Fecha" width="100">
+                                <p:outputLabel value="#{marg.fechaIngreso}">
+                                    <f:convertDateTime pattern="dd-MM-yyyy"/>
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Observacion" >
+                                <p:outputLabel value="#{marg.observacion}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgFechas" header="Consulta Inscripciones por Fechas" widgetVar="consultaFechas"
+                  resizable="false" modal="true" closeOnEscape="true" width="400">
+            <h:form id="formFechas">
+                <p:panelGrid styleClass="noBorder" style="text-align: center;font-weight: bolder;width: 100%;">
+                    <p:row>
+                        <p:column>
+                            Desde:
+                        </p:column>
+                        <p:column>
+                            Hasta:
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:calendar value="#{consultaIndice.desde}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy"/>
+                        </p:column>
+                        <p:column>
+                            <p:calendar value="#{consultaIndice.hasta}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:commandButton value="Reporte" icon="ui-icon-document" styleClass="btnStyle"
+                                             actionListener="#{consultaIndice.imprimirInscripcionesPorFecha()}"/>
+                        </p:column>
+                        <p:column>
+                            <p:commandButton value="Buscar" icon="ui-icon-search" styleClass="btnStyle"
+                                             actionListener="#{consultaIndice.buscarInscripFechas()}"/>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgInsEspecificas" header="Consulta Especificas - Inscripciones" widgetVar="consultaEspecifica"
+                  resizable="false" modal="true" closeOnEscape="true" width="75%">
+            <h:form id="formInsEspecificas">
+                <p:spacer height="10"/>
+                <p:panelGrid style="text-align: center;font-weight: bolder;width: 100%;">
+                    <p:row>
+                        <p:column>
+                            Libro:
+                        </p:column>
+                        <p:column>
+                            Acto:
+                        </p:column>
+                        <p:column>
+                            Inscripción:
+                        </p:column>
+                        <p:column>
+                            Repertorio:
+                        </p:column>
+                        <p:column>
+                            Desde:
+                        </p:column>
+                        <p:column>
+                            Hasta:
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            <p:selectOneMenu value="#{consultaIndice.libroConsEsp}" converter="entityConverter">
+                                <f:selectItem itemLabel="TODOS LOS LIBROS" itemValue="#{null}" />
+                                <f:selectItems value="#{consultaIndice.libros}" var="libro"
+                                               itemLabel="#{libro.nombre}" itemValue="#{libro}"/>
+                            </p:selectOneMenu>
+                        </p:column>
+                        <p:column>
+                            <p:autoComplete id="selectActo" queryDelay="400" value="#{consultaIndice.actoConsEsp}" converter="entityConverter" completeMethod="#{consultaIndice.complete}"
+                                            var="acto" itemLabel="#{acto.abreviatura}#{acto eq null?'':' | '}#{acto.nombre}" itemValue="#{acto}" size="30" placeholder="TODOS LOS ACTOS">
+                            </p:autoComplete>
+                        </p:column>
+                        <p:column>
+                            <p:inputNumber value="#{consultaIndice.inscripcionConsEsp}" decimalPlaces="0"/>
+                        </p:column>
+                        <p:column>
+                            <p:inputNumber value="#{consultaIndice.repertorioConsEsp}" decimalPlaces="0"/>
+                        </p:column>
+                        <p:column>
+                            <p:calendar value="#{consultaIndice.desdeConsEsp}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy"/>
+                        </p:column>
+                        <p:column>
+                            <p:calendar value="#{consultaIndice.hastaConsEsp}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy"/>
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="3">
+                            <p:commandButton value="Reporte" icon="ui-icon-document" styleClass="btnStyle" actionListener="#{consultaIndice.imprimirInscripcionesEspecificas()}"/>
+                        </p:column>
+                        <p:column colspan="3">
+                            <p:commandButton value="Buscar" icon="ui-icon-search" styleClass="btnStyle" actionListener="#{consultaIndice.consultaEspecifica}"/>
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+                <p:spacer height="10"/>
+            </h:form>
+        </p:dialog>
+
+
+        <p:dialog id="dlgIndices" header="Consulta de Indices" widgetVar="consultaIndices" resizable="false" modal="true" closeOnEscape="true" width="75%">
+            <h:form id="formIndices">
+                <p:dataTable value="#{consultaIndice.listMovs}" var="movis" style="text-align: center;width: 100%;font-size: 10px;" scrollable="true"
+                             scrollHeight="250" rowIndexVar="indexMovs" emptyMessage="Sin elementos..." >
+                    <p:column headerText="No" width="30">
+                        #{indexMovs+1}
+                    </p:column>
+                    <p:column headerText="Acto">
+                        <p:outputLabel value="#{movis.acto.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Papel">
+                        <p:outputLabel value="#{consultaIndice.getPapelByMovAndCodInterv(movis.id, consultaIndice.select.cedRuc)}"/>
+                    </p:column>
+                    <p:column headerText="No Rep." width="75">
+                        <p:outputLabel value="#{movis.numRepertorio}"/>
+                    </p:column>
+                    <p:column headerText="Fec.Rep." width="130">
+                        <p:outputLabel value="#{movis.fechaRepertorio}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                        </p:outputLabel>
+                    </p:column>
+                    <p:column headerText="No Insc." width="75">
+                        <p:outputLabel value="#{movis.numInscripcion}"/>
+                    </p:column>
+                    <p:column headerText="Fec.Insc." width="130">
+                        <p:outputLabel value="#{movis.fechaInscripcion}">
+                            <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                        </p:outputLabel>
+                    </p:column>
+                    <p:column headerText="No Tramite" width="75">
+                        <p:outputLabel value="#{movis.tramite.tramite.numTramite}"/>
+                    </p:column>
+                    <p:column headerText="Info" width="35">
+                        <p:commandLink actionListener="#{consultaIndice.detalleMovimiento(movis)}">
+                            <p:graphicImage value="/resources/icons/abrir.png" height="15"/>
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgIndicesDet" header="Detalle de Indices" widgetVar="consultaIndicesDet" resizable="false" closeOnEscape="true" width="55%">
+            <h:form id="formIndicesDet">
+                <p:panelGrid styleClass="noBorder" columns="8" style="font-weight: bolder;">
+                    Contrato:
+                    <p:outputLabel value="#{consultaIndice.movSelec.acto.nombre}"/>
+                    No Insc.:
+                    <p:outputLabel value="#{consultaIndice.movSelec.numInscripcion}"/>
+                    No Rep.:
+                    <p:outputLabel value="#{consultaIndice.movSelec.numRepertorio}"/>
+                    Fec.Insc.:
+                    <p:outputLabel value="#{consultaIndice.movSelec.fechaInscripcion}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                    </p:outputLabel>
+                </p:panelGrid>
+                <p:dataTable value="#{consultaIndice.movSelec.regMovimientoClienteCollection}" var="movMc" style="text-align: center;width: 100%;font-size: 10px;" scrollable="true"
+                             scrollHeight="200" rowIndexVar="indexMc" emptyMessage="Sin elementos..." >
+                    <p:column headerText="No" width="30">
+                        #{indexMc+1}
+                    </p:column>
+                    <p:column headerText="Documento">
+                        <p:outputLabel value="#{movMc.enteInterv.cedRuc}"/>
+                    </p:column>
+                    <p:column headerText="Nombre">
+                        <p:outputLabel value="#{movMc.enteInterv.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Papel">
+                        <p:outputLabel value="#{movMc.papel.papel}"/>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+
+    </ui:define>
+</ui:composition>

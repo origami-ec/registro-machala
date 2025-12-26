@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="valoresCero" language="groovy" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="0" bottomMargin="0" uuid="fadafa86-3b59-4beb-8132-40242fec227f">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" hAlign="Left" vAlign="Bottom" pdfFontName="Helvetica-Bold" pdfEncoding="Cp1252"/>
+	<style name="ANULADA" mode="Opaque" forecolor="#000000" backcolor="#FF9999"/>
+	<parameter name="IMG_URL" class="java.lang.String"/>
+	<parameter name="TESORERA" class="java.lang.String"/>
+	<parameter name="COORDINADORA" class="java.lang.String"/>
+	<parameter name="CONTADORA" class="java.lang.String"/>
+	<parameter name="DESDE" class="java.lang.String"/>
+	<parameter name="HASTA" class="java.lang.String"/>
+	<parameter name="HASTA_STRING" class="java.lang.String"/>
+	<parameter name="USUARIO" class="java.lang.Long"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["C:\\Users\\mjair\\OneDrive\\Desktop\\TRABAJO\\SISTEM\\registro-machala\\sgr-machala\\src\\main\\webapp\\reportes\\diarios\\"]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+    COALESCE(SUM(sub.valor_unitario_redondeado), 0) AS total_unitario_global,
+    COALESCE(SUM(
+        CASE
+            WHEN sub.total_pagar_redondeado > 0 THEN sub.total_pagar_redondeado
+            ELSE sub.descuento_redondeado
+        END
+    ), 0) AS total_descuento_global,
+    COALESCE(SUM(sub.total_pagar_redondeado), 0)    AS total_global_final,
+    MAX(sub.usuario)                                AS usuario
+
+FROM (
+    SELECT DISTINCT
+        dl.id,
+        us.usuario,
+        ((dl.valor_unitario::NUMERIC) + COALESCE(dl.recargo, 0)::NUMERIC)::NUMERIC(19,2) as valor_unitario_redondeado,
+        dl.descuento::NUMERIC(19,2) as descuento_redondeado,
+        dl.valor_total::NUMERIC(19,2) as total_pagar_redondeado
+    FROM flow.regp_liquidacion liq
+    INNER JOIN flow.regp_liquidacion_detalles dl ON dl.liquidacion = liq.id
+    LEFT JOIN app.acl_user us ON us.id = liq.user_ingreso
+    LEFT JOIN flow.regp_intervinientes inter ON inter.liquidacion = dl.id
+    LEFT JOIN flow.regp_exoneracion exo ON exo.id = inter.exoneracion
+    WHERE
+        liq.fecha_ingreso BETWEEN to_timestamp($P{DESDE}, 'DD/MM/YYYY HH24:MI')
+                              AND to_timestamp($P{HASTA}, 'DD/MM/YYYY HH24:MI')
+        AND (CASE WHEN $P{USUARIO} > 0 THEN us.id = $P{USUARIO} ELSE TRUE END)
+        AND liq.estado_liquidacion = 2
+        AND liq.reingreso IS FALSE
+        AND (
+            (exo.id = 6 AND exo.concepto <> 'REINGRESO DE TRAMITE')
+            OR
+            (dl.descuento > 0 AND dl.valor_total > 0)
+            OR
+            (
+                dl.valor_total = 0
+                AND dl.descuento > 0
+                AND exo.id IS NOT NULL
+                AND UPPER(exo.concepto) NOT LIKE '%DEVOLU%'
+                AND exo.concepto <> 'REINGRESO DE TRAMITE'
+            )
+        )
+
+    UNION ALL
+    SELECT
+        NULL as id,
+        us.usuario,
+        (rp.valor + COALESCE(rp.descuento, 0))::NUMERIC(19,2) as valor_unitario_redondeado,
+        rp.descuento::NUMERIC(19,2) as descuento_redondeado,
+        rp.valor::NUMERIC(19,2) as total_pagar_redondeado
+
+    FROM financiero.ren_factura fa
+    LEFT JOIN financiero.ren_cajero ca ON ca.id = fa.caja
+    LEFT JOIN app.acl_user us ON us.id = ca.usuario
+    LEFT JOIN financiero.ren_pago rp ON rp.id = fa.pago
+    LEFT JOIN flow.regp_liquidacion linked_liq ON linked_liq.id = rp.liquidacion
+
+    WHERE
+        fa.fecha BETWEEN to_timestamp($P{DESDE}, 'DD/MM/YYYY HH24:MI')
+                     AND to_timestamp($P{HASTA}, 'DD/MM/YYYY HH24:MI')
+        AND (CASE WHEN $P{USUARIO} > 0 THEN us.id = $P{USUARIO} ELSE TRUE END)
+        AND fa.estado = true
+        AND (
+            rp.liquidacion IS NULL
+            OR
+            (linked_liq.id IS NOT NULL)
+        )
+        AND rp.descuento > 0
+
+) AS sub;]]>
+	</queryString>
+	<field name="total_unitario_global" class="java.math.BigDecimal"/>
+	<field name="total_descuento_global" class="java.math.BigDecimal"/>
+	<field name="total_global_final" class="java.math.BigDecimal"/>
+	<field name="usuario" class="java.lang.String"/>
+	<variable name="SUM_TOTAL" class="java.lang.String" incrementType="Column" calculation="Sum">
+		<variableExpression><![CDATA[$F{total_descuento_global}]]></variableExpression>
+	</variable>
+	<variable name="variable1" class="java.lang.String">
+		<variableExpression><![CDATA[]]></variableExpression>
+	</variable>
+	<background>
+		<band height="842" splitType="Stretch">
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="0" y="0" width="555" height="842" uuid="d99d0c2c-8059-48ec-9f30-1c04d60f6d64"/>
+				<imageExpression><![CDATA[$P{IMG_URL}]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<pageHeader>
+		<band height="50"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="90">
+			<staticText>
+				<reportElement style="negrita" x="32" y="34" width="482" height="16" uuid="d534854c-1e5e-4b41-8846-9dda9d07765d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[REPORTE DE RECAUDACIÓN VALORES EXONERADOS]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="67" y="66" width="128" height="16" uuid="314614fe-1b2f-43ce-b278-68bcf0c7dd00"/>
+				<textFieldExpression><![CDATA[$P{HASTA_STRING}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement x="67" y="50" width="128" height="16" uuid="13f35b87-c64f-4a69-ba6e-90c16ced1a5e"/>
+				<textFieldExpression><![CDATA[$P{DESDE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="13" y="66" width="54" height="16" uuid="a8f6c17d-95cd-4b95-8e10-220b14b9d08e"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Hasta:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="13" y="50" width="54" height="16" uuid="214beecd-b44b-47e5-8f7d-b32d5b9bad50"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Desde:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="300" y="50" width="118" height="16" uuid="8b3c770a-f1b5-4420-a836-e3498160853f"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Fecha de Impresión:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="300" y="66" width="50" height="16" uuid="dd22d4b7-5d7c-4a8b-9020-7fc0a7e1abfd"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Cajero:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="350" y="66" width="195" height="16" uuid="2a0b8e66-ccf9-40c8-b4cd-4282122ff9dc"/>
+				<textFieldExpression><![CDATA[$P{USUARIO} == 0 ? "TODOS" :$F{usuario}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement x="418" y="50" width="127" height="16" uuid="46957a6b-0b54-4141-a0da-2072cc25cf29"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="53" splitType="Stretch">
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="556" height="15" isRemoveLineWhenBlank="true" uuid="2b291d08-36b0-4281-a32b-0588f80e10a3"/>
+				<subreportParameter name="DESDE">
+					<subreportParameterExpression><![CDATA[$P{DESDE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="HASTA">
+					<subreportParameterExpression><![CDATA[$P{HASTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="USUARIO">
+					<subreportParameterExpression><![CDATA[$P{USUARIO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "exonerados100.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="15" width="556" height="15" isRemoveLineWhenBlank="true" uuid="2554eb3c-439a-4b17-81a5-eca59aa45583"/>
+				<subreportParameter name="USUARIO">
+					<subreportParameterExpression><![CDATA[$P{USUARIO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DESDE">
+					<subreportParameterExpression><![CDATA[$P{DESDE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="HASTA">
+					<subreportParameterExpression><![CDATA[$P{HASTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "exonerados50.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="30" width="556" height="23" isRemoveLineWhenBlank="true" uuid="830009f4-7a30-439c-b5ce-d29b681f5079"/>
+				<subreportParameter name="HASTA">
+					<subreportParameterExpression><![CDATA[$P{HASTA}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="USUARIO">
+					<subreportParameterExpression><![CDATA[$P{USUARIO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="DESDE">
+					<subreportParameterExpression><![CDATA[$P{DESDE}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "exoneradosCruceValores.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="59" splitType="Stretch">
+			<textField>
+				<reportElement x="455" y="0" width="38" height="16" uuid="41f58b5d-7176-4df3-a45f-6e3bae31478a"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Pág. "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="493" y="0" width="34" height="16" uuid="a06fd47a-a98d-4c5a-b3d8-8acbfee8f33e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement x="228" y="0" width="150" height="14" uuid="b4e2c81f-53ac-4b9c-9f97-d0ac3ae706f1"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="110" y="0" width="118" height="14" uuid="5fe1b349-ee73-42fe-b9d9-5e14e55d4277"/>
+				<text><![CDATA[Fecha de Impresión:]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="175" splitType="Stretch">
+			<staticText>
+				<reportElement x="255" y="39" width="205" height="20" uuid="3d47a3d9-9031-4539-8258-12be5b75b1ea"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[TOTAL EXONERADOS]]></text>
+			</staticText>
+			<textField pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement x="460" y="39" width="67" height="20" uuid="243a1573-c588-41d5-9a8a-6c1fa2e841db"/>
+				<box rightPadding="5"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{total_descuento_global}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="-1" y="80" width="269" height="17" uuid="aeac3c24-ec01-4872-ac2e-ee81671183ca"/>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["GENERADO POR"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="negrita" x="-1" y="97" width="269" height="77" uuid="ad4a18e2-2ac9-415a-97eb-13fdc5989cea"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression><![CDATA[$P{TESORERA}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="286" y="81" width="269" height="16" uuid="6e8ed30c-90d8-4bb7-b591-a8cc1a146c17"/>
+				<box leftPadding="2">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["RECIBIDO POR"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="negrita" x="286" y="97" width="269" height="78" uuid="f420eb92-8c91-43c9-8d67-7966d2e16f85"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom"/>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

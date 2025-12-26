@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="apple-mobile-web-app-capable" content="yes" />
+            <link rel="shortcut icon" type="image/jpg"  href="#{request.contextPath}/resources/paradise-layout/images/origami.ico" />
+        </f:facet>
+        <title>OrigamiGT</title>
+    </h:head> 
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{loginMB.doPreRenderView()}"/>
+        <f:viewParam name="code1" value="#{loginMB.codeUser}"/>
+        <f:viewParam name="code2" value="#{loginMB.codePass}"/>
+    </f:metadata>
+
+    <h:body styleClass="login-body">
+        <h:form id="formMain">
+            <!--<p:messages  id="messages" showDetail="true" closable="true" globalOnly="true"  />-->
+            <p:growl id="messages" globalOnly="true" showDetail="true" showSummary="true" >
+                <p:autoUpdate />
+            </p:growl>
+
+            <div class="login-panel p-grid">
+                <div class="p-col-12 logo-container">
+                    <center>
+                        <br/>
+                        <p:graphicImage  name="images/origami.png" style="width: 70%; height: 40%; text-align: center"
+                                         library="paradise-layout"/><br/><br/>
+                    </center> 
+                </div>
+
+                <h:panelGroup></h:panelGroup>
+                <h:panelGroup> 
+                    <div class="p-col-12">
+                        <p:outputLabel for="username" value="Iniciar Sesión" />
+                        <div class="input-wrapper">
+                            <p:inputText id="username" placeholder="Identificación" value="#{loginMB.user}" />
+                            <i class="pi pi-user" />
+                        </div>
+                    </div>
+                    <div class="p-col-12">
+                        <p:outputLabel for="password" value="Contraseña" />
+                        <div class="input-wrapper">
+                            <p:password id="password" 
+                                        value="#{loginMB.pass}" placeholder="Contraseña"  feedback="false" />
+                            <i class="pi pi-lock" />
+                        </div>
+                    </div>
+                    <div class="p-col-12 button-container">
+                        <p:commandButton id="btnLogIn" value="Acceder" icon="fa fa-user" 
+                                         action="#{loginMB.doLogin()}"
+                                         style="font-weight: bold;"
+                                         styleClass="info-button rounded-button p-mr-2 p-mb-2" />
+                    </div><br/><br/>
+                </h:panelGroup>
+            </div>
+        </h:form>
+    </h:body>
+    <h:outputStylesheet name="css/primeicons.css" library="paradise-layout" />
+    <h:outputStylesheet name="css/primeflex.min.css" library="paradise-layout" />
+    <h:outputStylesheet name="css/layout-#{guestPreferences.layout}.css" library="paradise-layout" />
+</html>

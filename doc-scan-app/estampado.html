@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Visualizador PDF para estampado de firma en formato A4</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <link rel="stylesheet" href="./bootstrap.min.css">
+    <link rel="stylesheet" href="./resources/font-awesome/css/font-awesome.min.css">
+
+    <style>
+        body {
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body style="margin:0 auto;">
+    </br>
+    <center>
+        <label style="font-weight: bolder;">Seleccione con el puntero el lugar donde estampará la firma</label>
+        </br>
+        </br>
+        <button id="btnFirmarArchivo" type="button" class="btn btn-primary" title="Fimar documento">
+        <i class="fa fa-save"></i> Firmar documento
+    </button>
+        </br>
+        </br>
+        <div id="posicionFirma" style="border-radius: 25% 10%;"></div>
+        <img id="imagenDoc" />
+
+    </center>
+
+
+
+</body>
+
+</html>

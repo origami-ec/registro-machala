@@ -1,0 +1,47 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co" >
+    <ui:define name="title">Feriados</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2>DIAS NO LABORABLES</h2></center>
+            <h:panelGrid styleClass="noBorder" columns="2" style="width: 100%">
+                <p:commandButton value="Agregar Dia no Laborable" icon="ui-icon-plus" style="float: right;"
+                                 actionListener="#{feriadosManaged.showDlgInferiado()}"/>
+            </h:panelGrid>
+            <p:dataTable id="dtferiados" reflow="true" paginator="true" lazy="true" rows="12" rowsPerPageTemplate="12,25,50" filterEvent="enter"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         value="#{feriadosManaged.lazy}" var="fer" emptyMessage="No se encontró ningún Item" style="text-align: center; width: 80%;margin: 0 auto;">
+                <p:column headerText="Descripcion" filterBy="#{fer.descripcion}" filterStyle="width: 95%;">
+                    <h:outputText value="#{fer.descripcion}"/>
+                </p:column>
+                <p:column headerText="Fecha Feriado" sortBy="#{fer.fecha}" width="200">
+                    <h:outputText value="#{fer.fecha}"><f:convertDateTime pattern="EEEEEEEEE dd MMMMM yyyy"/></h:outputText>
+                </p:column>
+                <p:column headerText="Edit." width="35">
+                    <p:commandLink actionListener="#{feriadosManaged.showDlgEdferiado(fer)}">
+                        <p:graphicImage value="/resources/icons/edit.png" height="16"/>
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog id="dlgIngreso" header="Ingreso de Dia No Laborable" widgetVar="dlgIngresoTramite" resizable="false"
+                  modal="true" closeOnEscape="true" width="400">
+            <h:form id="formIngreso">
+                <h:panelGrid styleClass="noBorder" style="text-align: center;font-weight: bolder;width: 100%;" columns="1">
+                    <co:inputDate label="Fecha:" value="#{feriadosManaged.feriado.fecha}" />
+                    <co:inputText label="Descripcion:" value="#{feriadosManaged.feriado.descripcion}" />
+                    <p:commandButton value="Ingresar" icon="ui-icon-check" styleClass="btnStyle" actionListener="#{feriadosManaged.saveFeriado()}"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

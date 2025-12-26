@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Persona</title>
+        <ui:include src="styleTemplete.xhtml" />
+    </h:head>
+    <h:body>
+        <h:form id="formMain">
+            <p:tabView activeIndex="#{dlgLazyEnte.tabIndex}" >
+                <p:tab title="Listado de personas">
+                    <br></br>
+                    <p:dataTable id="dtentes" reflow="true" paginator="true" lazy="true" rows="10" rowsPerPageTemplate="5,10,15" filterEvent="enter"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                 value="#{dlgLazyEnte.catEntes}" var="user" emptyMessage="No se encontró ningún Item" 
+                                 paginatorPosition="bottom">
+                        <p:column headerText="C.I./R.U.C." width="20%" filterBy="#{user.identificacion}" 
+                                  filterMatchMode="contains"
+                                  filterStyle="width: 95%;">
+                            <h:outputText value="#{user.identificacion}"/>
+                        </p:column>
+                        <p:column headerText="Nombres / Razón Social" filterBy="#{user.nombrerazonsocial}" 
+                                  filterMatchMode="contains"
+                                  filterStyle="width: 95%;">
+                            <h:outputText value="#{user.nombres}" rendered="#{user.esPersona}"/>
+                            <h:outputText value="#{user.razonSocial}" rendered="#{!user.esPersona}"/>
+                        </p:column>
+                        <p:column headerText="Apellidos / Nombre Comercial" filterBy="#{user.apellidonombrecomercial}" 
+                                  filterMatchMode="contains" filterStyle="width: 95%;">
+                            <h:outputText value="#{user.apellidos}" rendered="#{user.esPersona}"/>
+                            <h:outputText value="#{user.nombreComercial}" rendered="#{!user.esPersona}"/>
+                        </p:column>
+                        <p:column headerText="Tipo" width="5%">
+                            <h:outputText value="N" rendered="#{user.esPersona}"/>
+                            <h:outputText value="J" rendered="#{!user.esPersona}"/>
+                        </p:column>
+                        <p:column headerText="Seleccione." width="5%">
+                            <p:commandButton icon="fa fa-check"
+                                             actionListener="#{dlgLazyEnte.close(user)}" process="@this"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Nuevo persona">
+                    <br></br>
+                    <h:panelGrid id="formNewEnte" columns="2"  style="font-weight: bolder; margin-left: 2%; width: 90%">
+                        <h:panelGroup>
+                            Tipo Persona:<br></br>
+                            <p:selectOneMenu value="#{dlgLazyEnte.ente.esPersona}" style=" width: 80%">
+                                <f:selectItem itemLabel="Natural" itemValue="#{true}" />
+                                <f:selectItem itemLabel="Jurídica" itemValue="#{false}" />
+                                <p:ajax listener="#{dlgLazyEnte.updateTipoDoc()}" update="formNewEnte"/>
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            Tipo Documento:<br></br>
+                            <p:selectOneMenu id="tipoDoc" value="#{dlgLazyEnte.tipoDocumento}" 
+                                             disabled="#{!dlgLazyEnte.ente.esPersona}" 
+                                             style=" width: 80%">
+                                <f:selectItem itemLabel="Cédula" itemValue="C" />
+                                <f:selectItem itemLabel="RUC" itemValue="R" itemDisabled="#{dlgLazyEnte.ente.esPersona}"/>
+                                <f:selectItem itemLabel="Pasaporte" itemValue="P" />
+                                <p:ajax update="identificacion" process="tipoDoc"/>
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            CI/Ruc/Pas.*<br></br>
+                            <p:inputText id="identificacion" value="#{dlgLazyEnte.ente.identificacion}" 
+                                         maxlength="#{dlgLazyEnte.tipoDocumento eq 'C' ? 10:dlgLazyEnte.tipoDocumento eq 'P'? 50:13}" style=" width: 80%" >
+                                <!--<p:keyFilter regEx="# {dlgLazyEnte.regEx()}"/>-->
+                            </p:inputText>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{dlgLazyEnte.ente.esPersona}">
+                            Nombres*<br></br>
+                            <p:inputText value="#{dlgLazyEnte.ente.nombres}" style="text-transform: uppercase;  width: 80%" >
+                                <p:keyFilter regEx="/[0-9-a-zA-ZÀ-ú\\s\\ ]+/"/>
+                            </p:inputText>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{dlgLazyEnte.ente.esPersona}">
+                            Apellidos*<br></br>
+                            <p:inputText value="#{dlgLazyEnte.ente.apellidos}" style="text-transform: uppercase;  width: 80%">
+                                <p:keyFilter regEx="/[0-9-a-zA-ZÀ-ú\\s\\ ]+/"/>
+                            </p:inputText>    
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{!dlgLazyEnte.ente.esPersona}">
+                            Razon Social*<br></br>
+                            <p:inputText value="#{dlgLazyEnte.ente.razonSocial}" style="text-transform: uppercase;  width: 80%">
+                                <p:keyFilter regEx="/[0-9-a-zA-ZÀ-ú\\s\\ ]+/"/>
+                            </p:inputText>    
+                        </h:panelGroup >
+                        <h:panelGroup rendered="#{!dlgLazyEnte.ente.esPersona}">
+                            Nom.Comercial*<br></br>
+                            <p:inputText value="#{dlgLazyEnte.ente.nombreComercial}" style="text-transform: uppercase;  width: 80%"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            Direccion:<br></br>
+                            <p:inputText value="#{dlgLazyEnte.ente.direccion}" style="text-transform: uppercase;  width: 80%" />
+                        </h:panelGroup>
+                        <h:panelGroup style="width: 50%" styleClass="width: 50%">
+                            Correo*<br></br>
+                            <div class="ui-inputgroup">
+                                <p:inputText id="intputcorreoEdit" value="#{dlgLazyEnte.ente.correo}" 
+                                             style="width: 50%">
+                                    <p:keyFilter for="intputcorreoEdit" testFunction="return c != '@';"/>
+                                </p:inputText>
+                                <p:selectOneMenu id="hideNoselectionOption" value="#{dlgLazyEnte.dominio}"
+                                                 style="width: 120px"
+                                                 filter="true" filterMatchMode="contains" editable="true">
+                                    <f:selectItems value="#{dlgLazyEnte.dominios}"
+                                                   var="d" 
+                                                   itemLabel="#{d.descripcion}" itemValue="#{d.descripcion}"/>                                    
+                                </p:selectOneMenu>
+                            </div>
+                            <!--<p:inputText value="# {dlgLazyEnte.ente.correo}(*)" style="width: 80%"/>-->
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            Tlfn.:<br></br>
+                            <p:inputMask value="#{dlgLazyEnte.ente.telefono}" mask="(99) 9999999" style="width: 80%" />
+                        </h:panelGroup>
+                    </h:panelGrid>
+                    <br/>
+                    <center>
+                        <p:commandButton value="Guardar" icon="fa fa-save" 
+                                         actionListener="#{dlgLazyEnte.saveEnte()}" 
+                                         process="@form,tipoDoc" />
+                    </center>
+                </p:tab>
+            </p:tabView>
+            <br></br>
+
+            <br></br>
+
+        </h:form>
+    </h:body>
+</html>

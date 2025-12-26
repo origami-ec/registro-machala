@@ -1,0 +1,13 @@
+server:
+  port: 8785
+spring:
+  application:
+    name: ws-transaction #-> SERVICE ID
+  main:
+    allow-bean-definition-overriding: true
+
+  h2:
+    console:
+      enabled: false
+
+

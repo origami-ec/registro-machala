@@ -1,0 +1,196 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:define name="title">
+        Trámites Ventanilla Única
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="formMain" prependId="false">
+            <center>
+                <h2>Ruta de Trámites</h2>
+            </center>
+            <br/><br/>
+            <p:outputPanel rendered="#{!tramitesGeneralesMB.renderedView}">
+                <p:dataTable id="datosTodos" var="todo"
+                             value="#{tramitesGeneralesMB.lazyVentanillaTodos}"
+                             lazy="true" widgetVar="datosTodos" rowIndexVar="i"
+                             rows="10" reflow="true" paginator="true"  filterEvent="enter"
+                             rowsPerPageTemplate="10,50,100"  paginatorPosition="bottom"
+                             emptyMessage="No existen registros"
+                             currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros">
+                    <p:column headerText="Fecha" style="text-align: center">
+                        <h:outputText value="#{todo.fechaCreacion}" >
+                            <f:convertDateTime pattern="dd-MM-yyyy hh:mm:ss"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="N° Trámite" filterBy="#{todo.tramite.secuencial}" style="text-align: center">
+                        <h:outputText value="#{todo.tramite.secuencial}" />
+                    </p:column>
+                    <p:column headerText="Trámite" filterBy="#{todo.tramite.codigo}" style="text-align: center">
+                        <h:outputText value="#{todo.tramite.codigo}" />
+                    </p:column>
+                    <p:column headerText="Identificación" style="text-align: center" filterBy="#{todo.enteSolicitante.identificacion}">
+                        <h:outputText value="#{todo.enteSolicitante.identificacion}" />
+                    </p:column>
+                    <p:column headerText="Apellidos/Razón Social" style="text-align: center">
+                        <h:outputText value="#{todo.enteSolicitante.identificacion.length() eq 13 ? todo.enteSolicitante.razonSocial:todo.enteSolicitante.apellidos}"/>
+                    </p:column>
+                    <p:column headerText="Nombres/Nombre Comercial" style="text-align: center">
+                        <h:outputText value="#{todo.enteSolicitante.identificacion.length() eq 13 ? todo.enteSolicitante.nombreComercial:todo.enteSolicitante.nombres}"/>
+                    </p:column>
+                    <p:column headerText="Servicio" style="text-align: center" filterBy="#{todo.tipoTramite.descripcion}">
+                        <h:outputText value="#{todo.tipoServicio.nombre}" />
+                        <f:facet name="filter">
+                            <p:selectOneMenu onchange="PF('datosTodos').filter()" styleClass="custom-filter"
+                                             filter="true" filterMatchMode="contains" style="min-width:100% !important; max-width: 0 !important">
+                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                <f:selectItems itemLabel="#{serv.nombre}" var="serv" 
+                                               value="#{tramitesGeneralesMB.serviciosDepartamentos}"
+                                               itemValue="#{serv.nombre}"/>
+                            </p:selectOneMenu> 
+                        </f:facet>
+                    </p:column>
+                    <p:column headerText="Finalizado" style="text-align: center" filterBy="#{todo.finalizado}">
+                        <f:facet name="filter">
+                            <p:selectOneMenu onchange="PF('datosServiciosProcesos').filter()" styleClass="custom-filter"
+                                             filter="true">
+                                <f:selectItem itemLabel="Seleccione..." itemValue="#{null}"/>
+                                <f:selectItem itemLabel="Sí" itemValue="#{true}"/>
+                                <f:selectItem itemLabel="No" itemValue="#{false}"/>
+                            </p:selectOneMenu> 
+                        </f:facet>
+                        <h:outputText value="#{todo.finalizado?'Sí':'No'}" />
+                    </p:column>
+                    <p:column headerText="Acciones" style="text-align: center">
+                        <p:commandLink title="Ticket" actionListener="#{tramitesGeneralesMB.showReporteTicket(todo)}"
+                                       update="formMain">
+                            <i class="fa fa-fw fa-file-pdf-o" style="font-size: 1.5em; margin-right: 8px; color: #00796B;"></i>
+                        </p:commandLink>
+                        <p:commandLink title="Detalle" actionListener="#{tramitesGeneralesMB.detalleSolicitudServicio(todo)}"
+                                       update="formMain">
+                            <i class="fa fa-fw fa-folder-open-o" style="font-size: 1.5em; margin-right: 8px; color: #00796B;"></i>
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </p:outputPanel>
+            <center>
+                <h:panelGrid id="panelDetalle" rendered="#{tramitesGeneralesMB.renderedView}">
+                    <p:fieldset legend="Detalle de la Solicitud">
+                        <p:panelGrid  columns="2" layout="grid" styleClass="form-group ui-panelgrid-blank"
+                                      columnClasses="ui-grid-col-5, ui-grid-col-7">
+                            <p:panelGrid columns="1" style="margin-top: 5px; width: 98%">
+                                <p:commandButton value="Generar PDF" icon="fa fa-file-pdf-o"
+                                                 actionListener="#{tramitesGeneralesMB.generarPDF()}"/>
+                                <h:panelGroup>
+                                    <p:outputLabel value="# Trámite" /><br/>
+                                    <p:outputLabel value="#{tramitesGeneralesMB.solicitudServicio.tramite.codigo}" 
+                                                   style="font-weight: bold"/><br/>
+                                    <p:outputLabel value="#{tramitesGeneralesMB.solicitudServicio.tipoServicio.nombre}" 
+                                                   rendered="#{tramitesGeneralesMB.solicitudServicio.tipoServicio ne null}"
+                                                   style="font-weight: bold"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Departamento Solicitante" /><br/>
+                                    <p:outputLabel value="#{tramitesGeneralesMB.solicitudServicio.departamento.nombre}" 
+                                                   style="font-weight: bold"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Usuario Solicitante" /><br/>
+                                    <p:outputLabel value="#{tramitesGeneralesMB.solicitudServicio.usuarioIngreso.nombreUsuario}" 
+                                                   style="font-weight: bold"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Solicitante" /><br/>
+                                    <p:outputLabel value="#{tramitesGeneralesMB.solicitudServicio.enteSolicitante.identificacion}" 
+                                                   style="font-weight: bold"/><br/>
+                                    <p:outputLabel value="#{tramitesGeneralesMB.solicitudServicio.enteSolicitante.nombreCompleto}" 
+                                                   rendered="#{tramitesGeneralesMB.solicitudServicio.enteSolicitante.esPersona}" 
+                                                   style="font-weight: bold"/>
+                                    <p:outputLabel value="#{tramitesGeneralesMB.solicitudServicio.enteSolicitante.razonSocial}" 
+                                                   rendered="#{!tramitesGeneralesMB.solicitudServicio.enteSolicitante.esPersona}" 
+                                                   style="font-weight: bold"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Observación" /><br/>
+                                    <p:outputLabel value="#{tramitesGeneralesMB.solicitudServicio.descripcionInconveniente}" 
+                                                   style="font-weight: bold"/><br/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Usuarios Asignados" style="font-weight: bold"/><br/>
+                                    <p:dataTable value="#{tramitesGeneralesMB.tareas}" 
+                                                 var="tarea" tableStyle="table-layout:auto" 
+                                                 rows="5" reflow="true" paginator="true" 
+                                                 rowsPerPageTemplate="5,50,100"  paginatorPosition="bottom"
+                                                 filterEvent="enter" emptyMessage="No existen registros">
+                                        <p:column headerText="Nombre Tarea">
+                                            <p:outputLabel value="#{tarea.name}"/>
+                                        </p:column>
+                                        <p:column headerText="Usuario">
+                                            <p:outputLabel value="#{tarea.assignee}" rendered="#{tarea.assignee ne null}"/>
+                                            <p:outputLabel value="#{tramitesRp.usuariosCandidatos(tarea.id)}" rendered="#{tarea.assignee eq null}"/>
+                                            <p:outputLabel value=" #{tramitesRp.getNombresUsuario(tarea.assignee)}" rendered="#{tarea.assignee ne null}"/>
+                                        </p:column>
+                                        <p:column headerText="Departamento" width="120">
+                                            <p:outputLabel value=" #{tramitesRp.obtenerDepartamentoByUsuario(tarea.assignee,tarea.id)}"/>
+                                        </p:column>
+                                        <p:column headerText="Fech.Inicio" width="120">
+                                            <p:outputLabel value="#{tarea.createTime}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"    />
+                                            </p:outputLabel>
+                                        </p:column>
+                                        <p:column headerText="Fech.Fin" width="120">
+                                            <p:outputLabel value="#{tarea.endTime}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"    />
+                                            </p:outputLabel>
+                                        </p:column>
+                                    </p:dataTable>
+                                </h:panelGroup>
+                            </p:panelGrid>
+                            <p:panelGrid id="pnlDocsObs" styleClass="form-group ui-panelgrid-blank" columns="1" style="margin-top: 5px; width: 98%;">
+                                <p:tabView id="tvDocsObs">
+                                    <p:tab title="Observaciones">
+                                        <p:card style="width: 25rem; margin-bottom: 2em">
+                                            <f:facet name="title"><h4>Respuesta/Informe</h4></f:facet>
+                                            <p>#{tramitesGeneralesMB.solicitudServicio.informe!=null? tramitesGeneralesMB.solicitudServicio.informe:'No existe una respuesta'}</p>
+                                        </p:card><br/>
+                                        <p:dataTable value="#{tramitesGeneralesMB.observaciones}" emptyMessage="Sin elementos..."
+                                                     var="obs" style="text-align: center;width: 99%">
+                                            <p:column headerText="Tarea" width="150">
+                                                <p:outputLabel value="#{obs.tarea}"/>
+                                            </p:column>
+                                            <p:column headerText="Observación">
+                                                <p:outputLabel value="#{obs.observacion}"/>
+                                            </p:column>
+                                            <p:column headerText="Usuario" width="100">
+                                                <p:outputLabel value="#{tramitesRp.usuarioObs(obs.userCre)}"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </p:tab>
+                                    <p:tab title="Flujo">
+                                        <h3>Diagrama del Proceso</h3>
+                                        <p:graphicImage value="#{tramitesGeneralesMB.imageProcessInstance}" stream="false"
+                                                        rendered="#{not empty tramitesGeneralesMB.imageProcessInstance}"/>
+                                    </p:tab>
+                                </p:tabView>
+                            </p:panelGrid>
+                        </p:panelGrid>
+                        <center>
+                            <p:commandButton value="Regresar"
+                                             icon="fa fa-fw fa-mail-reply-all"
+                                             actionListener="#{tramitesGeneralesMB.loadModel()}"
+                                             styleClass="blue-btn rounded-btn"
+                                             update="formMain"
+                                             process="@form" />
+                        </center>
+                    </p:fieldset>                    
+                </h:panelGrid>
+            </center>
+        </h:form>
+    </ui:define>
+</ui:composition>

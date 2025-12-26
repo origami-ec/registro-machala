@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:fn="http://xmlns.jcp.org/jsp/jstl/functions"
+                xmlns:poue="http://primefaces.org/ui/extensions" >
+    <ui:define name="title">Visualizar Documentos</ui:define>
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{visorPDF.doPreRenderView()}"/>
+        <f:viewParam name="periodo" value="#{visorPDF.periodo}" />
+        <f:viewParam name="libro" value="#{visorPDF.libro}" />
+        <f:viewParam name="inscripcion" value="#{visorPDF.inscripcion}" />
+        <f:viewParam name="movimiento" value="#{visorPDF.idMov}" />
+    </f:metadata>
+    <ui:define name="content">
+        <h:form id="mainForm">
+
+            <p:splitter>
+                <p:splitterPanel styleClass="flex align-items-center justify-content-center" >
+                    <p:media value="#{visorPDF.urlArchivo}" width="100%" height="800px" player="pdf" 
+                             rendered="#{visorPDF.archivoDoc.id eq null}"/>
+                    <p:media value="#{visorPDF.visorUrl}" width="100%" height="800px" player="pdf" 
+                             rendered="#{visorPDF.archivoDoc.id ne null}"/>
+                    <!--<h:panelGroup rendered="# {visorPDF.archivoDoc.id ne null}">
+                        <iframe id="visor" style="" width="100%" height="800" allowfullscreen="" webkitallowfullscreen="" 
+                                src="# {visorPDF.visorUrl}" />
+                    </h:panelGroup>-->
+                </p:splitterPanel>
+                <p:splitterPanel styleClass="flex align-items-center justify-content-center" size="1">
+                    <p:panelGrid columns="1" style="font-weight: bolder;font-size: 16px;width: 100%;margin: 0 auto;text-align: center;">
+                        MARGINACIONES DE LA INSCRIPCION
+                    </p:panelGrid>
+                    <p:dataTable var="anota" value="#{visorPDF.anotaciones}" style="width: 400px;" 
+                                 emptyMessage="No se encontraron marginaciones." scrollable="true" 
+                                 scrollHeight="700" rendered="#{visorPDF.anotaciones.size() gt 0}">
+                        <p:column headerText="Pág." width="20" rendered="false">
+                            <p:outputLabel value="#{anota.page}"/>
+                        </p:column>
+                        <p:column headerText="Contenido" >
+                            <p:outputLabel value="#{anota.content}"/>
+                        </p:column>
+                    </p:dataTable>
+                    <p:dataTable var="marg" value="#{visorPDF.marginaciones}" style="width: 400px;" 
+                                 emptyMessage="No se encontraron marginaciones." scrollable="true" 
+                                 scrollHeight="700" rendered="#{visorPDF.marginaciones.size() gt 0}">
+                        <p:column headerText="Contenido" >
+                            <p:outputLabel value="Usuario: #{marg.usuario}" style="font-weight: bolder;"/><br/>
+                            <p:outputLabel value="#{marg.observacion}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:splitterPanel>
+            </p:splitter>
+
+        </h:form>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,21 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/templateGuest.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:co="http://xmlns.jcp.org/jsf/composite/co"
+    xmlns:poue="http://primefaces.org/ui/extensions">
+    <ui:define name="title">Validación de Documentos</ui:define>
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{verificacionQR.doPreRenderView()}"/>
+        <f:viewParam name="uuid" value="#{verificacionQR.archivo}" />
+    </f:metadata>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <poue:documentViewer url="#{verificacionQR.urlArchivo}" height="550" />
+        </h:form>
+        <ui:include src="/template/footer.xhtml" />
+    </ui:define>
+</ui:composition>

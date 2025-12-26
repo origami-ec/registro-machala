@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ReimprimirTicketTramite" language="groovy" pageWidth="421" pageHeight="595" whenNoDataType="BlankPage" columnWidth="381" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="94631395-da4c-4a4f-ba76-3b9a05212943">
+	<property name="ireport.zoom" value="2.196150000000001"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="130"/>
+	<style name="bold" scaleImage="FillFrame" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold" isPdfEmbedded="false"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="HEADER_URL" class="java.lang.String"/>
+	<parameter name="WATERMARK_URL" class="java.lang.String"/>
+	<parameter name="FOOTER_URL" class="java.lang.String"/>
+	<parameter name="qrCode" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<field name="departamento" class="java.lang.String"/>
+	<field name="solicitante" class="java.lang.String"/>
+	<field name="numTramite" class="java.lang.String"/>
+	<field name="fecha" class="java.util.Date"/>
+	<field name="servicio" class="java.lang.String"/>
+	<field name="tipoServicio" class="java.lang.String"/>
+	<field name="usuario" class="java.lang.String"/>
+	<field name="campoReferencia" class="java.lang.String"/>
+	<background>
+		<band height="421" splitType="Stretch">
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="20" y="11" width="350" height="400" uuid="b8d98922-5b95-464e-b813-4e01866a3bd3"/>
+				<imageExpression><![CDATA[$P{WATERMARK_URL}]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<title>
+		<band height="68" splitType="Stretch">
+			<staticText>
+				<reportElement x="76" y="0" width="305" height="23" forecolor="#FF0033" uuid="83528a5c-52e8-40b8-a2e3-5fa7c0f62c33"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[BENEMÉRITO CUERPO DE BOMBEROS DE GUAYAQUIL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="76" y="23" width="305" height="12" forecolor="#FF0033" uuid="5476d6e9-ebfc-4b76-acc0-18c69812e8fa"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FUNDADO EN 1835]]></text>
+			</staticText>
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="0" y="0" width="76" height="65" uuid="477e8821-c192-4aba-91a7-3580434d58e6"/>
+				<imageExpression><![CDATA[$P{HEADER_URL}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="76" y="35" width="305" height="12" forecolor="#FF0033" uuid="b931235a-4446-4fc8-b7e7-f2f339a73fca"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DECLARADO BENEMÉRITO POR EL H. CONGRESO DE 1930]]></text>
+			</staticText>
+		</band>
+	</title>
+	<detail>
+		<band height="257">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="bold" stretchType="RelativeToTallestObject" x="8" y="14" width="202" height="22" uuid="9a5a5885-7ec7-4a04-aa84-d3ce0be858df"/>
+				<textElement verticalAlignment="Middle">
+					<font size="13" isBold="true" isItalic="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numTramite}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="8" y="0" width="202" height="14" uuid="53986430-669d-4044-9587-96e205b72246"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Trámite No:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="bold" stretchType="RelativeToBandHeight" x="8" y="104" width="202" height="20" isPrintWhenDetailOverflows="true" uuid="de46c049-afa6-48f6-a81b-574822c66c8c"/>
+				<box leftPadding="10"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{servicio}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="bold" stretchType="RelativeToBandHeight" x="8" y="73" width="202" height="20" isPrintWhenDetailOverflows="true" uuid="c5ad4488-3868-4aff-8bac-2a0daacaabd9"/>
+				<box leftPadding="10"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{departamento}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="bold" stretchType="RelativeToBandHeight" x="10" y="135" width="200" height="20" isPrintWhenDetailOverflows="true" uuid="aeb727e7-8fc0-41bf-b2c8-c9605fbd6440"/>
+				<box leftPadding="10"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="false" isStrikeThrough="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{solicitante}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm:ss" isBlankWhenNull="true">
+				<reportElement style="bold" stretchType="RelativeToBandHeight" x="8" y="199" width="202" height="20" uuid="6b129a82-5107-4605-89b1-4e39ca7f5d55"/>
+				<box leftPadding="10"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" x="8" y="93" width="202" height="12" uuid="b33137e9-12db-483c-bb2f-93b842287161"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Asunto:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" x="8" y="187" width="202" height="12" uuid="f4945424-e34d-471b-9486-f9f23e2598af"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Fecha de Inicio:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" x="8" y="155" width="202" height="12" uuid="78c4b167-45de-4abf-8b41-a765bd218144"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Ingresado por:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" x="8" y="124" width="202" height="12" uuid="f8f27fcb-3c88-4f9d-9e24-876d78ed447c"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Solicitante:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" x="8" y="62" width="202" height="12" uuid="c069da8e-c77d-4b4e-806b-b60742fda472"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Departamento destino:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy h.mm a" isBlankWhenNull="true">
+				<reportElement style="bold" stretchType="RelativeToBandHeight" x="8" y="167" width="202" height="20" uuid="57ff3844-26e4-4e61-b628-e5774e2b0c09"/>
+				<box leftPadding="10"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{usuario}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm:ss" isBlankWhenNull="true">
+				<reportElement style="bold" stretchType="RelativeToBandHeight" x="20" y="227" width="340" height="20" uuid="55474cf9-f463-409e-a240-d1c1f5f44cc3"/>
+				<box topPadding="4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Reingreso del trámite"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="8" y="36" width="202" height="14" uuid="d726d786-7827-4a7d-bcac-1cb28a8610a8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true" isItalic="false"/>
+				</textElement>
+				<text><![CDATA[Referencia:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="bold" stretchType="RelativeToBandHeight" x="8" y="50" width="202" height="12" isPrintWhenDetailOverflows="true" uuid="78da9aaa-1d5e-452d-b530-92c4c8f6ba8a"/>
+				<box leftPadding="10"/>
+				<textElement verticalAlignment="Middle" markup="none">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{campoReferencia}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="50">
+			<staticText>
+				<reportElement x="39" y="37" width="305" height="12" forecolor="#FF0033" uuid="0a7417bd-2116-495d-a4e3-7c6562b31163"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Guayaquil - Ecuador]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="39" y="24" width="305" height="12" forecolor="#FF0033" uuid="f005a8f8-2768-4a12-b91d-12e83dec0c02"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Av. 9 de Ocubre 607 y Escobedo - Telfs.: 3714840 - Casilla 09-01-621]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="14" width="381" height="8" uuid="1617131d-a4a2-4c4c-b416-ec7083ac87e5"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#FF0000"/>
+					<bottomPen lineWidth="0.5" lineColor="#FF0000"/>
+				</box>
+				<text><![CDATA[]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

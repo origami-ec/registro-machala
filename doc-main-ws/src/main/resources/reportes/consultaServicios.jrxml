@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="consultaServicios" language="groovy" pageWidth="595" pageHeight="842" whenNoDataType="BlankPage" columnWidth="475" leftMargin="60" rightMargin="60" topMargin="20" bottomMargin="20" uuid="e70bf7b3-10e4-457b-953e-a72467c75fab">
+	<property name="ireport.zoom" value="1.3636363636363653"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="html" fill="Solid" markup="html" isBlankWhenNull="true" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1250" isPdfEmbedded="true"/>
+	<style name="style_bold" isBold="true" isItalic="false" isUnderline="false" pdfFontName="Helvetica-Bold"/>
+	<subDataset name="dataset1" uuid="d88a4eec-8b7e-4499-9bf0-3b60610a685a">
+		<field name="nameTask" class="java.lang.String"/>
+		<field name="user" class="java.lang.String"/>
+		<field name="createTime" class="java.util.Date"/>
+		<field name="endTime" class="java.util.Date"/>
+	</subDataset>
+	<parameter name="HEADER_URL" class="java.lang.String"/>
+	<parameter name="WATERMARK_URL" class="java.lang.String"/>
+	<parameter name="FOOTER_URL" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select 1]]>
+	</queryString>
+	<field name="tramite" class="java.lang.Object"/>
+	<field name="tipoServicio" class="java.lang.Object"/>
+	<field name="departamento" class="java.lang.Object"/>
+	<field name="usuarioIngreso" class="java.lang.Object"/>
+	<field name="enteSolicitante" class="java.lang.Object"/>
+	<field name="descripcionInconveniente" class="java.lang.String"/>
+	<field name="usersTasks" class="java.util.List"/>
+	<background>
+		<band height="700" splitType="Stretch">
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="89" y="246" width="291" height="259" uuid="60f86741-231c-4599-be5f-4e64a15f866b"/>
+				<imageExpression><![CDATA[$P{WATERMARK_URL}]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<pageHeader>
+		<band height="66" splitType="Stretch">
+			<staticText>
+				<reportElement x="114" y="0" width="305" height="23" forecolor="#FF0033" uuid="20c2a579-56ac-4673-bf31-9b1ab1a0371b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[BENEMÉRITO CUERPO DE BOMBEROS DE GUAYAQUIL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="114" y="23" width="305" height="12" forecolor="#FF0033" uuid="f21517c2-4841-47ae-9e68-a475a6e24103"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FUNDADO EN 1835]]></text>
+			</staticText>
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="38" y="0" width="76" height="65" uuid="bef6929d-8b4a-4c4f-9277-f1cf8937a331"/>
+				<imageExpression><![CDATA[$P{HEADER_URL}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement x="114" y="35" width="305" height="12" forecolor="#FF0033" uuid="dc64b811-3a24-4ad8-bb23-120179c83c0f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DECLARADO BENEMÉRITO POR EL H. CONGRESO DE 1930]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="192">
+			<staticText>
+				<reportElement x="90" y="8" width="322" height="20" uuid="07865f75-2a61-4edb-8d3a-a5d17084b2e2"/>
+				<box leftPadding="0"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CONSULTA DE SERVICIOS INGRESADOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="380" y="172" width="95" height="20" uuid="f145a191-6d68-41a1-9700-15b29b1c8c66"/>
+				<box leftPadding="0">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Fin]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement x="2" y="30" width="473" height="20" uuid="0c0d4dba-19a6-47f3-a842-5d8e063b186a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipoServicio}.nombre]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="262" y="172" width="118" height="20" uuid="b83d8c1b-9514-4844-984a-d0364a5c4c2d"/>
+				<box leftPadding="0">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Usuario]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="172" width="262" height="20" uuid="dc1b231f-5a13-4c4c-b8f0-246b81270872"/>
+				<box leftPadding="0">
+					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nombre Tarea]]></text>
+			</staticText>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" x="2" y="63" width="68" height="18" isPrintWhenDetailOverflows="true" uuid="f4b231d9-2b0e-4ebd-8183-a9a46fdef8f0"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[# Trámite:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="70" y="63" width="405" height="18" isPrintWhenDetailOverflows="true" uuid="68d0bd26-254d-4236-ae3d-f2470e687647"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{tramite}.codigo]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="70" y="99" width="405" height="19" isPrintWhenDetailOverflows="true" uuid="e9f4a5d8-dc20-4685-a1ac-e3776f66ea99"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{departamento}.nombre]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="99" width="70" height="19" isPrintWhenDetailOverflows="true" uuid="62e330ef-2b4d-415a-ae34-f1f92945ab1d"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Departamento:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="70" y="81" width="405" height="18" isPrintWhenDetailOverflows="true" uuid="75ad6882-cfea-456d-8c7f-0b90fec2af82"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{usuarioIngreso}.usuarioNombre + " " + $F{usuarioIngreso}.nombreUsuario]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" x="1" y="81" width="69" height="18" isPrintWhenDetailOverflows="true" uuid="e700b779-e5d6-413d-8f63-94066217f4e6"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Usuario:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="70" y="118" width="405" height="18" isPrintWhenDetailOverflows="true" uuid="cf8ccd03-6ce3-4706-bc17-ca2f374819fe"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{enteSolicitante}.identificacion + " " + $F{enteSolicitante}.nombreCompleto]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="118" width="70" height="18" isPrintWhenDetailOverflows="true" uuid="14462a8c-7580-402a-aa5a-eda122286799"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Solicitante:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="70" y="136" width="405" height="18" isPrintWhenDetailOverflows="true" uuid="71085735-167e-4659-843e-a692c99beb88"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{descripcionInconveniente}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" x="0" y="136" width="70" height="18" isPrintWhenDetailOverflows="true" uuid="0851fb72-6d6a-4099-9915-343052bfea0d"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Observación]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="154" width="140" height="18" uuid="d219d934-1a56-48c0-a397-a31a2d1f7ac1"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Usuarios Asignados]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<componentElement>
+				<reportElement x="0" y="0" width="475" height="20" uuid="d54d75c8-e122-4127-bde8-2a9ece23f678"/>
+				<jr:list xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" printOrder="Vertical">
+					<datasetRun subDataset="dataset1" uuid="89307e33-fd65-4d33-a033-3097c8b2e275">
+						<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($F{usersTasks})]]></dataSourceExpression>
+					</datasetRun>
+					<jr:listContents height="20" width="475">
+						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="0" y="0" width="262" height="20" isPrintWhenDetailOverflows="true" uuid="54225a19-8101-4685-b464-640fae172c49"/>
+							<box topPadding="2" leftPadding="3" bottomPadding="1" rightPadding="3">
+								<pen lineWidth="0.25"/>
+								<topPen lineWidth="0.25"/>
+								<leftPen lineWidth="0.25"/>
+								<bottomPen lineWidth="0.25"/>
+								<rightPen lineWidth="0.25"/>
+							</box>
+							<textElement textAlignment="Justified" verticalAlignment="Middle"/>
+							<textFieldExpression><![CDATA[$F{nameTask}]]></textFieldExpression>
+						</textField>
+						<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="262" y="0" width="118" height="20" isPrintWhenDetailOverflows="true" uuid="b59cd94a-f122-4958-861a-c886723169b2"/>
+							<box leftPadding="1" rightPadding="1">
+								<pen lineWidth="0.25"/>
+								<topPen lineWidth="0.25"/>
+								<leftPen lineWidth="0.25"/>
+								<bottomPen lineWidth="0.25"/>
+								<rightPen lineWidth="0.25"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{user}]]></textFieldExpression>
+						</textField>
+						<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm:ss" isBlankWhenNull="true">
+							<reportElement stretchType="RelativeToBandHeight" x="380" y="0" width="95" height="20" isPrintWhenDetailOverflows="true" uuid="49252642-9f23-4c71-a46b-4d4afd4e8f7b"/>
+							<box leftPadding="1" rightPadding="1">
+								<pen lineWidth="0.25"/>
+								<topPen lineWidth="0.25"/>
+								<leftPen lineWidth="0.25"/>
+								<bottomPen lineWidth="0.25"/>
+								<rightPen lineWidth="0.25"/>
+							</box>
+							<textElement textAlignment="Center" verticalAlignment="Middle">
+								<font size="9"/>
+							</textElement>
+							<textFieldExpression><![CDATA[$F{endTime}]]></textFieldExpression>
+						</textField>
+					</jr:listContents>
+				</jr:list>
+			</componentElement>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="47" splitType="Stretch">
+			<staticText>
+				<reportElement x="2" y="31" width="473" height="12" forecolor="#FF0033" uuid="f3eaebb1-a046-4f12-a4d0-6cded62082b3"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Guayaquil - Ecuador]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="18" width="473" height="12" forecolor="#FF0033" uuid="86eef4fa-090e-4410-87e4-840a945301a5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Av. 9 de Ocubre 607 y Escobedo - Telfs.: 3714840 - Casilla 09-01-621]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="8" width="473" height="8" uuid="74608ab0-f1a5-46e9-ae18-4e5ad3252086"/>
+				<box>
+					<topPen lineWidth="0.5" lineColor="#FF0000"/>
+					<bottomPen lineWidth="0.5" lineColor="#FF0000"/>
+				</box>
+				<text><![CDATA[]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

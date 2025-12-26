@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<wsdl:definitions name="interoperador" targetNamespace="http://interoperabilidad.dinardap.gob.ec/interoperador/" xmlns:ns1="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://interoperabilidad.dinardap.gob.ec/interoperador/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <wsdl:types>
+        <xs:schema targetNamespace="http://interoperabilidad.dinardap.gob.ec/interoperador/" version="1.0" xmlns:tns="http://interoperabilidad.dinardap.gob.ec/interoperador/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+            <xs:element name="consultar" type="tns:consultar"/>
+            <xs:element name="consultarFault">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="faultCode" type="xs:string"/>
+                        <xs:element name="faultString" type="xs:string"/>
+                        <xs:element name="faultMessageUser" type="xs:string"/>
+                        <xs:element name="timeStamp" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="consultarResponse" type="tns:consultarResponse"/>
+            <xs:complexType name="consultar">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="parametros" type="tns:parametros"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="parametros">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="parametro" nillable="true" type="tns:parametro"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="parametro">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="nombre" type="xs:string"/>
+                    <xs:element minOccurs="0" name="valor" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="consultarResponse">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="paquete" type="tns:paquete"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="paquete">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="numeroPaquete" type="xs:string"/>
+                    <xs:element minOccurs="0" name="entidades" type="tns:entidades"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="entidades">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="entidad" nillable="true" type="tns:entidad"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="entidad">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="nombre" type="xs:string"/>
+                    <xs:element minOccurs="0" name="filas" type="tns:filas"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="filas">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="fila" nillable="true" type="tns:fila"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="fila">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="columnas" type="tns:columnas"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="columnas">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="columna" nillable="true" type="tns:columna"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="columna">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="campo" type="xs:string"/>
+                    <xs:element minOccurs="0" name="valor" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+    </wsdl:types>
+    <wsdl:message name="ConsultarFault_Exception">
+        <wsdl:part element="tns:consultarFault" name="ConsultarFault_Exception">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="consultar">
+        <wsdl:part element="tns:consultar" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="consultarResponse">
+        <wsdl:part element="tns:consultarResponse" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:portType name="interoperador">
+        <wsdl:operation name="consultar">
+            <wsdl:input message="tns:consultar" name="consultar">
+            </wsdl:input>
+            <wsdl:output message="tns:consultarResponse" name="consultarResponse">
+            </wsdl:output>
+            <wsdl:fault message="tns:ConsultarFault_Exception" name="ConsultarFault_Exception">
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:portType>
+    <wsdl:binding name="interoperadorSoapBinding" type="tns:interoperador">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+        <wsdl:operation name="consultar">
+            <soap:operation soapAction="http://interoperabilidad.dinardap.gob.ec/interoperador/consultar" style="document"/>
+            <wsdl:input name="consultar">
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output name="consultarResponse">
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="ConsultarFault_Exception">
+                <soap:fault name="ConsultarFault_Exception" use="literal"/>
+            </wsdl:fault>
+        </wsdl:operation>
+    </wsdl:binding>
+    <wsdl:service name="interoperador">
+        <wsdl:port binding="tns:interoperadorSoapBinding" name="interoperadorPort">
+            <soap:address location="https://interoperabilidad.dinardap.gob.ec/interoperador-v2"/>
+        </wsdl:port>
+    </wsdl:service>
+</wsdl:definitions>|

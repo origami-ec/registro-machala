@@ -1,0 +1,21 @@
+version: '3'
+services:
+  sigeri-web:
+    container_name: sigeri-web
+    image: sigeri-web:latest 
+    privileged: true 
+    
+    environment: 
+      - rutaRepoTemporal=/server_files/temp/
+      - rutaRepoAnexos=/server_files/anexos/
+      - rutaRepoFirmas=/server_files/firmas/
+      - rutaRepoArchivo=/server_files/archivos/
+      - rutaRepoDocumentos=/server_files/documentos/
+      - rutaRepoFirmados=/server_files/firmados/
+      - rutaRepoNotas=/server_files/notas/ 
+      - servicios=http://10.10.10.15:8086/api/v1/
+      
+    ports:
+      - 8090:8080
+    volumes:
+      - /server_files/:/server_files/

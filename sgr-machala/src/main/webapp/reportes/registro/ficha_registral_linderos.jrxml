@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ficha_registral_linderos" language="groovy" pageWidth="505" pageHeight="802" columnWidth="505" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="ad7480c2-5f94-4e73-b3a8-54ee43cc988c">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ID_FICHA" class="java.lang.Long"/>
+	<queryString>
+		<![CDATA[select li.*, tl.titulo
+from app.reg_ficha_linderos li
+left join app.reg_tipo_lindero tl on tl.id = li.tipo
+WHERE ficha = $P{ID_FICHA} order by 1]]>
+	</queryString>
+	<field name="id" class="java.lang.Long"/>
+	<field name="ficha" class="java.lang.Long"/>
+	<field name="tipo" class="java.lang.Long"/>
+	<field name="linderante" class="java.lang.String"/>
+	<field name="longitud" class="java.math.BigDecimal"/>
+	<field name="estado" class="java.lang.Boolean"/>
+	<field name="titulo" class="java.lang.String"/>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToTallestObject" x="0" y="0" width="505" height="16" isPrintWhenDetailOverflows="true" uuid="242dc34a-00ad-4701-ba88-6fb196a44d1c"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[($F{titulo} == null ? "" : $F{titulo}) + $F{linderante} + ($F{longitud} > 0 ? ", CON: " + $F{longitud} + " MTS.": "")]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

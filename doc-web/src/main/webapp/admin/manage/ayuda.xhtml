@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                >
+    <ui:define name="top"><h3>Ayuda</h3></ui:define>
+    <ui:define name="title">Ayuda</ui:define>
+    <ui:define name="content">
+        <h:outputScript name="firma_2.js" library="js" />
+        <h:form id="mainForm" prependId="false">
+            <center>
+                <h2>
+                    Manual de Usuario Final Ventanilla Inteligente
+                </h2>
+            </center>
+            <h:panelGrid columns="1" columnClasses="thirty-percent,  seventy-percent"  style="width: 100%">
+                <h:panelGroup rendered="#{ayudaMB.visualizarDoc}">
+                    <iframe src="/origamiGT/ReporteWS" style="width: 100%; height: 600px;" />
+                </h:panelGroup>
+            </h:panelGrid>
+        </h:form>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,34 @@
+version: '2'
+services:
+  asgard:
+    container_name: municipio-loja-web
+    image: municipio-loja-web:latest
+    environment:
+      - ejbRuta=java:global/ventanillaInteligente/
+      - rutaFirmasElectronicas=/archivos/firmasElectronicas/
+      - rutaRepositorioArchivo=/archivos/documentos/
+      - rutaFirmasDigitales=/archivos/firmasDigitales/
+      - appWEB=http://192.168.100.10:8613
+      - ws=http://192.168.100.10:8613
+      - wsUser=9G4u8q0GnXBkNY7LCBuF
+      - wsPass=ULdI1c8qukgxcjANqIwh
+      - wsDinardap=http://186.101.220.187:8790/api/
+      - wsDinardapUser=adminVentanilla
+      - wsDinardapPass=NKPCSQ10@PROPIEDAD
+      - entityManager=java:module/manager
+      - bpmBaseEngine=java:module/bpmBaseEngine
+      - bpmProcessEngine=java:module/bpmProcessEngine
+      - datasource=java:module/dataSource
+      - region=EC
+      - driverClass=org.postgresql.Driver
+      - docdbIp=jdbc:postgresql://192.168.100.3:5432/asgard_archivo
+      - docdbUser=sisapp
+      - docdbPass=sisapp98
+      - activitidbIp=jdbc:postgresql://192.168.100.3:5432/ventanilla
+      - activitidbUser=sisapp
+      - activitidbPass=sisapp98
+      
+    ports:
+      - 8609:8089
+    volumes:
+      - /archivos/:/archivos/

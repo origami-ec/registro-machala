@@ -1,0 +1,164 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../template/bpmTemplate.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml" 
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="title">Reactivar trámites Ingresados</ui:define>
+
+    <ui:define name="content">
+        <style type="text/css">
+            .finish {
+                background-color: #dadbe7 !important;
+                background-image: none !important;
+                color: #000000 !important;
+            }
+        </style>
+        <h:form id="formMain">
+            <center>
+                <h2>Reactivar trámites</h2>
+            </center>
+            <div style="width: 100% !important; display: inline-block">
+                <div class="ui-g" style="float: right; width: 25% !important; text-align: right;">
+                    <div class="ui-g-12 ui-md-6 ui-lg-3 estado-normal" style="cursor: pointer;" onclick="activos();">ACTIVO</div>
+                    <div class="ui-g-12 ui-md-6 ui-lg-3 estado-activo  " style="cursor: pointer;border-bottom-color: #dadbe7;border-bottom-style: solid;
+                         " onclick="finalizados();">FINALIZADO</div>
+                </div>
+            </div>
+            <p:remoteCommand actionListener="#{tramitesMB.filterByEstado(false)}" name="activos" update="formMain" />
+            <p:remoteCommand actionListener="#{tramitesMB.filterByEstado(true)}" name="finalizados" update="formMain" />
+            <p:dataTable  id="dtDetail" value="#{tramitesMB.lazyTramites}" var="tram" paginator="true" rows="10"
+                          rowsPerPageTemplate="10, 20, 30" reflow="true"
+                          paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                          paginatorPosition="bottom"
+                          emptyMessage="No existen registros"
+                          rowStyleClass="#{tram.endTime ne null? 'finish' : 'estado-normal'}"
+                          lazy="true" filterEvent="enter" style="text-align: center;" resizableColumns="true">
+                <p:column headerText="# Instancia" filterBy="#{tram.procInstId}"  style="text-align: center"
+                          sortBy="#{tram.procInstId}" width="100">
+                    <p:outputLabel value="#{tram.procInstId}"/>
+                </p:column>
+                <p:column headerText="# Trámite" filterBy="#{tram.tramite.codigo}"  style="text-align: center"
+                          sortBy="#{tram.tramite.codigo}" width="100">
+                    <p:outputLabel value="#{tram.tramite.codigo}"/>
+                </p:column>
+                <p:column headerText="Fecha Ingreso" filterBy="#{tram.tramite.fecha}"  style="text-align: center"
+                          width="120">
+                    <p:outputLabel value="#{tram.tramite.fecha}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                    </p:outputLabel>
+                </p:column>
+                <p:column headerText="Fecha Finalización" filterBy="#{tram.endTime}"  style="text-align: center"
+                          width="120">
+                    <p:outputLabel value="#{tram.endTime}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/>
+                    </p:outputLabel>
+                </p:column>
+                <p:column headerText="Tipo Trámite" width="250"  style="text-align: center" sortBy="#{tram.tramite.tipoTramite.descripcion}">
+                    <p:outputLabel value="#{tram.tramite.tipoTramite.descripcion}"/>
+                </p:column>
+                <p:column headerText="Periodo" sortBy="#{tram.periodo}" width="150" style="text-align: center">
+                    <p:outputLabel value="#{tram.periodo}"/>
+                </p:column>
+                <p:column headerText="Tarea" width="30">
+                    <p:commandLink title="Detalle" actionListener="#{tramitesMB.showDetalis(tram)}">
+                        <i class="pi pi-bookmark"></i>
+                    </p:commandLink>
+                    <p:commandLink title="Reactivar" 
+                                   style="margin-left: 10px"
+                                   actionListener="#{tramitesMB.showDlgReactivar(tram)}" 
+                                   rendered="#{tram.terminado}">
+                        <i class="pi pi-refresh"></i>
+                        <p:confirmDialog  message="¿Está seguro de reactivar el Trámite: #{tram.tramite.codigo}?" />
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+            <br></br>
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Si" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+            </p:confirmDialog>     
+        </h:form>
+
+        <p:dialog id="dlgVerInfoRp"  widgetVar="dlgVerInfoRp" resizable="false" showHeader="false" closeOnEscape="true" modal="true" width="820" height="500">
+            <h:form id="formInformLiq" prependId="false">
+                <center>
+                    <p:outputLabel value="Información de Trámites" style="font-size: 16px; font-weight: bold" /><br></br>
+                    <p:outputLabel value="No de Trámite: #{tramitesMB.tram.tramite.codigo}" style="font-weight: bold; font-size: 14px;"/>
+                </center>
+                <br></br>
+                <p:tabView>
+                    <p:tab title="Tareas">
+                        <p:dataTable value="#{tramitesMB.tareas}" emptyMessage="El trámite no ha sido ingresado."
+                                     var="tarea"   style="text-align: center; width: 99%">
+                            <p:column headerText="Nombre Tarea">
+                                <p:outputLabel value="#{tarea.name}"/>
+                            </p:column>
+                            <p:column headerText="Usuario" width="100">
+                                <p:outputLabel value="#{tarea.assignee}" rendered="#{tarea.assignee ne null}"/>
+                                <p:outputLabel value="#{tramitesRp.usuariosCandidatos(tarea.id)}" rendered="#{tarea.assignee eq null}"/>
+                            </p:column>
+                            <p:column headerText="Fech.Inicio" width="120">
+                                <p:outputLabel value="#{tarea.createTime}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"    />
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Fech.Fin" width="120">
+                                <p:outputLabel value="#{tarea.endTime}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"    />
+                                </p:outputLabel>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Observaciones">
+                        <p:dataTable value="#{tramitesMB.observaciones}" emptyMessage="Sin elementos..."
+                                     var="obs" style="text-align: center;width: 99%">
+                            <p:column headerText="Tarea" width="150">
+                                <p:outputLabel value="#{obs.tarea}"/>
+                            </p:column>
+                            <p:column headerText="Observación">
+                                <p:outputLabel value="#{obs.observacion}"/>
+                            </p:column>
+                            <p:column headerText="Usuario" width="100">
+                                <p:outputLabel value="#{obs.userCre}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+
+                    <p:tab title="Flujo">
+                        <p:graphicImage value="#{tramitesMB.imageProcessInstance}" stream="false" width="100%" rendered="#{not empty tramitesMB.imageProcessInstance}"   />
+                    </p:tab>
+                </p:tabView><br></br><br></br>
+                <center>
+                    <p:commandButton value="Cerrar" actionListener="#{tramitesMB.closeDlogoViewTramite()}" icon="fa fa-close" 
+                                     style="width: auto;"  />
+                </center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgEditor" widgetVar="dlgTramiteActivar"  resizable="false" position="center" modal="true" showHeader="false">
+            <h:form id="formEdit">
+                <h:panelGrid columns="1" styleClass="noBorder" style="text-align: center;font-weight: bolder;">
+                    Reactivar Trámite:  (Tramite No #{tramitesMB.tramites.tramite.codigo})
+                    <p:inputTextarea value="#{tramitesMB.observacion}" cols="50" rows="10" autoResize="false" style="color: #000000;font-size: 12px;"/>
+                    <h:panelGrid columns="1">
+                        <h:panelGroup>
+                            <p:commandButton value="Aceptar" icon="fa fa-check" style="margin-right: 5px"
+                                             actionListener="#{tramitesMB.reactivarTramiteActiviti()}"/>
+                            <p:commandButton value="Cancelar" icon="fa fa-close"
+                                             update="formEdit"
+                                             actionListener="#{tramitesMB.cerrarDialog()}"
+                                             styleClass="danger-button p-mr-2 p-mb-2"/>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+
+    </ui:define>
+
+</ui:composition>

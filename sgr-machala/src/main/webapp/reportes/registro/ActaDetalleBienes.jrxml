@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ActaDetalleBienes" pageWidth="435" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="435" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="5f11f9fd-ea0c-4136-905e-07244485776e">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0FFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="negrita" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica-Bold"/>
+	<parameter name="P_MOVIMIENTO" class="java.lang.Long"/>
+	<queryString>
+		<![CDATA[select fi.clave_catastral as codigo_predial, fi.num_ficha, fi.linderos, fi.descripcion_bien,
+fi.superficie, fi.direccion_bien, fi.tipo_predio
+from app.reg_movimiento_ficha mf
+left join app.reg_ficha fi on mf.ficha = fi.id
+where mf.movimiento = $P{P_MOVIMIENTO} order by fi.num_ficha;]]>
+	</queryString>
+	<field name="codigo_predial" class="java.lang.String"/>
+	<field name="num_ficha" class="java.lang.Long"/>
+	<field name="linderos" class="java.lang.String"/>
+	<field name="descripcion_bien" class="java.lang.String"/>
+	<field name="superficie" class="java.lang.String"/>
+	<field name="direccion_bien" class="java.lang.String"/>
+	<field name="tipo_predio" class="java.lang.String"/>
+	<group name="ficha_registral">
+		<groupExpression><![CDATA[$F{num_ficha}]]></groupExpression>
+		<groupHeader>
+			<band splitType="Stretch"/>
+		</groupHeader>
+		<groupFooter>
+			<band height="10" splitType="Stretch"/>
+		</groupFooter>
+	</group>
+	<detail>
+		<band height="29" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="144" y="0" width="291" height="14" backcolor="#CCCCCC" uuid="54ec341d-92af-472e-947d-76747c2d3f7d"/>
+				<box leftPadding="3">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Código Catastral]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="0" width="144" height="14" backcolor="#CCCCCC" uuid="ecccde10-eb86-4ecc-b04b-7ee0e70d12c4"/>
+				<box leftPadding="3">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Ficha Registral]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement isPrintRepeatedValues="false" x="144" y="14" width="291" height="14" uuid="c1d9ee17-04ec-48bd-95a3-f090b0a90e1a"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{codigo_predial} == null ? "NO REGISTRA" : $F{codigo_predial}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement isPrintRepeatedValues="false" x="0" y="14" width="144" height="14" uuid="427376d3-a86f-49a8-a84c-121c43c52994"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{num_ficha}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="29" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="14" width="435" height="14" isPrintWhenDetailOverflows="true" uuid="51337c00-767a-4c5f-9296-35d9e8ab4980"/>
+				<box leftPadding="4">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descripcion_bien}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="0" width="435" height="14" backcolor="#CCCCCC" uuid="94b0dbdd-2026-4c84-b959-e4c09ca3dfad"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Ubicación]]></text>
+			</staticText>
+		</band>
+		<band height="29" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" positionType="Float" mode="Opaque" x="0" y="0" width="435" height="14" backcolor="#CCCCCC" uuid="68e7f69b-1bae-4933-85da-fb3765a4ed37"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Linderos]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="14" width="435" height="14" isPrintWhenDetailOverflows="true" uuid="4f3f7b8e-9f5e-41b8-94bb-ff8151bee4d5"/>
+				<box leftPadding="4">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{linderos}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="29" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" positionType="Float" mode="Opaque" x="0" y="0" width="144" height="14" backcolor="#CCCCCC" uuid="fdefea48-ac98-4669-a306-6d240cffea34"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Superficie]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" positionType="Float" mode="Opaque" x="145" y="0" width="144" height="14" backcolor="#CCCCCC" uuid="5174a359-eafb-475c-8db6-0034e88f7100"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Tipo de Predio]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" positionType="Float" mode="Opaque" x="290" y="0" width="145" height="14" backcolor="#CCCCCC" uuid="cf871374-e6c3-460a-9104-99fe6e6e2b99"/>
+				<box leftPadding="3">
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Descripción del Bien]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="14" width="144" height="14" uuid="9c3744e5-2ad7-466e-bc8d-d86e31207184"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{superficie}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="145" y="14" width="144" height="14" uuid="2d1acb64-cccf-42ed-8cdf-096948758ab9"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipo_predio}.equalsIgnoreCase("U") ? "URBANO" :
+$F{tipo_predio}.equalsIgnoreCase("R") ? "RURAL" : ""]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="290" y="14" width="145" height="14" uuid="7124f82e-c9f2-4561-8ecc-ed505a6abc8b"/>
+				<box leftPadding="2">
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{direccion_bien}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

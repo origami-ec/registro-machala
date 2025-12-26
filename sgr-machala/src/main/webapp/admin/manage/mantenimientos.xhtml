@@ -1,0 +1,265 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Mantenimientos</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2>MANTENIMIENTOS REGISTRO DE LA PROPIEDAD</h2></center>
+            <p:accordionPanel id="accMantenimiento" activeIndex="-1">
+                <p:tab title="LIBROS REGISTRALES" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <p:dataTable id="dtLibros" value="#{mantenimientos.libros}" var="lib" style="width: 50%;float: left;" 
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                 rows="10" emptyMessage="No hay elementos." filterEvent="enter" paginator="true">
+                        <p:column headerText="NOMBRE DEL LIBRO" filterBy="#{lib.nombre}" filterStyle="width: 99%">
+                            <p:outputLabel value="#{lib.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Tipo Libro" width="70" rendered="false">
+                            <p:outputLabel value="PROPIEDAD" rendered="#{lib.propiedad}" />
+                            <p:outputLabel value="MERCANTIL" rendered="#{!lib.propiedad}" />
+                        </p:column>
+                        <p:column headerText="ESTADO LIBRO" width="60">
+                            <p:outputLabel value="ACTIVO" rendered="#{lib.estado}" />
+                            <p:outputLabel value="INACTIVO" rendered="#{!lib.estado}" />
+                        </p:column>
+                        <p:column headerText="BLOQUEO FOLIACION" width="60">
+                            <p:outputLabel value="SI" rendered="#{lib.estadoFicha}" />
+                            <p:outputLabel value="NO" rendered="#{!lib.estadoFicha}" />
+                        </p:column>
+                        <p:column headerText="***" width="20">
+                            <p:commandButton icon="pi pi-forward" update="mainForm:accMantenimiento:pnlLibro" 
+                                             actionListener="#{mantenimientos.selectLibro(lib)}" />
+                        </p:column>
+                    </p:dataTable>
+                    <p:panel id="pnlLibro" header="Información de Libro" style="width: 49%;float: right;">
+                        <h:panelGrid columns="1" style="width: 100%">
+                            <p:outputLabel value="Nombre Libro:" style="font-weight: bolder;font-size: 14px;"/>
+                            <p:inputText value="#{mantenimientos.libro.nombre}" readonly="true" 
+                                         maxlength="100" style="width: 100%;"/>
+                            <!--<p:outputLabel value="Tipo Libro:" style="font-weight: bolder;font-size: 14px;"/>
+                            <p:selectOneRadio value="# {mantenimientos.libro.propiedad}" disabled="# {mantenimientos.libro.id ne null}">
+                                <f:selectItem itemLabel="Propiedad" itemValue="# {true}"/>
+                                <f:selectItem itemLabel="Mercantil" itemValue="# {false}"/>
+                            </p:selectOneRadio>-->
+                            <br/>
+                            <p:outputLabel value="Estado:" style="font-weight: bolder;font-size: 14px;"/>
+                            <p:selectOneRadio value="#{mantenimientos.libro.estado}" >
+                                <f:selectItem itemLabel="Activo" itemValue="#{true}"/>
+                                <f:selectItem itemLabel="Inactivo" itemValue="#{false}"/>
+                            </p:selectOneRadio>
+                            <br/>
+                            <p:outputLabel value="Bloqueo Foliación:" style="font-weight: bolder;font-size: 14px;"/>
+                            <p:selectOneRadio value="#{mantenimientos.libro.estadoFicha}" >
+                                <f:selectItem itemLabel="Bloqueado" itemValue="#{true}"/>
+                                <f:selectItem itemLabel="Desbloqueado" itemValue="#{false}"/>
+                            </p:selectOneRadio>
+                        </h:panelGrid><br/>
+                        <center><p:commandButton value="Guardar Datos" icon="pi pi-save" update="dtLibros, pnlLibro" 
+                                                 actionListener="#{mantenimientos.saveLibro()}"/></center>
+                    </p:panel>
+                </p:tab>
+                <p:tab title="ACTOS REGISTRALES" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <p:dataTable id="dtActos" value="#{mantenimientos.contratos}" var="actos" style="width: 50%;float: left;" resizableColumns="true"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                 rows="10" rowsPerPageTemplate="10,20,50" emptyMessage="No hay elementos." filterEvent="enter" paginator="true" 
+                                 lazy="true">
+                        <p:column headerText="Libro" width="100" rendered="false">
+                            <p:outputLabel id="lblLibro" value="#{actos.libro.nombre}" />
+                            <p:tooltip for="lblLibro" value="#{actos.libro.nombre}" />
+                        </p:column>
+                        <p:column headerText="Abreviatura" width="100" rendered="true">
+                            <p:outputLabel value="#{actos.abreviatura}" />
+                        </p:column>
+                        <p:column headerText="Nombre" sortBy="#{actos.nombre}" filterBy="#{actos.nombre}" filterStyle="width: 95%">
+                            <p:outputLabel id="lblActo" value="#{actos.nombre}" />
+                            <p:tooltip for="lblActo" value="#{actos.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Edit." width="20">
+                            <p:commandButton icon="pi pi-forward" disabled="true" update="mainForm:accMantenimiento:pnlActos" 
+                                             actionListener="#{mantenimientos.selectActo(actos)}" process="@this"/>
+                        </p:column>
+                    </p:dataTable>
+                    <p:panel id="pnlActos" header="Información del Contrato" style="width: 49%;float: right;">
+                        <h:panelGrid columns="2" style="font-weight: bolder;">
+                            Abreviatura
+                            <p:inputText value="#{mantenimientos.acto.abreviatura}" readonly="#{mantenimientos.acto.id ne null}" />
+                            Nombre:
+                            <p:inputText value="#{mantenimientos.acto.nombre}" size="50" readonly="#{mantenimientos.acto.id ne null}" style="width: 98%;"/>
+                            <!--Libro:
+                            <p:selectOneMenu id="librosActos" value="# {mantenimientos.libroSeleccionado}" filter="true" converter="entityConverter">
+                                <p:ajax update="librosActos" />
+                                <f:selectItem itemLabel="Seleccione.." itemValue="# {null}" />
+                                <f:selectItems value="# {mantenimientos.libros}" var="li" itemLabel="# {li.nombre}" itemValue="# {li}"/>
+                            </p:selectOneMenu>-->
+                        </h:panelGrid>
+                        <center><p:commandButton value="Guardar" icon="pi pi-save" update="dtActos, pnlActos" 
+                                                 actionListener="#{mantenimientos.saveActoDirecto()}"/></center>
+                    </p:panel>
+                </p:tab>                
+                <p:tab title="PAPELES" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <p:dataTable id="dtPapeles" value="#{mantenimientos.papeles}" var="papel" style="width: 50%;float: left;" 
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                 rows="10" rowsPerPageTemplate="10,20,50" emptyMessage="No hay elementos." filterEvent="enter" paginator="true" lazy="true">
+                        <p:column headerText="Abrev." sortBy="#{papel.abreviatura}" filterBy="#{papel.abreviatura}" filterStyle="width: 95%" width="100">
+                            <p:outputLabel value="#{papel.abreviatura}" />
+                        </p:column>
+                        <p:column headerText="Nombre" sortBy="#{papel.papel}" filterBy="#{papel.papel}" filterStyle="width: 95%">
+                            <p:outputLabel value="#{papel.papel}" />
+                        </p:column>
+                        <p:column headerText="Edit." width="20">
+                            <p:commandButton icon="pi pi-forward" disabled="false" 
+                                             update="mainForm:accMantenimiento:pnlPapel" 
+                                             actionListener="#{mantenimientos.selectPapel(papel)}" />
+                        </p:column>
+                    </p:dataTable>
+                    <p:panel id="pnlPapel" header="Información de Papel" style="width: 49%;float: right;">
+                        <h:panelGrid columns="2" style="font-weight: bolder;">
+                            Abreviatura:
+                            <p:inputText value="#{mantenimientos.papel.abreviatura}" maxlength="10" />
+                            <!--<p:outputLabel value="Codigo Nrpm" rendered="# {userSession.roles.contains(1)}" />-->
+                            <!--<p:inputText value="# {mantenimientos.papel.codigoNrpm}" maxlength="10" rendered="# {userSession.roles.contains(1)}" />-->
+                            Nombre:
+                            <p:inputText value="#{mantenimientos.papel.papel}" size="50" maxlength="100"/>
+                        </h:panelGrid>
+                        <center><p:commandButton value="Guardar" icon="pi pi-save" update="dtPapeles, pnlPapel" 
+                                                 actionListener="#{mantenimientos.savePapel()}"/></center>
+                    </p:panel>
+                </p:tab>
+                <p:tab title="CANTONES / DOMICILIOS" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <p:dataTable id="dtDomicilios" value="#{mantenimientos.domicilios}" var="dom" style="width: 40%;float: left;" 
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                 rows="10" emptyMessage="No hay elementos." filterEvent="enter" paginator="true" lazy="true">
+                        <p:column headerText="Nombre" sortBy="#{dom.nombre}" filterBy="#{dom.nombre}" filterStyle="width: 75%">
+                            <p:outputLabel value="#{dom.nombre}" />
+                        </p:column>
+                        <p:column headerText="Edit." width="20">
+                            <p:commandButton icon="pi pi-forward" disabled="true" update="mainForm:accMantenimiento:pnlDomicilio" 
+                                             actionListener="#{mantenimientos.selectDomicilio(dom)}" />
+                        </p:column>
+                    </p:dataTable>
+                    <p:panel id="pnlDomicilio" header="Información de Cantón" style="width: 59%;float: right;">
+                        <h:panelGrid columns="3" style="font-weight: bolder;">
+                            Nombre:
+                            <p:inputText value="#{mantenimientos.domicilio.nombre}" size="50" maxlength="80"/>
+                            <p:commandButton value="Guardar" icon="pi pi-save" update="dtDomicilios, pnlDomicilio" 
+                                             actionListener="#{mantenimientos.saveDomicilio()}"/>
+                        </h:panelGrid>
+                    </p:panel>
+                </p:tab>
+                <p:tab title="CARGOS REPRESENTANTES" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <p:dataTable id="dtCargos" value="#{mantenimientos.cargos}" var="car" style="width: 40%;float: left;" 
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                 rows="10" emptyMessage="No hay elementos." filterEvent="enter" paginator="true" >
+                        <p:column headerText="Nombre" filterBy="#{car.nombre}" filterStyle="width: 75%">
+                            <p:outputLabel value="#{car.nombre}" />
+                        </p:column>
+                        <p:column headerText="Edit." width="20">
+                            <p:commandButton icon="pi pi-forward" disabled="false" update="mainForm:accMantenimiento:pnlCargo" 
+                                             actionListener="#{mantenimientos.selectCargo(car)}" />
+                        </p:column>
+                    </p:dataTable>
+                    <p:panel id="pnlCargo" header="Información de Cargo" style="width: 59%;float: right;">
+                        <h:panelGrid style="font-weight: bolder;" columns="3">
+                            Nombre:
+                            <p:inputText value="#{mantenimientos.cargo.nombre}" size="50" maxlength="50"/>
+                            <p:commandButton value="Guardar" icon="pi pi-save" update="dtCargos, pnlCargo" 
+                                             actionListener="#{mantenimientos.saveCargo()}"/>
+                        </h:panelGrid>
+                    </p:panel>
+                </p:tab>
+                <p:tab title="INTERVINIENTES **Edición de identificación y nombres" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <p:dataTable id="dtIntevinientes" value="#{mantenimientos.intervinientes}" var="inte" style="width: 50%;float: left;" 
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                 rows="10" rowsPerPageTemplate="10,20,50" emptyMessage="No hay elementos." filterEvent="enter" paginator="true" 
+                                 lazy="true" resizableColumns="true">
+                        <p:column headerText="CI/RUC" sortBy="#{inte.cedRuc}" filterBy="#{inte.cedRuc}" filterStyle="width: 95%" width="110">
+                            <p:outputLabel value="#{inte.cedRuc}" />
+                        </p:column>
+                        <p:column headerText="Nombre" sortBy="#{inte.nombre}" filterBy="#{inte.nombre}" filterStyle="width: 95%">
+                            <p:outputLabel id="lblNombres" value="#{inte.nombre}"/>
+                            <p:tooltip for="lblNombres" value="#{inte.nombre}" position="top"/>
+                        </p:column>
+                        <!--<p:column headerText="Sec" width="50">
+                            <p:outputLabel value="# {inte.secuencia}"/>
+                        </p:column>-->
+                        <p:column headerText="Edit." width="20">
+                            <p:commandButton icon="pi pi-forward" actionListener="#{mantenimientos.selectEnte(inte)}" 
+                                             update="mainForm:accMantenimiento:pnlInterviniente"/>
+                        </p:column>
+                    </p:dataTable>
+                    <p:panel id="pnlInterviniente" header="Información de Interviniente" style="width: 49%;float: right;">
+                        <h:panelGrid style="font-weight: bolder;width: 100%;" columns="2">
+                            CI/RUC:
+                            <p:inputText value="#{mantenimientos.ente.cedRuc}" size="30" />
+                            Nombre:
+                            <p:inputText value="#{mantenimientos.ente.nombre}" style="width: 98%;"/>
+                        </h:panelGrid>
+                        <center><p:commandButton value="Guardar" icon="pi pi-save" update="dtIntevinientes, pnlInterviniente" 
+                                                 actionListener="#{mantenimientos.saveEnte()}"/></center>
+                    </p:panel>
+                </p:tab>
+                <p:tab title="ENTE JUDICIALES" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <p:dataTable id="dtJuzgados" value="#{mantenimientos.juzgados}" var="jud" style="width: 50%;float: left;" 
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                 rows="10" rowsPerPageTemplate="10,20,50" emptyMessage="No hay elementos." filterEvent="enter" paginator="true" lazy="true">
+                        <p:column headerText="Abrev." sortBy="#{jud.abreviatura}" filterBy="#{jud.abreviatura}" filterStyle="width: 95%" width="100">
+                            <p:outputLabel value="#{jud.abreviatura}" />
+                        </p:column>
+                        <p:column headerText="Nombre" sortBy="#{jud.nombre}" filterBy="#{jud.nombre}" filterStyle="width: 95%" >
+                            <p:outputLabel value="#{jud.nombre}" />
+                        </p:column>
+                        <p:column headerText="Edit." width="20">
+                            <p:commandButton icon="pi pi-forward" actionListener="#{mantenimientos.selectJuzgado(jud)}" 
+                                             update="mainForm:accMantenimiento:pnlJuzgado"/>
+                        </p:column>
+                    </p:dataTable>
+                    <p:panel id="pnlJuzgado" header="Información de Ente Judicial" style="width: 49%;float: right;">
+                        <h:panelGrid style="font-weight: bolder;" columns="2">
+                            Abreviatura:
+                            <p:inputText value="#{mantenimientos.juzgado.abreviatura}" maxlength="10" style="text-transform: uppercase;"/>
+                            Nombre:
+                            <p:inputText value="#{mantenimientos.juzgado.nombre}" size="50" maxlength="200" style="text-transform: uppercase;"/>
+                        </h:panelGrid>
+                        <center><p:commandButton value="Guardar" icon="pi pi-save" update="dtJuzgados, pnlJuzgado" 
+                                                 actionListener="#{mantenimientos.saveJuzgado()}"/></center>
+                    </p:panel>
+                </p:tab>
+                <!--<p:tab title="BARRIOS" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <p:dataTable id="dtBarrios" value="# {mantenimientos.lazyBarrios}" var="br1" style="text-align: center; width: 40%;float: left;" 
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                 rows="10" emptyMessage="No hay elementos." filterEvent="enter" paginator="true" lazy="true" >
+                        <p:column headerText="Parroquia" sortBy="# {br1.parroquia.descripcion}" filterBy="# {br1.parroquia.descripcion}" filterStyle="width: 75%">
+                            <p:outputLabel value="# {br1.parroquia.descripcion}" />
+                        </p:column>
+                        <p:column headerText="Nombre" sortBy="# {br1.nombre}" filterBy="# {br1.nombre}" filterStyle="width: 75%">
+                            <p:outputLabel value="# {br1.nombre}" />
+                        </p:column>
+                        <p:column headerText="**" width="40">
+                            <p:commandLink actionListener="# {mantenimientos.setBarrio(br1)}" update="mainForm:accMantenimiento:pnBarrio">
+                                <p:graphicImage value="/resources/icons/ir.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                    <p:panel id="pnBarrio" header="Información de Barrio" style="width: 59%;float: right;">
+                        <p:panelGrid styleClass="noBorder" columns="2">
+                            Parroquia:
+                            <p:selectOneMenu value="# {mantenimientos.barrio.parroquia}" converter="entityConverter" >
+                                <f:selectItem itemLabel="Seleccione..." itemValue="# {null}" />
+                                <f:selectItems value="# {mantenimientos.parroquias}" var="cp1" itemLabel="# {cp1.descripcion}" itemValue="# {cp1}" />
+
+                            </p:selectOneMenu>
+                            Nombre:
+                            <p:inputText value="# {mantenimientos.barrio.nombre}" maxlength="100" size="60"/>
+                            <p:commandButton value="Guardar" update="mainForm:accMantenimiento:dtBarrios, pnBarrio" actionListener="# {mantenimientos.saveBarrio()}"/>
+                        </p:panelGrid>
+                    </p:panel>
+                </p:tab>-->
+            </p:accordionPanel>
+        </h:form>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+
+    <ui:define name="top"><h3>Firmar Documentos</h3></ui:define>
+    <ui:define name="title">Firmar Documentos</ui:define>
+    <ui:define name="content">
+        <center>
+            <h2> Firmar Documentos </h2>
+        </center>
+        <h:form id="formMain" enctype="multipart/form-data" style="height: 80%">
+            <p:tabView id="tbSolicitud">
+                <p:tab title="Firma Electrónica">
+                    <p:panelGrid id="pnlDocumento" columns="2" styleClass="ui-panelgrid-blank" 
+                                 columnClasses="fifty-percent, fifty-percent" style="width: 100% !important">
+                        <h:panelGroup>
+                            <p:panelGrid id="pnlDatosDoc" columns="3" styleClass="ui-panelgrid-blank" 
+                                         style="width: 100% !important">
+                                <h:panelGroup>
+                                    <p:outputLabel value="Fecha de la firma: " style="font-weight: bold"/><br/>
+                                    <p:clock value="#{firmaElectronicaDocMB.fechaFirmar}" pattern="dd/MM/yyyy HH:mm:ss"/>
+                                    <!--<p:calendar  value="# {firmaElectronicaDocMB.fechaFirmar}" locale="es" pattern="dd/MM/yyyy HH:mm:ss"/>-->
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Razón de firma" class="Fs15"  style="font-weight: bold"/><br/>
+                                    <p:inputText value="#{firmaElectronicaDocMB.motivo}" /> 
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Localización" class="Fs15"  style="font-weight: bold"/><br/>
+                                    <p:inputText value="#{firmaElectronicaDocMB.localizacion}" /> 
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="# Página" class="Fs15"  style="font-weight: bold"/><br/>
+                                    <p:inputText id="txtPagina" value="#{firmaElectronicaDocMB.numeroPagina}" /> 
+                                </h:panelGroup>
+                            </p:panelGrid>
+
+                            <p:outputLabel value="Los tipo de archivos permitidos: pdf" class="Fs15" /><br/>
+
+                            <p:outputLabel  id="nombreArchivo" value="#{firmaElectronicaDocMB.uploadedFile.fileName}"
+                                            style="font-weight: bolder; width: 80% !important; font-size: 8px" /><br></br>
+                            <p:fileUpload listener="#{firmaElectronicaDocMB.handleFileUpload2}" 
+                                          style="width: 100%" accept=".pdf"
+                                          skinSimple="true" allowTypes="/(\.|\/)(pdf)$/i" 
+                                          mode="advanced" dragDropSupport="true" update="formMain:tbSolicitud:nombreArchivo"
+                                          label="Agregar archivo" uploadLabel="Subir" cancelLabel="Cancelar"  previewWidth="60"   />
+                            <br></br>
+
+                            <center>
+                                <p:commandButton value="Firmar y Grabar" 
+                                                 icon="fa fa-save" 
+                                                 styleClass="info-button rounded-button p-mr-2 p-mb-2"
+                                                 actionListener="#{firmaElectronicaDocMB.agregarFirmarDocumento(true)}"
+                                                 style="width: auto;" >
+                                    <p:ajax event="dialogReturn" listener="#{firmaElectronicaDocMB.archivoFirmado}" 
+                                            process="@this"
+                                            update="formMain"
+                                            />
+                                </p:commandButton>
+                                <p:spacer width="5" />
+                                <p:commandButton value="Cancelar" update="formDocumento" 
+                                                 styleClass="info-button rounded-button p-mr-2 p-mb-2"
+                                                 icon="fa fa-close" actionListener="#{firmaElectronicaDocMB.cerrrDlogo()}" 
+                                                 style="width: auto;" />
+                            </center>
+
+
+
+                            <!--download="# {basicDocumentViewerController.downloadFileName}"-->
+                        </h:panelGroup>
+                        <h:panelGroup >
+                            <center><p:outputLabel value="Aqui aparecerá su documento firmado" style="font-weight: bolder"/></center>
+                            <h:panelGroup rendered="#{firmaElectronicaDocMB.firmaTemp.archivoFirmado eq null ? false : true}">
+                                <iframe src="/origamiGT/ReporteWS" style="width: 100%; height: 500px;" /> 
+                            </h:panelGroup>
+                        </h:panelGroup>
+
+                    </p:panelGrid>
+                </p:tab> 
+            </p:tabView>
+        </h:form>
+
+        <p:dialog id="DlgoDocumento" width="700"  showHeader="false" widgetVar="DlgoDocumento" 
+                  modal="true" showEffect="fade" 
+                  hideEffect="fade" resizable="false"  closable="false" height="330">
+            <br></br>
+            <center>
+                <p:outputLabel value="Documentos" style="font-weight: bolder; font-size: 16px;" /><br></br> 
+            </center>
+            <br></br>
+            <h:form id="formDocumento"  prependId="false" enctype="multipart/form-data">
+                <p:outputLabel value="Los tipo de archivos permitidos: pdf" class="Fs15" />
+                <p:fileUpload listener="#{firmaElectronicaDocMB.handleFileUpload2}"  style="width: 100%" accept="pdf"
+                              skinSimple="true" allowTypes="/(\.|\/)(pdf)$/i" mode="advanced" dragDropSupport="false" 
+                              label="Buscar" uploadLabel="Subir" cancelLabel="Cancelar"  previewWidth="60"   />
+                <br></br>
+                <center>
+                    <p:commandButton value="Firmar y Grabar" 
+                                     icon="fa fa-copyright" 
+                                     actionListener="#{firmaElectronicaDocMB.agregarFirmarDocumento(true)}"
+                                     style="width: auto;" >
+                        <p:ajax event="dialogReturn" listener="#{firmaElectronicaDocMB.archivoFirmado}"  update="formDocumento,formMain"
+                                />
+                    </p:commandButton>
+                    <p:spacer width="5" />
+                    <p:commandButton value="Cancelar" update="formDocumento" icon="fa fa-close" actionListener="#{firmaElectronicaDocMB.cerrrDlogo()}" style="width: auto;" />
+                </center>
+            </h:form>
+        </p:dialog> 
+    </ui:define>
+</ui:composition>

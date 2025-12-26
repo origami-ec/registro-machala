@@ -1,0 +1,164 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/templateDocs.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html" 
+                xmlns:poue="http://primefaces.org/ui/extensions"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+
+    <ui:define name="top"><h3>OrigamiDocs</h3></ui:define>
+    <ui:define name="title">OrigamiDocs</ui:define>
+    <ui:define name="content">
+        <center>
+            <h2> OrigamiDocs </h2>
+        </center>
+        <h:form id="formMain"  prependId="false" enctype="multipart/form-data;charset=UTF-8">
+            <style type="text/css">
+
+                table tr td {
+                    height: 60px;
+                }
+            </style>
+            <p:panelGrid id="pnlDocumento" columns="2" columnClasses="forty-percent, sixty-percent" styleClass="ui-panelgrid-blank" style="width: 100% !important" >
+                <h:panelGroup>
+                    <p:panelGrid id="pnlIndex" columns="1" styleClass="ui-panelgrid-blank" style="width: 100% !important" >
+                        <h:panelGroup> 
+                            <p:outputLabel value="Indexación: " style="width: 100%; font-weight: bolder"/><br/>
+                            <p:selectOneMenu value="#{archivosMB.indice}" converter="dtoConverter" style="width: 100%">
+                                <p:ajax update="dtIndicesFrm" />
+                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                <f:selectItems var="i" value="#{archivosMB.indices}" itemLabel="#{i.descripcion}" itemValue="#{i}"/>
+                            </p:selectOneMenu>
+                        </h:panelGroup> 
+                        <h:panelGroup> 
+                            <p:outputLabel value="Descripción del documento" style="width: 100%; font-weight: bolder"/><br/>
+                            <p:inputText value="#{archivosMB.indice.descripcionArchivo}"  style="width: 100%">
+                                <p:ajax event="blur" listener="#{archivosMB.validarCampoTesauro()}" update="dtTablas"></p:ajax>
+                            </p:inputText>
+                            <p:dataGrid var="tbl" value="#{archivosMB.sugerencias}" columns="2" layout="grid" lazy="false" id="dtTablas" >
+                                <f:facet name="header">
+                                    Sugerencias 
+                                </f:facet>
+                                <div class="product-grid-item card" style="margin-bottom: 0">
+                                    <div class="product-grid-item-top">
+                                        <div>
+                                            <i class="pi pi-tag product-category-icon"/>
+                                            <span class="product-category">
+                                                <p:outputLabel value="#{tbl.palabra}" style="font-weight: bolder"/>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <br/>
+                                    <div class="product-grid-item-content">
+                                        <p:dataList value="#{tbl.sugerencias}" var="field"  lazy="false" >
+                                             <p:outputLabel value="#{field}"/>
+                                        </p:dataList>
+                                    </div>
+                                </div>
+                            </p:dataGrid>   
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:dataTable id="dtIndicesFrm" var="index" value="#{archivosMB.indice.campos}" editable="true" lazy="false">
+                                <p:ajax event="rowEdit" listener="#{archivosMB.onRowEdit}" />
+                                <p:ajax event="rowEditCancel" listener="#{archivosMB.onRowCancel}" />
+                                <p:column headerText="Descripción" width="100">
+                                    <p:outputLabel value="* " style="color: red" rendered="#{index.obligatorio}"/>
+                                    <p:outputLabel value="#{index.descripcion}" />
+                                </p:column>
+                                <p:column headerText="Detalle">
+                                    <p:cellEditor>
+                                        <f:facet name="output">
+                                            <p:outputLabel value="#{index.detalle}"/>
+                                        </f:facet>
+                                        <f:facet name="input">
+                                            <br/>
+                                            <p:inputText id="modelInput" value="#{index.detalle}" style="width:100%;"
+                                                         rendered="#{index.tipoDato eq 'TEXTO'}"/>
+                                            <p:inputText id="text2" value="#{index.detalle}" rendered="#{index.tipoDato eq 'NUMERO'}" style="width:100%;">
+                                                <p:keyFilter mask="num" />
+                                            </p:inputText>
+                                            <p:selectBooleanButton onLabel="SI" offLabel="NO" value="#{index.detalle}" rendered="#{index.tipoDato eq 'LOGICO'}"
+                                                                   onIcon="pi pi-check" offIcon="pi pi-times" style="width:6rem;" />
+
+                                            <p:calendar id="datetime" value="#{index.detalle}"  style="width:100%; " 
+                                                        showOn="button" placeholder="dd-MM-yyyy" navigator="true"
+                                                        pattern="dd-MM-yyyy" rendered="#{index.tipoDato eq 'FECHA'}">
+                                                <f:convertDateTime pattern="dd-MM-yyyy" />
+                                            </p:calendar>
+
+                                            <p:selectOneMenu value="#{index.detalle}"  style="width:100%;" rendered="#{index.tipoDato eq 'CATEGORIA'}"> 
+                                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                                <f:selectItems var="i" value="#{index.categorias}" itemLabel="#{i}" itemValue="#{i}"/>
+                                            </p:selectOneMenu>
+                                            <br/>
+
+                                        </f:facet>
+                                    </p:cellEditor>
+                                </p:column>
+                                <p:column style="width:6rem" headerText="***">
+                                    <p:rowEditor editTitle="Editar #{index.descripcion}" cancelTitle="Cancelar" saveTitle="Grabar datos #{index.descripcion}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGroup>
+                    </p:panelGrid>
+
+                </h:panelGroup>
+                <h:panelGroup>
+                    <br/> 
+                    <center>
+                        <p:commandButton value="Abrir documents" styleClass="info-button rounded-button"   rendered="false"
+                                         process="@this"
+                                         icon="fa fa-code-fork" actionListener="#{archivosMB.abrirDocuments()}"/>
+                        <p:spacer width="10" />
+                        <p:commandButton value="Actualizar datos" icon="fa fa-refresh" styleClass="info-button rounded-button"
+
+                                         actionListener="#{archivosMB.actualizarDocumentosScan()}" />
+                    </center>
+                    <br/> 
+                    <br/>
+                    <p:dataTable id="dtDocumentosScan" value="#{archivosMB.documentosScan}" var="doc" >
+                        <p:column headerText="Documentos">
+                            <p:outputLabel value="#{doc.fecha}">
+                                <f:convertDateTime pattern="yyyy-MM-dd HH:mm" />
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Identificador">
+                            <p:outputLabel value="#{doc.id}" />
+                        </p:column>
+                        <p:column headerText="Estado">
+                            <p:outputLabel value="#{doc.estado}" />
+                        </p:column>
+                        <p:column headerText="Formato">
+                            <p:outputLabel value="#{doc.formato}" />
+                        </p:column>
+                        <p:column headerText="Seleccionar">
+                            <p:commandLink actionListener="#{archivosMB.guardarArchivo(doc)}"  update="formMain"
+                                           styleClass="edit" style="margin-right: 10px" title="Seleccionar documento" >
+                                <i class="fa fa-file-pdf-o" style="font-size: 1.2em; margin-right: 5px;"></i>
+                            </p:commandLink>
+                            <p:spacer width="10" />
+                            <p:commandLink actionListener="#{archivosMB.getDownloadFile(doc.id)}"  process="dtDocumentosScan"
+                                           styleClass="edit" style="margin-right: 10px" title="Ver documento">
+                                <i class="fa fa-eye" style="font-size: 1.2em; margin-right: 5px;"></i>
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable> 
+                </h:panelGroup>
+
+
+            </p:panelGrid>
+
+            <script>
+                var callexe = function () {
+                    //var oShell = new ActiveXObject("Shell.Application");
+                    var commandtoRun = "file:\\C:\\Windows\\notepad.exe";
+                    window.open(commandtoRun);
+                    //oShell.ShellExecute(commandtoRun, "", "", "open", "1");
+                }
+            </script> 
+
+        </h:form>
+    </ui:define>
+</ui:composition>

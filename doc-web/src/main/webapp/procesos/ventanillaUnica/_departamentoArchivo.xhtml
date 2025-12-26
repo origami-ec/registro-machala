@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:comp="http://xmlns.jcp.org/jsf/composite/dialog"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:panelGrid id="pnlDatosTramite" columns="2" style="width: 100%; font-weight: bold" columnClasses="fifty-percent, fifty-percent" >
+        <h:panelGroup>
+            <p:fieldset id="fldDepsServ" legend="Departamentos y Servicios"  >
+                <h:panelGroup id="panelTramite" rendered="false">
+                    <p:outputLabel id="lblTipoTramite" for="cmbTipotramite" 
+                                   value="Trámite #{iniciarTramiteArchivoMB.tipoTramite.interno eq true? 'Interno':'Externo'}"  
+                                   style="font-weight: bolder" /><br></br>
+                    <p:selectOneMenu id="cmbTipotramite" value="#{iniciarTramiteArchivoMB.tipoTramite}" 
+                                     converter="dtoConverter"  autoWidth="false" filter="true"
+                                     style="width: 90% !important;" > 
+                        <f:selectItems value="#{iniciarTramiteArchivoMB.tipoTramites}" var="tram" 
+                                       itemLabel="#{tram.descripcion}" itemValue="#{tram}"/>
+                        <p:ajax  listener="#{iniciarTramiteArchivoMB.initDepartamentoDesdeTipoTramite()}" 
+                                 update="formMain:pnlDatosTramite"/>
+                    </p:selectOneMenu>    
+                </h:panelGroup> 
+                <h:panelGroup id="panelDept"  >
+                    <p:outputLabel id="lblDepartamento" value="Departamentos"  style="font-weight: bolder" /><br></br>
+                    <p:selectOneMenu id="cmbDepartamento" value="#{iniciarTramiteArchivoMB.departamento}" filter="true" 
+                                     disabled="#{!iniciarTramiteArchivoMB.tipoTramite.interno}"
+                                     converter="dtoConverter" autoWidth="true"  
+                                     style="width: 90% !important;" >
+                        <p:ajax listener="#{iniciarTramiteArchivoMB.initServiciosDepartamentos()}" 
+                                update="formMain:panelItems"/>
+                        <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+                        <f:selectItems value="#{iniciarTramiteArchivoMB.departamentos}" var="dpt" 
+                                       itemLabel="#{dpt.nombre}" itemValue="#{dpt}"/>
+                    </p:selectOneMenu>    
+                </h:panelGroup> 
+                <br/>
+                <h:panelGroup id="panelItems"  >
+                    <p:outputLabel id="lblServicios" value="Servicio" 
+                                   style="font-weight: bolder" /><br></br>
+                    <p:selectOneMenu value="#{iniciarTramiteArchivoMB.item}" disabled="#{!iniciarTramiteArchivoMB.tipoTramite.interno}"
+                                     converter="dtoConverter" autoWidth="false"
+                                     style="width: 90% !important;">
+                        <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+                        <f:selectItems value="#{iniciarTramiteArchivoMB.itemList}"
+                                       var="item" itemLabel="#{item.nombre}" itemValue="#{item}"/>
+                        <p:ajax update="formMain" listener="#{iniciarTramiteArchivoMB.initRequisitos()}"/>
+                    </p:selectOneMenu>    
+                </h:panelGroup>
+                <br></br>
+            </p:fieldset> 
+
+        </h:panelGroup>
+        <h:panelGroup>
+            <p:fieldset  id="pnlSolicitante" legend="Solicitante" style="font-weight: bold; width: 100% !important">
+                <h:panelGroup>
+                    <p:outputLabel value="Identificación:" /> <br></br>
+                    <div class="ui-inputgroup"> 
+                        <p:inputText value="#{iniciarTramiteArchivoMB.solicitante.identificacion}" 
+                                     placeholder="Ingrese la Identificación"    style="width: 100%" 
+                                     readonly="#{iniciarTramiteArchivoMB.solicitante.id ne null}"
+                                     onkeypress="if (event.keyCode == 13) {
+                                                 return false;
+                                             }"/>
+                        <p:spacer width="5" />
+                        <p:commandButton icon="fa fa-search" update="pnlSolicitante" 
+                                         actionListener="#{iniciarTramiteArchivoMB.buscarSolicitante()}" >
+                            <p:ajax event="dialogReturn" listener="#{iniciarTramiteArchivoMB.selectSolicitante}" update="pnlSolicitante"/>
+                        </p:commandButton>
+                        <p:remoteCommand name="buscar" actionListener="#{iniciarTramiteArchivoMB.buscarSolicitante()}"  />
+                        <p:spacer width="5" />
+                        <p:commandButton  icon="fa fa-trash" update="pnlSolicitante"
+                                          actionListener="#{iniciarTramiteArchivoMB.limpiarDatosSolicitante()}" >
+                        </p:commandButton>
+                    </div>
+
+                </h:panelGroup>
+                <h:panelGroup rendered="#{iniciarTramiteArchivoMB.solicitante.esPersona}">
+                    <p:outputLabel value="Nombres:" /> <br></br>
+                    <p:inputText value="#{iniciarTramiteArchivoMB.solicitante.nombres}"   style="text-transform: uppercase;width: 98%"/>
+                </h:panelGroup>
+                <h:panelGroup rendered="#{iniciarTramiteArchivoMB.solicitante.esPersona}">
+                    <p:outputLabel value="Apellidos" /> <br></br>
+                    <p:inputText value="#{iniciarTramiteArchivoMB.solicitante.apellidos}" style="text-transform: uppercase;width: 98%"/>
+                </h:panelGroup>
+                <h:panelGroup rendered="#{!iniciarTramiteArchivoMB.solicitante.esPersona}">
+                    <p:outputLabel value="Razón Social" /> <br></br>
+                    <p:inputText value="#{iniciarTramiteArchivoMB.solicitante.razonSocial}"  style="text-transform: uppercase;width: 98%"/>
+                </h:panelGroup>
+                <h:panelGroup rendered="#{!iniciarTramiteArchivoMB.solicitante.esPersona}">
+                    <p:outputLabel value="Nombre Comercial" /> <br></br>
+                    <p:inputText value="#{iniciarTramiteArchivoMB.solicitante.nombreComercial}"   style="text-transform: uppercase;width: 98%"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:outputLabel value="Dirección" /> <br></br>
+                    <p:inputText id="direccionSolicitante"  value="#{iniciarTramiteArchivoMB.solicitante.direccion}"  style="text-transform: uppercase;width: 98%"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:outputLabel value="Correo:" /> <br></br>
+                    <p:inputText   value="#{iniciarTramiteArchivoMB.solicitante.correo}" 
+                                   disabled="#{!userSession.esUsuarioArchivo}"
+                                   style="width: 98%"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:outputLabel value="Teléfono:" /> <br></br>
+                    <p:inputText   value="#{iniciarTramiteArchivoMB.solicitante.telefono}" style="text-transform: uppercase;width: 98%"/>
+                </h:panelGroup>
+                <br></br> 
+                <center>
+                    <p:commandButton value="Actualizar" icon="fa fa-refresh" update="pnlSolicitante" style=" margin-top: 10px "
+                                     actionListener="#{iniciarTramiteArchivoMB.actualizarDatosSolicitante()}" />
+                </center> 
+            </p:fieldset>
+
+
+        </h:panelGroup>
+
+    </h:panelGrid> 
+    <br></br>
+</html>
+

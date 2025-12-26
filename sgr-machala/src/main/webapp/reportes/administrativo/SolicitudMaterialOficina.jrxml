@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="SolicitudMaterialOficina" language="groovy" pageWidth="595" pageHeight="842" columnWidth="475" leftMargin="60" rightMargin="60" topMargin="20" bottomMargin="20" uuid="e70bf7b3-10e4-457b-953e-a72467c75fab">
+	<property name="ireport.zoom" value="1.652892561983471"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="384"/>
+	<style name="html" fill="Solid" markup="html" isBlankWhenNull="true" fontSize="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1250" isPdfEmbedded="true"/>
+	<style name="style_bold" isBold="true" isItalic="false" isUnderline="false" pdfFontName="Helvetica-Bold"/>
+	<subDataset name="tareas" uuid="e61ef07c-6d3c-4e60-b3c2-b46052ab1a2b">
+		<parameter name="SOLICITUD" class="java.lang.Long">
+			<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		</parameter>
+		<queryString>
+			<![CDATA[select det.*
+from administrativo.solicitud_bienes_det det
+inner join administrativo.solicitud_bienes sol on det.solicitud = sol.id
+where det.solicitud =  $P{SOLICITUD}]]>
+		</queryString>
+		<field name="id" class="java.lang.Long"/>
+		<field name="solicitud" class="java.lang.Long"/>
+		<field name="descripcion" class="java.lang.String"/>
+		<field name="cantidad" class="java.lang.Integer"/>
+		<field name="unidad" class="java.lang.String"/>
+		<field name="caracteristicas" class="java.lang.String"/>
+		<field name="observaciones" class="java.lang.String"/>
+	</subDataset>
+	<parameter name="HEADER_URL" class="java.lang.String"/>
+	<parameter name="WATERMARK_URL" class="java.lang.String"/>
+	<parameter name="FOOTER_URL" class="java.lang.String"/>
+	<parameter name="ID" class="java.lang.Long">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT * from administrativo.cargo limit 1]]>
+	</queryString>
+	<field name="id" class="java.lang.Long"/>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="supervisor" class="java.lang.Long"/>
+	<field name="departamento" class="java.lang.Long"/>
+	<background>
+		<band height="700" splitType="Stretch">
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="12" y="300" width="450" height="220" uuid="60f86741-231c-4599-be5f-4e64a15f866b"/>
+				<imageExpression><![CDATA[$P{WATERMARK_URL}]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<pageHeader>
+		<band height="118" splitType="Stretch">
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="92" y="0" width="284" height="71" uuid="bffc1d04-f8f0-4f5f-a049-4f3539b9ddff"/>
+				<imageExpression><![CDATA[$P{HEADER_URL}]]></imageExpression>
+			</image>
+			<componentElement>
+				<reportElement isPrintRepeatedValues="false" mode="Transparent" x="305" y="85" width="170" height="33" uuid="73ed8b6e-d9dd-41a3-ae36-282d455f7b53"/>
+				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="Code39 (Extended)" drawText="false" checksumRequired="false">
+					<jr:codeExpression><![CDATA["0213-2022"]]></jr:codeExpression>
+				</jr:barbecue>
+			</componentElement>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="195" splitType="Stretch">
+			<staticText>
+				<reportElement style="style_bold" x="0" y="1" width="474" height="20" isPrintWhenDetailOverflows="true" uuid="338a8b49-5b76-4789-baa4-3518c2326858"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12"/>
+				</textElement>
+				<text><![CDATA[INFORME DE GESTION DE PROCESO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="style_bold" x="0" y="20" width="474" height="20" isPrintWhenDetailOverflows="true" uuid="ef418af3-f73a-4927-9600-5d485547214f"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="12"/>
+				</textElement>
+				<text><![CDATA[EMPRESA PUBLICA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="style_bold" x="16" y="68" width="50" height="18" isPrintWhenDetailOverflows="true" uuid="ec51924c-9d3b-47bb-9855-7ac63f572d87"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<text><![CDATA[Para:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="style_bold" positionType="Float" x="158" y="40" width="295" height="20" isPrintWhenDetailOverflows="true" uuid="86bfa614-c835-4090-800d-3b29206c48de"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle" markup="html">
+					<font fontName="SansSerif" isBold="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Solicitud n° 0213-2022"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="style_bold" positionType="Float" stretchType="RelativeToBandHeight" mode="Opaque" x="357" y="176" width="96" height="15" backcolor="#CCCCCC" uuid="be5c5523-6444-45cb-a470-eaf0da2a5a33"/>
+				<box leftPadding="5">
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Observaciones"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="style_bold" positionType="Float" stretchType="RelativeToBandHeight" mode="Opaque" x="148" y="176" width="60" height="15" backcolor="#CCCCCC" uuid="6654bbe0-a1c8-4992-bac9-ae9a3ecf3119"/>
+				<box leftPadding="5">
+					<topPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Cantidad"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="style_bold" positionType="Float" stretchType="RelativeToBandHeight" mode="Opaque" x="16" y="176" width="132" height="15" backcolor="#CCCCCC" uuid="9f937348-5d04-4f07-ab13-b1c205410bf0"/>
+				<box leftPadding="5">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Descripción"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="style_bold" positionType="Float" stretchType="RelativeToBandHeight" mode="Opaque" x="208" y="176" width="51" height="15" backcolor="#CCCCCC" uuid="c42dda12-c9b6-4f33-8368-53b07e0189b2"/>
+				<box leftPadding="5">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Unidad"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="style_bold" x="16" y="86" width="50" height="18" isPrintWhenDetailOverflows="true" uuid="683a0090-e9fe-4524-b35a-e1e4da3332ec"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<text><![CDATA[De:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="66" y="68" width="295" height="18" isPrintWhenDetailOverflows="true" uuid="8126a50b-8d62-496e-8338-50d647c17f52"/>
+				<textElement verticalAlignment="Middle" markup="html">
+					<font fontName="SansSerif" isBold="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["PROVEEDORES DE SERVICIOS"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="66" y="86" width="295" height="18" isPrintWhenDetailOverflows="true" uuid="00aefdaa-69c3-47e1-b834-6506686f96fd"/>
+				<textElement verticalAlignment="Middle" markup="html">
+					<font fontName="SansSerif" isBold="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["CRISTIAN CHOEZ CHOEZ"]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="66" y="104" width="295" height="18" isPrintWhenDetailOverflows="true" uuid="fea1b3a5-30b5-4c20-addc-59cff725fb21"/>
+				<textElement verticalAlignment="Middle" markup="html">
+					<font fontName="SansSerif" isBold="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["SOLICITUD DE SERVICIOS"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="style_bold" x="16" y="104" width="50" height="18" isPrintWhenDetailOverflows="true" uuid="efdcf129-e4cf-48ec-aedf-d3944a60c12a"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="10"/>
+				</textElement>
+				<text><![CDATA[Asunto:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="style_bold" positionType="Float" x="16" y="134" width="437" height="37" isPrintWhenDetailOverflows="true" uuid="0c2be130-2035-4753-8aff-9a591fc1c671"/>
+				<textElement verticalAlignment="Middle" markup="html">
+					<font fontName="SansSerif" isBold="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Por medio de la presente solicito a usted se sirva proveer la información necesaria"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="style_bold" positionType="Float" stretchType="RelativeToBandHeight" mode="Opaque" x="259" y="176" width="98" height="15" backcolor="#CCCCCC" uuid="440e0aef-3e34-4260-a32c-836327d26ccc"/>
+				<box leftPadding="5">
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="SansSerif" size="9" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Caracteristicas"]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="41">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" stretchType="RelativeToTallestObject" x="16" y="0" width="438" height="32" isPrintWhenDetailOverflows="true" uuid="9f01bb73-1e33-4cbd-bf59-62f50f7dae21"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle" markup="none">
+					<font fontName="SansSerif" size="9" isBold="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Material que será utilizado de acuerdo al Reglamento General para la Administración, Utilización, Manejo y Control de los Bienes y Existencias del Sector Público, así como de las normas de control interno."]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="137">
+			<textField isBlankWhenNull="true">
+				<reportElement style="style_bold" x="16" y="22" width="144" height="58" uuid="b37b0bf6-ac4d-4307-aae9-74cc8a57d6a6"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+			</textField>
+			<textField>
+				<reportElement style="style_bold" x="16" y="80" width="144" height="20" uuid="d029de40-fb6f-4a3a-9f02-e659f2bfccc6"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ING CRISTIAN CHOEZ CHOEZ"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="style_bold" x="16" y="100" width="144" height="21" uuid="c52cfbb3-026b-4f8f-8ed5-36cda6dbf934"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FUNCIONARIO"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="style_bold" x="16" y="2" width="144" height="20" uuid="5b03568d-0ce5-4c8e-bb4c-0c20e7fd204e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true" isItalic="false" isUnderline="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["FUNCIONARIO"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="style_bold" x="177" y="100" width="144" height="21" uuid="e2a26781-6159-4ca8-9975-56efb5b691c5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["JEFE INMEDIATO"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="style_bold" x="177" y="2" width="144" height="20" uuid="9ed0cfe6-eed9-4583-9e3b-da76b3479e9e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true" isItalic="false" isUnderline="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["AUTORIZADO"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="style_bold" x="177" y="80" width="144" height="20" uuid="e25e8756-c4bf-48d8-98ef-21854eed515e"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="7" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["ING CRISTHIAN INSTRIAGO"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="style_bold" x="177" y="22" width="144" height="58" uuid="46452099-4301-4baa-abd7-0e80c7f114c2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="52" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy HH:mm:ss">
+				<reportElement style="style_bold" positionType="Float" x="81" y="0" width="252" height="12" uuid="50f31aaa-9417-45d1-9046-4d52302583d5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="8" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="style_bold" x="1" y="0" width="80" height="12" uuid="e58eabff-6a5d-411b-8e1e-5ef2a9d1ae03"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<text><![CDATA[Fecha de Emisión:]]></text>
+			</staticText>
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement mode="Transparent" x="0" y="12" width="475" height="40" uuid="d177f912-aa7b-4454-9ad2-815c288b9a9f"/>
+				<imageExpression><![CDATA[$P{FOOTER_URL}]]></imageExpression>
+			</image>
+			<textField>
+				<reportElement x="355" y="0" width="80" height="12" uuid="54f437e3-fd35-48ad-bc7a-1a03372729a9"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Página "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="435" y="0" width="40" height="12" uuid="dd07bd94-d60e-4387-85ed-e9dd2b50cacd"/>
+				<textElement>
+					<font fontName="SansSerif" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

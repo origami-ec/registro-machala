@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+
+    <ui:define name="top"><h3>Acceso al Sistema</h3></ui:define>
+    <ui:define name="title">Acceso al Sistema</ui:define>
+    <ui:define name="content">
+        <center><h2> Accesos al Sistema </h2></center>
+        <h:form prependId="false" id="mainForm" >
+            <p:tabView>
+                <p:tab title="Accesos al sistema" rendered="false">
+
+                    ´<p:dataTable id="inicioSesionLogs" value="#{asgardLogsMB.aclLogins}" var="log" 
+                                  reflow="true" paginator="true" lazy="true" rows="10" 
+                                  widgetVar="inicioSesionLogs"
+                                  rowsPerPageTemplate="10,20,30" filterEvent="enter"
+                                  paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                  emptyMessage="No se encontró ningún Log" paginatorPosition="bottom">
+                        <p:column headerText="Fecha Inicio">
+                            <f:facet name="filter">
+                                <p:datePicker selectionMode="range" onchange="PF('inicioSesionLogs').filter()"/>
+                            </f:facet>
+                            <p:outputLabel value="#{log.fechaDoLogin}" >
+                                <f:convertDateTime pattern="dd-MM-yyyy HH:mm:ss" />
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Fecha Cierre">
+                            <f:facet name="filter">
+                                <p:datePicker selectionMode="range" onchange="PF('inicioSesionLogs').filter()"/>
+                            </f:facet>
+                            <p:outputLabel value="#{log.fechaDoLogout}" >
+                                <f:convertDateTime pattern="dd-MM-yyyy HH:mm:ss" />
+                            </p:outputLabel>
+                        </p:column>
+                        <!--                        <p:column headerText="APP">
+                                                    <p:outputLabel value="# {log.app}" />
+                                                </p:column>-->
+                        <p:column headerText="Acción">
+                            <p:outputLabel value="#{log.evento}" />
+                        </p:column> 
+                        <p:column headerText="Usuario" filterBy="#{log.userSessionName}" filterMatchMode="contains">
+                            <p:outputLabel value="#{log.userSessionName}" />
+                        </p:column>
+                        <p:column headerText="Nombres" filterBy="#{log.nombres}" filterMatchMode="contains">
+                            <p:outputLabel value="#{log.nombres}" />
+                        </p:column>
+                        <p:column headerText="IP - MAC">
+                            <p:outputLabel value="#{log.ipUserSession}" /><br></br>
+                            <p:outputLabel value="#{log.macClient}" />
+                        </p:column>
+
+                    </p:dataTable>   
+                </p:tab>
+                <p:tab title="Logs del Sistema">
+                    <p:fieldset legend="Generar reporte">
+                        <h:panelGroup>
+                            <p:panel header="Filtros" >
+
+                                <p:panelGrid id="pnlFiltrosFecha" columns="3" styleClass="ui-panelgrid-blank" >
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Desde: "  style="font-weight: bolder"/><br/>
+                                        <p:calendar value="#{asgardLogsMB.desde}" placeholder="dd-MM-yyyy" pattern="dd-MM-yyyy" 
+                                                    style="min-width:100% !important; max-width: 0 !important"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Hasta: " style="font-weight: bolder"/><br/>
+                                        <p:calendar value="#{asgardLogsMB.hasta}" placeholder="dd-MM-yyyy" pattern="dd-MM-yyyy" 
+                                                    style="min-width:100% !important; max-width: 0 !important"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <h:panelGroup>
+                                            <p:outputLabel value="" /><br/>
+                                            <p:commandButton value="Generar reporte" actionListener="#{asgardLogsMB.generarReporte()}" icon="fa fa-save"/>
+                                        </h:panelGroup>
+                                    </h:panelGroup>
+                                </p:panelGrid>
+
+
+
+                            </p:panel>
+                        </h:panelGroup>
+                    </p:fieldset>
+                    ´<p:dataTable id="logsDT" value="#{asgardLogsMB.asgardLogs}" var="log"  widgetVar="logsDT"
+                                  reflow="true" paginator="true" lazy="true" rows="10" 
+                                  filterEvent="enter"
+                                  paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                  emptyMessage="No se encontró ningún registro"  
+                                  paginatorPosition="bottom" >
+                        <p:column field="fecha" headerText="Fecha">
+                            <f:facet name="filter">
+                                <p:datePicker selectionMode="range" onchange="PF('logsDT').filter()"/>
+                            </f:facet>
+                            <p:outputLabel value="#{log.fecha}" >
+                                <f:convertDateTime pattern="dd-MM-yyyy HH:mm:ss" />
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column headerText="APP"  >
+                            <!--                            <f:facet name="filter">
+                                                            <p:selectOneMenu onchange="PF('logsDT').filter()" styleClass="custom-filter">
+                                                                <f:selectItem itemLabel="Todos" itemValue="# {null}" noSelectionOption="true"/>
+                                                                <f:selectItems value="# {asgardLogsMB.apps}" var="app" itemLabel="# {app.nombre}" itemValue="# {app.nombre}"/>
+                                                            </p:selectOneMenu>
+                                                        </f:facet>-->
+                            <p:outputLabel value="#{log.app}" />
+                        </p:column>
+                        <p:column headerText="Acción">
+                            <!--                            <f:facet name="filter">  field="accion"
+                                                            <p:selectOneMenu onchange="PF('logsDT').filter()" styleClass="custom-filter">
+                                                                <f:selectItem itemLabel="Todos" itemValue="# {null}" noSelectionOption="true"/>
+                                                                <f:selectItems value="# {asgardLogsMB.acciones}"  />
+                                                            </p:selectOneMenu>
+                                                        </f:facet>-->
+                            <p:outputLabel value="#{log.accion}" />
+                        </p:column>
+                        <p:column headerText="Usuario">
+                            <p:outputLabel value="#{log.usuarioApp}" /><br/>
+                            <p:outputLabel value="#{log.usuario}" />
+                        </p:column>
+                        <p:column headerText="Descripción">
+                            <p:outputLabel value="#{log.descripcion}" />
+                        </p:column>
+                        <p:column headerText="IP - MAC">
+                            <p:outputLabel value="#{log.ip}" /><br></br>
+                            <p:outputLabel value="#{log.mac}" /><br></br>
+                            <p:outputLabel value="#{log.osClient}" />
+                        </p:column>
+
+                        <p:column headerText="Response">
+                            <p:outputLabel value="#{log.response}" />
+                        </p:column>
+
+                        <p:column headerText="Request">
+                            <p:outputLabel value="#{log.request}" />
+                        </p:column>
+                    </p:dataTable>    
+                </p:tab>
+
+            </p:tabView>
+        </h:form>
+
+
+
+    </ui:define>
+</ui:composition>

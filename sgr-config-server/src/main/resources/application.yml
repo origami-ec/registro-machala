@@ -1,0 +1,18 @@
+server:
+  port: 7777
+
+
+spring:
+  application:
+    name: sigeri-config-server
+
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/origami-ec/config-files-machala.git
+          skipSslValidation: true
+          default-label: main
+          username: origami-ec
+          password: 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
+

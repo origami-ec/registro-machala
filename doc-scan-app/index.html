@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>FirmaEC</title>
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+    <link rel="stylesheet" href="./node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <script type="text/javascript" src="./node_modules/jquery/dist/jquery.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
+    <script src="./node_modules/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    <link rel="stylesheet" href="./resources/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+<body>
+    <div class="container p-4">
+        <div class="card p-2">
+            <div class="card-body">
+                <div align="center">
+                    <h4>OrigamiGT</h4>
+                    <h5>Firmar documentos</h5>
+                    <h6>Recuerda aqui solo aparecerán los documentos de un solo trámite debes firmarlos para que aparezca el siguiente.</h6>
+                    <h6>Solo da UN SOLO CLICK y espera la notificación <b>OK</b> en tu escritorio para continuar </h6>
+                </div>
+                <br />
+                <div class="input-group mb-3">
+                    <input id="pathArchivo" type="text" class="form-control" required="true" readonly="readonly" placeholder="Arrastre aqui su documento de PDF...">
+                    <div class="input-group-prepend">
+                        <button id="btnCargarArchivo" type="button" class="btn btn-primary" title="Cargar archivo"><i class="fa fa-upload"></i></button>
+                        <button id="btnLimpiar" type="button" class="btn btn-danger" title="Eliminar archivo"><i class="fa fa-close"></i></button>
+                    </div>
+                </div>
+
+                <input id="pathFirma" type="text" required="true" class="form-control mb-2" placeholder="Ruta firma..." readonly/>
+                <input id="pathClave" type="password" required="true" class="form-control mb-2" placeholder="Contraseña..." />
+                <div class="input-group">
+                    <input id="txtRazon" type="text" class="form-control" placeholder="Razón de firma" />
+                    <input id="txtUbicacion" type="text" class="form-control" placeholder="Localización" />
+                    <input id="txtPagina" type="number" class="form-control" placeholder="#Página" />
+                    <button id="btnFirmarDocumento" type="button" class="btn btn-primary" title="Fimar documento"><i class="fa fa-save"></i></button>
+                    <button id="btnRefresh" type="button" class="btn btn-success" title="Consultar archivos"><i class="fa fa-refresh"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container p-4">
+        <div class="row ">
+            <table class="table table-hover table-ligth">
+                <thead>
+                    <tr>
+                        <th scope="col">Trámite</th>
+                        <th scope="col">Archivo</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col">***</th>
+                    </tr>
+                </thead>
+                <tbody id="listDocuments">
+                    <!-- info -->
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</body>
+
+</html>

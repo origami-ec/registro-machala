@@ -1,0 +1,81 @@
+[sistema]
+ejbRuta = java:global/sgr-machala/
+
+rutaAnexos = C:/servers_files/anexos/
+rutaTemporales = C:/servers_files/temp/
+rutaFirmados = C:/servers_files/fd/
+rutaFirmaEC = C:/servers_files/firmas/
+rutaDocumentos = C:/servers_files/documentos/
+formatoArchivos = /(\\.|\\/)(gif|jpe?g|png|pdf|xlsx|docx|xlsm|dwg|shp|doc|xls|ppt|pptx|tif|txt)$/
+
+[ejbs]
+entityManager = java:module/manager
+bpmBaseEngine = java:module/bpmBaseEngine
+bpmProcessEngine = java:module/bpmProcessEngine
+datasource = java:module/dataSource
+
+[zoning]
+region = EC
+
+[mail]
+smtp_Host = smtp.gmail.com
+smtp_Port = 587
+correo = origami.supergold@gmail.com
+pass = nonosawkzhpymdme
+ssl = true
+
+[condb]
+driverClass = org.postgresql.Driver
+url = jdbc:postgresql://127.0.0.1:5432/sgr_machala
+username = sisapp
+password = sisapp98
+minPoolConSize = 1
+maxPoolConsize = 2
+maxIdleTime = 1800
+
+[activiti]
+driverClass = org.postgresql.Driver
+url = jdbc:postgresql://127.0.0.1:5432/sgr_machala
+username = sisapp
+password = sisapp98
+minPoolConSize = 1
+maxPoolConsize = 2
+maxIdleTime = 1800
+
+[docdb]
+driverClass = org.postgresql.Driver
+url = jdbc:postgresql://127.0.0.1:5432/sgr_machala_archivos
+username = sisapp
+password = sisapp98
+minPoolConSize = 1
+maxPoolConsize = 2
+maxIdleTime = 1800
+
+[archivodb]
+driverClass = org.postgresql.Driver
+url = jdbc:postgresql://127.0.0.1:5432/sgr_machala_digitalizacion
+username = sisapp
+password = sisapp98
+minPoolConSize = 1
+maxPoolConsize = 2
+maxIdleTime = 1800
+
+[webservices]
+dominioVentanilla = http://localhost:9090/#/
+urlWSVentanilla = http://localhost:8085/
+wsdlMunicipio = http://200.124.240.62:8080/gim/paymentPlatform?wsdl
+urlWsApiFacturas = http://127.0.0.1:8086/api/v1/comprobantes/
+urlWsApiClientes = http://10.10.10.10/api/usuario.php?cedula=
+accesstoken = TestTKPrOInF
+idUsuarioEgob = 965
+urlFirmaEC = http://127.0.0.1:8781/api/
+urlWsEmail = http://127.0.0.1:8782/asgard/api/
+urlWsDinardap = http://127.0.0.1:8790/api/
+urlOrigamiZuul = http://127.0.0.1:8783/
+urlOrigamiDocs = http://127.0.0.1:8718/origami/docs/
+urlOrigamiMedia = http://127.0.0.1:8784/origami/api/
+ambienteFacturacion = 1
+isOnline = false
+
+[automatic]
+enviar = false

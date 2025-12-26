@@ -1,0 +1,81 @@
+[sistema]
+ejbRuta = java:global/
+
+rutaAnexos = /server_files/anexos/
+rutaTemporales = /server_files/temp/
+rutaFirmados = /server_files/firmados/
+rutaFirmaEC = /server_files/firmas/
+rutaDocumentos = /server_files/documentos/
+formatoArchivos = /(\\.|\\/)(gif|jpe?g|png|pdf|xlsx|docx|xlsm|dwg|shp|doc|xls|ppt|pptx|tif|txt)$/
+
+[ejbs]
+entityManager = java:module/manager
+bpmBaseEngine = java:module/bpmBaseEngine
+bpmProcessEngine = java:module/bpmProcessEngine
+datasource = java:module/dataSource
+
+[zoning]
+region = EC
+
+[mail]
+smtp_Host = smtp.gmail.com
+smtp_Port = 587
+correo = registro.machala.tramites1@gmail.com
+pass = vqwleymyxosyqqot
+ssl = true
+
+[condb]
+driverClass = org.postgresql.Driver
+url = jdbc:postgresql://10.10.10.12:5432/sigeri
+username = sisapp
+password = iUkHtEOs4ltghBM25
+minPoolConSize = 1
+maxPoolConsize = 2
+maxIdleTime = 1800
+
+[activiti]
+driverClass = org.postgresql.Driver
+url = jdbc:postgresql://10.10.10.12:5432/sigeri
+username = sisapp
+password = iUkHtEOs4ltghBM25
+minPoolConSize = 1
+maxPoolConsize = 2
+maxIdleTime = 1800
+
+[docdb]
+driverClass = org.postgresql.Driver
+url = jdbc:postgresql://10.10.10.12:5432/sigeri_archivos
+username = sisapp
+password = iUkHtEOs4ltghBM25
+minPoolConSize = 1
+maxPoolConsize = 2
+maxIdleTime = 1800
+
+[archivodb]
+driverClass = org.postgresql.Driver
+url = jdbc:postgresql://10.10.10.12:5432/sigeri_digitalizacion
+username = sisapp
+password = iUkHtEOs4ltghBM25
+minPoolConSize = 1
+maxPoolConsize = 2
+maxIdleTime = 1800
+
+[webservices]
+dominioVentanilla = https://tramitesenlinea.rmpplayas.gob.ec/#/
+urlWSVentanilla = http://192.168.23.17:8085/rpm-ventanilla/api/
+wsdlMunicipio = http://192.168.23.17:8080/gim/paymentPlatform?wsdl
+urlWsApiFacturas = http://10.10.10.15:8086/api/v1/comprobantes/
+urlWsApiClientes = http://10.10.10.10/api/usuario.php?cedula=
+accesstoken = TestTKPrOInF
+idUsuarioEgob = 965
+urlFirmaEC = http://10.10.10.13:8781/api/
+urlWsEmail = http://10.10.10.13:8782/asgard/api/
+urlWsDinardap = https://devenlinea.daule.gob.ec/dinardap-rp/api/ 
+urlOrigamiZuul = http://10.10.10.18:8783/
+urlOrigamiDocs = http://10.10.10.18:8718/origami/docs/
+urlOrigamiMedia = http://10.10.10.18:8784/origami/api/
+ambienteFacturacion = 2
+isOnline = false
+
+[automatic]
+enviar = false

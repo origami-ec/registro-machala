@@ -1,0 +1,256 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co"
+                xmlns="http://www.w3.org/1999/xhtml">
+    <ui:define name="title">Administración de perfiles</ui:define>
+    <ui:define name="content">
+        <h:form id="formUsuarios" prependId="false">
+            <center><h2>Administración de perfiles</h2></center>
+            <p:tabView id="accMantenimiento">
+                <p:tab title="Usuarios" >
+                    <h:panelGrid columns="1">
+
+                        <p:dataTable id="dtuser" reflow="true" paginator="true" lazy="true" rows="10" 
+                                     rowsPerPageTemplate="10,20,30" filterEvent="enter"
+                                     paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     paginatorPosition="bottom" widgetVar="dtuser" 
+                                     value="#{usuariosMB.usuarios}" var="user" 
+                                     emptyMessage="No se encontró ningún Item"
+                                     currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros">
+                            <p:column headerText="Usuario" 
+                                      filterBy="#{user.usuarioNombre}" filterStyle="width: 75%">
+                                <h:outputText value="#{user.usuarioNombre}" />
+                            </p:column>
+                            <p:column headerText="Nombres"  filterBy="#{user.nombreUsuario}" filterStyle="width: 75%">
+                                <h:outputText value="#{user.nombreUsuario}" />
+                            </p:column>
+
+                            <p:column headerText="Estado" width="60" >
+                                <p:outputLabel value="#{!user.eliminado? 'Activo' :'Inactivo'}"/>
+
+                            </p:column>
+                            <p:column headerText="Acciones" >
+                                <center> 
+                                    <p:commandLink actionListener="#{usuariosMB.showDlgEditarRoles(user,true)}" rendered="#{!user.eliminado}"
+                                                   styleClass="edit" style="margin-right: 10px" title="Editar Roles">
+                                        <i class="fa fa-edit" style="font-size: 1.2em; margin-right: 5px;"></i>
+                                    </p:commandLink>
+
+                                    <p:commandLink actionListener="#{usuariosMB.showDlgEditarRoles(user,false)}" 
+                                                   style="margin-right: 10px" title="Visualizar">
+                                        <i class="fa fa-eye" style="font-size: 1.2em; margin-right: 5px;"></i>
+                                    </p:commandLink>
+                                </center>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGrid>
+                </p:tab>
+                <p:tab title="Grupo de usuarios">
+                    <center>
+                        <p:commandButton value="Nuevo grupo"   
+                                         icon="fa fa-plus" actionListener="#{usuariosMB.showDlgRol()}" 
+                                         styleClass="new rounded-button" style="float: right" /><br></br>
+                    </center>
+                    <br/>
+                    <p:dataTable id="dtRoles" reflow="true" paginator="true" lazy="true" rows="10" 
+                                 rowsPerPageTemplate="10,20,30" filterEvent="enter"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 paginatorPosition="bottom" widgetVar="dtRoles"
+                                 value="#{usuariosMB.roles}" tableStyle="table-layout:auto"
+                                 rowStyleClass="#{usrol.estado? null : 'finishOrInactive'}"
+                                 var="usrol" emptyMessage="No se encontró ningún Item"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros">
+                        <p:column headerText="Nombre" filterBy="#{usrol.nombre}" filterStyle="width: 95%;">
+                            <h:outputText value="#{usrol.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Departamento" filterBy="#{usrol.departamento.nombre}">
+                            <f:facet name="filter">
+                                <p:selectOneMenu onchange="PF('dtRoles').filter()" styleClass="custom-filter"
+                                                 filter="true" filterMatchMode="contains">
+                                    <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                    <f:selectItems value="#{usuariosMB.departamentos}" var="dep" 
+                                                   itemLabel="#{dep.nombre} - #{dep.tipoUnidad.valor}" 
+                                                   itemValue="#{dep.nombre}"/>
+                                </p:selectOneMenu> 
+                            </f:facet>
+                            <h:outputText value="#{usrol.departamento.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Estado" width="5%" filterBy="#{usrol.estado}">
+                            <h:outputText value="#{usrol.estado? 'Activo':'Inactivo'}"/>
+                            <f:facet name="filter">
+                                <p:selectOneMenu onchange="PF('dtRoles').filter()" styleClass="custom-filter">
+                                    <f:selectItem itemLabel="Todos" itemValue="#{null}" noSelectionOption="true"/>
+                                    <f:selectItem itemLabel="Activo" itemValue="#{true}"/>
+                                    <f:selectItem itemLabel="Inactivo" itemValue="#{false}"/>
+                                </p:selectOneMenu>
+                            </f:facet>
+                        </p:column>
+                        <p:column headerText="Editar" width="5%">
+                            <p:commandLink actionListener="#{usuariosMB.showDlgEditRol(usrol)}" styleClass="edit">
+                                <i class="fa fa-edit" style="font-size: 1.2em; margin-right: 5px;"></i>            
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+
+            </p:tabView>
+        </h:form>
+
+
+        <p:dialog header="Información de usuario" widgetVar="dlgInfoUser" modal="true" resizable="false" position="center" width="500" height="300">
+            <h:form id="formInfoUser">
+                <p:tabView>
+                    <p:tab title="Persona">
+                        <h:panelGrid styleClass="noBorder" columns="2">
+                            Usuario:
+                            <p:inputText value="#{usuariosMB.acluser.nombreUsuario}" readonly="true"/>
+                            Estado:
+                            <p:inputText value="ACTIVO" readonly="true" rendered="#{usuariosMB.acluser.eliminado}"/>
+                            <p:inputText value="INACTIVO" readonly="true" rendered="#{!usuariosMB.acluser.eliminado}"/> 
+                        </h:panelGrid>
+                    </p:tab>
+                    <p:tab title="Roles">
+                        <p:dataTable value="#{usuariosMB.rolesUsuario}" var="roleU" id="dataRol" 
+                                     widgetVar="dataRol" scrollable="true" style="text-align: center;"
+                                     emptyMessage="No se asignaron roles." scrollHeight="200">
+                            <p:column  headerText="Rol" >
+                                <h:outputText value="#{roleU.rol.nombre}"/>
+                            </p:column>
+                            <p:column  headerText="Departamento">
+                                <p:outputLabel value="#{roleU.rol.departamento.nombre}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Cambios de Estado">
+                        <p:dataTable value="#{usuariosMB.aclRegistroUsers}" var="reg" scrollable="true" style="text-align: center;"
+                                     emptyMessage="Sin elementos." scrollHeight="200">
+                            <p:column headerText="Fecha" width="150">
+                                <h:outputText value="#{reg.fechaIngreso}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                            </p:column>
+                            <p:column headerText="Motivo">
+                                <h:outputText value="#{reg.motivo}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>
+
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgCambioRoles" header="#{usuariosMB.isFormEdit?'Editar Roles':'Visualizar roles'}" widgetVar="dlgRoles" modal="true" 
+                  closeOnEscape="true" position="center" width="550">
+            <h:form id="formCambioRol">
+                <p:panelGrid columns="1" styleClass="ui-noborder" style="width: 500px">
+                    <h:panelGroup>
+                        <p:outputLabel value="Usuario:" style="font-weight: bolder"/><br/>
+                        <p:outputLabel value="#{usuariosMB.acluser.nombreUsuario}" 
+                                       style="font-weight: bolder"/>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{usuariosMB.isFormEdit}" >
+                        <p:outputLabel value="Roles:" style="font-weight: bolder"/><br/>
+                        <p:selectOneMenu  id="selectRol" value="#{usuariosMB.rol}" 
+                                          converter="dtoConverter" filter="true" 
+                                          filterMatchMode="contains" autoWidth="false"
+                                          var="rol" style="min-width:100% !important; max-width: 0 !important">
+                            <f:selectItem itemLabel="Seleccione"  itemValue="#{null}"/>
+                            <f:selectItems value="#{usuariosMB.listRols}" var="rols" 
+                                           itemValue="#{rols}"
+                                           itemLabel="#{rols.nombre} - #{rols.departamento.nombre}"/>
+                            <p:column  headerText="Departamento" style="width: 50px">
+                                <h:outputText value="#{rol.departamento.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Rol" style="width: 50px">
+                                <h:outputText value="#{rol.nombre}"/>
+                            </p:column>
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{usuariosMB.isFormEdit}" >
+                        <center>
+                            <p:commandButton value="Agregar" icon="fa fa-plus" styleClass="rounded-button" actionListener="#{usuariosMB.agregarRol()}"
+                                             update="formCambioRol:dtRolesUser"/>
+                        </center>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:dataTable id="dtRolesUser" value="#{usuariosMB.rolsUser}" var="rol" scrollable="true" 
+                                     emptyMessage="No se asignaron roles." scrollHeight="180"
+                                     tableStyle="table-layout:auto">
+                            <p:column  headerText="Rol" style="text-align: center;">
+                                <h:outputText value="#{rol.nombre}"/>
+                            </p:column>
+                            <p:column  headerText="Departamento" style="text-align: center">
+                                <h:outputText value="#{rol.departamento.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Acciones" width="40" style="text-align: center" rendered="#{usuariosMB.isFormEdit}" >
+                                <p:commandLink actionListener="#{usuariosMB.eliminarRol(rol)}" update="dtRolesUser">
+                                    <i class="fa fa-trash" style="font-size: 1.2em;
+                                       margin-right: 5px; color: red"></i>
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{usuariosMB.isFormEdit}" >
+                        <center>
+                            <p:commandButton value="Guardar" icon="fa fa-save" styleClass="rounded-button" actionListener="#{usuariosMB.editarRoles()}"/>    
+                        </center>
+                    </h:panelGroup>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+
+        <p:dialog header="Administración de Roles" widgetVar="dlgRolUser" modal="true" 
+                  resizable="false" position="center" width="500">
+            <h:form id="formRolsUser">
+                <h:panelGrid styleClass="noBorder" columns="1">
+                    <h:panelGroup>
+                        <p:outputLabel value="Nombre: " /> <br></br>
+                        <p:inputText value="#{usuariosMB.rol.nombre}" style="width: 100%"/>    
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Departamentos: " /> <br></br>
+                        <p:selectOneMenu  var="c" value="#{usuariosMB.rol.departamento}" converter="dtoConverter"
+                                          style="min-width:100% !important; max-width: 0 !important" 
+                                          autoWidth="false"
+                                          filter="true"
+                                          filterMatchMode="contains">  
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />  
+                            <f:selectItems value="#{usuariosMB.departamentos}" var="dep" 
+                                           itemLabel="#{dep.nombre} - #{dep.tipoUnidad.valor}"
+                                           itemValue="#{dep}"/>  
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Departamento"/>
+                                </f:facet>
+                                <h:outputText value="#{c.nombre}"/>
+                            </p:column>
+
+                            <p:column>
+                                <f:facet name="header">
+                                    <h:outputText value="Tipo"/>
+                                </f:facet>
+                                <h:outputText value="#{c.tipoUnidad.valor}"/>
+                            </p:column>
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Estado: " /> <br></br>
+                        <p:selectOneMenu value="#{usuariosMB.rol.estado}" style="width: 100%">
+                            <f:selectItem itemLabel="Activo" itemValue="#{true}"/>
+                            <f:selectItem itemLabel="Inactivo" itemValue="#{false}"/>
+                        </p:selectOneMenu>    
+                    </h:panelGroup>
+                </h:panelGrid>
+                <br></br>
+                <center>
+                    <p:commandButton value="Guardar" icon="fa fa-save" styleClass="rounded-button" actionListener="#{usuariosMB.saveRoles()}"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

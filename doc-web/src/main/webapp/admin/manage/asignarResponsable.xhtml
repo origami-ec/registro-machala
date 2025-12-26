@@ -1,0 +1,130 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Responsable del Departamento</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm" prependId="false">
+            <center>
+                <h2>Roles del Departamento</h2>
+            </center>
+
+            <h:panelGrid columns="2" columnClasses="fifty-percent, top-alignment, fifty-percent">
+                <p:fieldset legend="Departamento - Usuarios" >
+                    <h:panelGroup>
+                        <p:outputLabel value="Departamentos"  style="font-weight: bolder" /><br></br>
+                        <p:selectOneMenu value="#{asignarResponsableMB.departamento}" 
+                                         converter="dtoConverter" filter="true" filterMatchMode="contains"
+                                         style="width: 90% !important;" >
+                            <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+                            <f:selectItems value="#{asignarResponsableMB.departamentos}"
+                                           var="dep"
+                                           itemLabel="#{dep.nombre}" itemValue="#{dep}"/>
+                            <p:ajax listener="#{asignarResponsableMB.initListUsuarios()}" update="dUsuarios"/>
+                        </p:selectOneMenu>    
+                    </h:panelGroup>                  
+                </p:fieldset>
+                <h:panelGroup id="panelUsuarios">
+                    <p:fieldset legend="Usuarios">
+                        <h:panelGroup id="panelItems">
+                            <p:dataTable id="dUsuarios"
+                                         value="#{asignarResponsableMB.listRolUsuario}" var="user"  
+                                         widgetVar="dtDatos"  rowIndexVar="i"
+                                         rows="10" reflow="true" paginator="true" rowKey="#{user.id}"
+                                         rowsPerPageTemplate="10,50,100"  paginatorPosition="bottom"
+                                         filterEvent="enter" emptyMessage="No existen registros"  
+                                         style="font-size: 12px">
+                              
+                                <p:column headerText="Usuario"  >
+                                    <h:outputText value="#{user.usuario.nombreUsuario}"/><br/>
+                                    <h:outputText value="#{user.usuario.cargo}" style="font-size: 10px; font-weight: bolder"/><br/>
+                                    <h:outputText value="#{user.usuario.estadoDisponible}" style="font-size: 10px; font-weight: bolder; color: red" rendered="#{!user.usuario.disponible}"/><br/>
+                                    <p:dataList value="#{user.servicios}" var="s" emptyMessage="No se encuentran trámites asociados" rendered="#{not empty user.servicios}">
+                                        <p:column headerText="Servicios relacionados">
+                                            <p:outputLabel value="#{s.servicio.nombre}" style="font-size: 8px" />
+                                        </p:column>
+                                    </p:dataList>
+                                </p:column>
+                                <p:column headerText="Responsable" width="70">
+                                    <center>
+                                        <p:selectBooleanCheckbox value="#{user.responsable}">
+                                            <p:ajax process="@this" listener="#{asignarResponsableMB.editResponsable(i, user)}" update="dUsuarios"/>
+                                        </p:selectBooleanCheckbox>
+                                    </center>
+                                </p:column>
+                                <p:column headerText="Jefe" width="70" >
+                                    <center>
+                                        <p:selectBooleanCheckbox value="#{user.jefe}">
+                                            <p:ajax process="@this" listener="#{asignarResponsableMB.editResponsable(i,user)}" update="dUsuarios"/>
+                                        </p:selectBooleanCheckbox>
+                                    </center>
+                                </p:column>
+                                <p:column headerText="Director" width="70" rendered="false">
+                                    <center>
+                                        <p:selectBooleanCheckbox value="#{user.director}">
+                                            <p:ajax process="@this" listener="#{asignarResponsableMB.editResponsable(i,user)}" update="dUsuarios"/>
+                                        </p:selectBooleanCheckbox>
+                                    </center>
+                                </p:column>
+                                <p:column headerText="Editar servicios" width="70"  >
+                                    <center>
+                                        <p:commandLink actionListener="#{asignarResponsableMB.asignarServicios(user)}" update="frmUsuarioResponsable"
+                                                       styleClass="edit" style="margin-right: 10px" title="Asignar servicios">
+                                            <i class="fa fa-edit" style="font-size: 1.2em; margin-right: 5px;"></i>
+                                        </p:commandLink>
+                                    </center>
+                                </p:column>
+
+                            </p:dataTable>   
+                        </h:panelGroup>
+                    </p:fieldset>
+                </h:panelGroup>
+            </h:panelGrid>
+
+        </h:form>
+
+
+        <p:dialog id="dlgUsuarioServicio" widgetVar="dlgUsuarioServicio"  width="500"   modal="true" header="Servicios"
+                  height="300" closeOnEscape="true">
+            <h:form id="frmUsuarioResponsable">
+                <center>
+                    <h:panelGroup>
+                        <p:outputLabel value="Usuario #{asignarResponsableMB.usuarioSeleccionado.usuario.nombreUsuario}" style="font-weight: bolder"/>
+                    </h:panelGroup>
+                    <br/>
+                    <br/>
+                    <p:dataTable value="#{asignarResponsableMB.servicios}" var="c" 
+                                 rowKey="#{c.id}" 
+                                 selection="#{asignarResponsableMB.serviciosSeleccionados}" >
+
+                        <p:ajax event="rowSelect" listener="#{asignarResponsableMB.onRowSelect}" update="frmUsuarioResponsable"/>
+                        <p:ajax event="rowUnselect" listener="#{asignarResponsableMB.onRowUnselect}" update="frmUsuarioResponsable"/>
+                        <p:ajax event="rowSelectCheckbox" listener="#{asignarResponsableMB.onRowSelect}" update="frmUsuarioResponsable" />
+                        <p:ajax event="rowUnselectCheckbox" listener="#{asignarResponsableMB.onRowUnselect}" update="frmUsuarioResponsable" />
+                        <p:column headerText="Servicios" filterBy="#{c.nombre}">
+                            <p:outputLabel value="#{c.nombre}" />
+                        </p:column>
+                        <p:column headerText="***" width="20" selectionMode="multiple"  />
+                    </p:dataTable>
+                    <br/><br/>
+
+                    <p:commandButton id="btnGuardar" value="Guardar"   update="mainForm"
+                                     styleClass="info-button rounded-button" 
+                                     actionListener="#{asignarResponsableMB.guardarUsuarioServicios()}" 
+                                     icon="fa fa-save"   />
+                </center>
+
+            </h:form>
+        </p:dialog>
+
+
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+        </p:confirmDialog>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,292 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Personas</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center>
+                <h1>
+                    MANTENIMIENTO DE PERSONAS/CLIENTES
+                    <p:commandButton id="buttonNew"  styleClass="new" value="Ingresar nueva Persona" icon="fa fa-plus" style="float: right;" 
+                                     actionListener="#{administradorEnte.showDlgNewEnte()}"/>
+                </h1>
+            </center>
+            <p:dataTable id="dtentes" reflow="true" paginator="true" lazy="true" rows="15" 
+                         rowsPerPageTemplate="15,25,50" 
+                         filterEvent="enter"
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         value="#{administradorEnte.cel}" var="user" 
+                         emptyMessage="No se encontró ningún Item" style="text-align: center;"
+                         paginatorPosition="bottom" tableStyle="table-layout:auto">
+                <p:column headerText="C.I./R.U.C." filterBy="#{user.identificacion}" >
+                    <h:outputText value="#{user.identificacion}"/>
+                </p:column>
+                <p:column headerText="Nombres / Razón Social" filterBy="#{user.nombrerazonsocial}" >
+                    <h:outputText value="#{user.nombres}" rendered="#{user.esPersona}"/>
+                    <h:outputText value="#{user.razonSocial}" rendered="#{!user.esPersona}"/>
+                </p:column>
+                <p:column headerText="Apellidos / Nombre Comercial" filterBy="#{user.apellidonombrecomercial}">
+                    <h:outputText value="#{user.apellidos}" rendered="#{user.esPersona}"/>
+                    <h:outputText value="#{user.nombreComercial}" rendered="#{!user.esPersona}"/>
+                </p:column>
+                <p:column headerText="Tipo" >
+                    <h:outputText value="N" rendered="#{user.esPersona}"/>
+                    <h:outputText value="J" rendered="#{!user.esPersona}"/>
+                </p:column>
+                <p:column headerText="Editar">
+                    <p:commandLink id="buttonEdit" styleClass="edit" actionListener="#{administradorEnte.showDlgEditEnte(user)}">
+                        <i class="fa fa-edit" style="font-size: 1.2em; margin-right: 5px;"></i>
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog   widgetVar="dlgEditEnte" modal="true"  showHeader="false"
+                    resizable="false" closeOnEscape="true" position="center">
+            <h:form id="formEditEnte">
+                <br></br>
+                <center>
+                    <p:outputLabel value="Datos de la persona"
+                                   style="font-weight: bolder; font-size: 16px;"
+                                   />
+                </center>
+                <h:panelGrid columns="1"  style="font-weight: bolder;">
+                    <h:panelGroup>
+                        <p:outputLabel value="CI/Ruc/Pas.:" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.identificacion}" readonly="true" size="40"/>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{administradorEnte.ente.esPersona}">
+                        <p:outputLabel value="Nombres*" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.nombres}" 
+                                     style="text-transform: uppercase;" size="40">
+                            <p:keyFilter regEx="/[a-zA-ZÀ-ú\\s\\ ]+/"/>
+                        </p:inputText>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{administradorEnte.ente.esPersona}">
+                        <p:outputLabel value="Apellidos*" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.apellidos}" 
+                                     style="text-transform: uppercase;" size="40">
+                            <p:keyFilter regEx="/[a-zA-ZÀ-ú\\s\\ ]+/"/>
+                        </p:inputText>
+                    </h:panelGroup>
+                    <h:panelGroup style="block" rendered="#{administradorEnte.ente.esPersona}">
+                        <p:outputLabel value="#{administradorEnte.ente.sexo}" /><br></br>
+                        <p:selectOneMenu value="#{administradorEnte.ente.sexo}" style="width: 100%">
+                            <f:selectItem itemLabel="Masculino" itemValue="#{true}"/>
+                            <f:selectItem itemLabel="Femenino" itemValue="#{false}"/>
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{!administradorEnte.ente.esPersona}">
+                        <p:outputLabel value="Razón Social*" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.razonSocial}" 
+                                     style="text-transform: uppercase;" size="40">
+                            <p:keyFilter regEx="/[a-zA-ZÀ-ú\\s\\ ]+/"/>
+                        </p:inputText>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{!administradorEnte.ente.esPersona}">
+                        <p:outputLabel value="Nom.Comercial*" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.nombreComercial}" 
+                                     style="text-transform: uppercase;" size="40">
+                            <p:keyFilter regEx="/[a-zA-ZÀ-ú\\s\\ ]+/"/>
+                        </p:inputText>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Dirección" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.direccion}" 
+                                     style="text-transform: uppercase;" size="40"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Correo*" /><br></br>
+                        <div class="ui-g-12">
+                            <div class="ui-inputgroup">
+                                <p:inputText id="intputcorreoEdit" value="#{administradorEnte.correo}" 
+                                             size="#{administradorEnte.size}">
+                                    <p:keyFilter for="intputcorreoEdit" testFunction="return c != '@';"/>
+                                </p:inputText>
+                                <p:selectOneMenu id="hideNoselectionOption" value="#{administradorEnte.dominio}"
+                                                 style="width: 100%" editable="true">
+                                    <f:selectItems value="#{administradorEnte.dominios}"
+                                                   var="d"
+                                                   itemLabel="#{d.descripcion}" itemValue="#{d.descripcion}"/>                                    
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Celular:" /><br></br> 
+                        <p:inputMask value="#{administradorEnte.ente.celular}" mask="(999) 999-9999" validateMask="true" size="40"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Teléfono:" /><br></br> 
+                        <p:inputMask value="#{administradorEnte.ente.telefono}" mask="(99) 999-9999" size="40"/>
+                    </h:panelGroup>
+                </h:panelGrid>
+                <center>
+                    <p:commandButton value="Guardar"  icon="fa fa-save" 
+                                     actionListener="#{administradorEnte.editEnte()}"/>
+                    <p:commandButton value="Cancelar" style="margin-left: 10px" icon="fa fa-close" 
+                                     oncomplete="PF('dlgEditEnte').hide();"/>
+                </center>
+            </h:form>   
+        </p:dialog>
+
+        <p:dialog showHeader="false" widgetVar="dlgNewCliente" modal="true" 
+                  resizable="false" closeOnEscape="true" position="center">
+            <h:form id="formNewEnte">
+                <center>
+                    <p:outputLabel value="Datos de la persona" style="font-weight: bolder; font-size: 16px;"/>
+                </center>
+                <br></br>
+                <h:panelGrid id="pnlNuevoEnte" columns="2" style="font-weight: bolder;">
+                    <h:panelGroup>
+                        <p:outputLabel value="Tipo Persona:" for="esPersona"/><br></br>
+                        <p:selectOneMenu value="#{administradorEnte.ente.esPersona}" id="esPersona" 
+                                         autoWidth="false" style="width: 100%">
+                            <f:selectItem itemLabel="Natural" itemValue="#{true}" />
+                            <f:selectItem itemLabel="Jurídica" itemValue="#{false}" />
+                            <p:ajax listener="#{administradorEnte.updateTipoDoc()}" update="formNewEnte"/>
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Tipo Documento:" for="tipoDocumento" /><br></br>
+                        <p:selectOneMenu value="#{administradorEnte.tipoDocumento}" id="tipoDocumento"
+                                         disabled="#{!administradorEnte.ente.esPersona}"  autoWidth="false" style="width: 100%" >
+                            <f:selectItem itemLabel="Cédula" itemValue="C" />
+                            <f:selectItem itemLabel="RUC" itemValue="R" itemDisabled="#{administradorEnte.ente.esPersona}"/>
+                            <f:selectItem itemLabel="Pasaporte" itemValue="P"/>
+                            <p:ajax update="identificacion" process="tipoDocumento"/>
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup style="block">
+                        <p:outputLabel for="identificacion" value="Identificación/Pasaporte*" /><br></br>
+                        <p:inputText id="identificacion" value="#{administradorEnte.ente.identificacion}"
+                                     maxlength="#{administradorEnte.tipoDocumento eq 'C' ? 10:administradorEnte.tipoDocumento eq 'P'? 50:13}" size="30">
+                            <p:keyFilter regEx="#{administradorEnte.regEx()}"/>
+                        </p:inputText> 
+                        <p:spacer width="10" />
+                        <p:commandLink  title="Buscar"  
+                                        actionListener="#{administradorEnte.buscarDatoSeguro()}"
+                                        update="pnlNuevoEnte">
+                            <i class="fa fa-fw fa-search" style="font-size: 1.2em;"></i>       
+                        </p:commandLink>
+                    </h:panelGroup>
+                    <h:panelGroup style="block">
+                        <p:outputLabel value="Sexo" /><br></br>
+                        <p:selectOneMenu value="#{administradorEnte.ente.sexo}" style="width: 100%">
+                            <f:selectItem itemLabel="Masculino" itemValue="#{true}"/>
+                            <f:selectItem itemLabel="Femenino" itemValue="#{false}"/>
+                        </p:selectOneMenu>
+                    </h:panelGroup><br/>
+                    <h:panelGroup style="block">
+                        <p:outputLabel value="" /><br></br>
+                    </h:panelGroup>
+                    <h:panelGroup  rendered="#{administradorEnte.ente.esPersona}">
+                        <p:outputLabel value="Nombres*" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.nombres}" 
+                                     disabled="#{administradorEnte.enteDinardap.id ne null}"
+                                     style="text-transform: uppercase;width: 100%">
+                            <p:keyFilter regEx="/[a-zA-ZÀ-ú\\s\\ ]+/"/>
+                        </p:inputText>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{administradorEnte.ente.esPersona}">
+                        <p:outputLabel value="Apellidos*" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.apellidos}" 
+                                     disabled="#{administradorEnte.enteDinardap.id ne null}"
+                                     style="text-transform: uppercase;width: 100%" >
+                            <p:keyFilter regEx="/[a-zA-ZÀ-ú\\s\\ ]+/"/>
+                        </p:inputText>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{!administradorEnte.ente.esPersona}">
+                        <p:outputLabel value="Razón Social*" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.razonSocial}" 
+                                     disabled="#{administradorEnte.enteDinardap eq null}"
+                                     style="text-transform: uppercase;width: 100%">
+                            <p:keyFilter regEx="/[a-zA-ZÀ-ú\\s\\ ]+/"/>
+                        </p:inputText>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{!administradorEnte.ente.esPersona}">
+                        <p:outputLabel value="Nom. Comercial*" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.nombreComercial}" 
+                                     disabled="#{administradorEnte.enteDinardap eq null}"
+                                     style="text-transform: uppercase;width: 100%">
+                            <p:keyFilter regEx="/[a-zA-ZÀ-ú\\s\\ ]+/"/>
+                        </p:inputText>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <p:outputLabel value="Dirección:" /><br></br>
+                        <p:inputText value="#{administradorEnte.ente.direccion}" 
+                                     style="text-transform: uppercase;width: 100%">
+
+                        </p:inputText>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Correo*" /><br></br>
+                        <div class="ui-g-12">
+                            <div class="ui-inputgroup">
+                                <p:inputText id="intputcorreo" value="#{administradorEnte.correo}" 
+                                             size="#{administradorEnte.size}">
+                                    <p:keyFilter for="intputcorreo" testFunction="return c != '@';"/>
+                                </p:inputText>
+                                <p:selectOneMenu id="hideNoselectionOption" value="#{administradorEnte.dominio}"
+                                                 editable="true" filter="true" filterMatchMode="contains">
+                                    <f:selectItems value="#{administradorEnte.dominios}"
+                                                   var="d"
+                                                   itemLabel="#{d.descripcion}" itemValue="#{d.descripcion}"/>                                    
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </h:panelGroup>
+                    <h:panelGroup >
+                        <p:outputLabel value="Celular" /><br></br>
+                        <p:inputMask value="#{administradorEnte.ente.celular}" 
+                                     mask="9999999999" style="width: 100%"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Telefono:" /><br></br>
+                        <p:inputMask value="#{administradorEnte.ente.telefono}" style="width: 100%" mask="(99) 999-9999" 
+                                     validateMask="true"/>
+                        <!--<p:inputText value="# {administradorEnte.ente.telefono}" size="40"/>-->
+                    </h:panelGroup>
+
+                </h:panelGrid>
+                <br></br>
+                <center>     
+                    <p:commandButton value="Guardar" 
+                                     icon="fa fa-save" 
+                                     actionListener="#{administradorEnte.saveEnte()}" style="margin-right: 10px" />
+                    <p:commandButton value="Cancelar" 
+                                     icon="fa fa-close"
+                                     oncomplete="PF('dlgNewCliente').hide();"/>
+                </center>
+            </h:form>   
+        </p:dialog>
+
+        <p:dialog header="Documento de la persona" widgetVar="dlgCorrEnte" modal="true" resizable="false" closeOnEscape="true" position="center">
+            <h:form id="formCorr">
+                <p:panelGrid styleClass="noBorder" style="font-weight: bolder;" columns="2">
+                    Tipo de Persona:
+                    <p:selectOneMenu value="#{administradorEnte.ente.esPersona}">
+                        <f:selectItem itemLabel="Natural" itemValue="#{true}" />
+                        <f:selectItem itemLabel="Jurídica" itemValue="#{false}" />
+                        <p:ajax listener="#{administradorEnte.updateTipoDoc()}" update="formNewEnte"/>
+                    </p:selectOneMenu>
+                    Tipo de Documento:
+                    <p:selectOneMenu value="#{administradorEnte.tipoDocumento}" disabled="#{!administradorEnte.ente.esPersona}">
+                        <f:selectItem itemLabel="Cédula" itemValue="C" />
+                        <f:selectItem itemLabel="RUC" itemValue="R" />
+                        <f:selectItem itemLabel="Pasaporte" itemValue="P" />
+                    </p:selectOneMenu>
+                    Documento:
+                    <p:inputText value="#{administradorEnte.ente.identificacion}" maxlength="13"/>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

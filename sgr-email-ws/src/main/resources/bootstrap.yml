@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: sigeri-email
+  profiles:
+    #active: local
+    #active: dev
+    active: prod
+  cloud:
+    config:
+      uri: http://127.0.0.1:8888
+      #uri: http://10.10.10.13:8888

@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+    <ui:define name="title">Bienvenido</ui:define>
+
+    <ui:define name="content">
+        <h:form id="formMain">
+            <p:growl id="notasReunion" showDetail="true" />
+            <div align="center">
+                <p:outputLabel value="#{bienvenidaMB.saludo}"
+                               style="
+                               font-family:  'Courier New', monospace !important;
+                               font-size: 30px;
+                               font-weight: bolder;
+                               text-align: left;
+                               color: black" /><br/><br/>
+            </div> 
+
+            <h:panelGrid columnClasses="fifty-percent, fifty-percent" columns="2" style="width: 100%" >
+                <h:panelGroup style="width: 100%" rendered="false">
+                    <div class="ui-fluid"> 
+                        <div class="ui-g-12">
+                            <div class="card card-w-title">
+                                <p:outputLabel value="Frase del día: " style="color: black" /><br/><br/>
+                                <p:outputLabel value="#{bienvenidaMB.frase}" style="font-weight: bolder; color: black;
+                                               font-family:  'Courier New', monospace !important;
+                                               font-size: 14px;"/>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+                <h:panelGroup style="width: 100%" rendered="false">
+                    <div class="ui-fluid"> 
+                        <div class="ui-g-12">
+                            <div class="card card-w-title">
+                                <p:outputLabel value="Fecha: " style="color: black" /><br/><br/>
+                                <p:clock pattern="dd-MM-yyyy HH:mm:ss"/>
+                            </div>
+                        </div>
+                    </div>    
+                </h:panelGroup>
+                <h:panelGroup></h:panelGroup>
+                <h:panelGroup></h:panelGroup>
+                
+                <h:panelGroup></h:panelGroup>
+                <h:panelGroup></h:panelGroup>
+                
+                <h:panelGroup></h:panelGroup>
+                <h:panelGroup></h:panelGroup>
+                <h:panelGroup style="width: 100%" >
+                    <div class="ui-fluid"> 
+                        <div class="ui-g-12">
+                            <div class="card card-w-title">
+                                <center>
+                                    <p:outputLabel value="Misión: " style="color: black" /><br/><br/>
+                                </center>
+                                <p:outputLabel value="#{bienvenidaMB.mision}" style="font-weight: bolder; color: black;
+                                               font-family:  'Courier New', monospace !important;
+                                               font-size: 16px;"/>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+                
+                <h:panelGroup style="width: 100%" >
+                    <div class="ui-fluid"> 
+                        <div class="ui-g-12">
+                            <div class="card card-w-title">
+                                <center>
+                                    <p:outputLabel value="Visión: " style="color: black" /><br/><br/>
+                                </center>
+                                <p:outputLabel value="#{bienvenidaMB.vision}" style="font-weight: bolder; color: black;
+                                               font-family:  'Courier New', monospace !important;
+                                               font-size: 16px;"/>
+                            </div>
+                        </div>
+                    </div>
+                </h:panelGroup>
+            </h:panelGrid>
+
+        </h:form>
+    </ui:define>
+</ui:composition>

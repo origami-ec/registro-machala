@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:dataTable value="#{ventanillaUnicaMB.observaciones}" var="obs" rendered="false"
+                 emptyMessage="No existen observaciones ingresadas" rowIndexVar="i">
+        <p:column headerText="**" width="30">
+            #{i+1}
+        </p:column>
+        <p:column headerText="Usuario" width="180">
+            #{ventanillaUnicaMB.usuarioObs(obs.userCre)}
+        </p:column>
+        <p:column headerText="Fecha" width="120">
+            <p:outputLabel value="#{obs.fecCre}" >
+                <f:convertDateTime pattern="dd-MM-yyyy HH:mm" />
+            </p:outputLabel>
+        </p:column>
+        <p:column headerText="Observación">
+            #{obs.observacion}
+        </p:column>
+    </p:dataTable>
+    <p:chronoline id="chronoline" value="#{ventanillaUnicaMB.events}" var="event" align="alternate" styleClass="customized-chronoline">
+
+        <p:card>
+            <f:facet name="title">
+                <p:outputLabel value="#{event.status}" style="font-weight: bolder" />
+            </f:facet>
+            <f:facet name="subtitle">
+                <p:outputLabel value="#{event.users}" style="font-weight: bolder" /><br/>
+                <p:outputLabel value="#{event.date}" style="font-weight: bolder" />
+            </f:facet> 
+            <p>#{event.details}</p>
+
+        </p:card>
+
+        <f:facet name="marker">
+            <span class="custom-marker p-shadow-2" style="background-color: #{event.color}"><i class="#{event.icon}"/></span>
+            <div class="ui-chronoline-event-connector" style="width: 1px !important; background: black !important;"/>
+        </f:facet>
+
+    </p:chronoline>
+</html>
+

@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>Seleccionar Movimientos Registrales</title>
+        <ui:include src="styleTemplete.xhtml" />
+    </h:head>
+    <h:body>
+        <h:form>
+            <h:panelGrid columns="1" style="width: 100%;text-align: right;">
+                <p:commandButton value="Cargar Movs. Seleccionados" icon="pi pi-check-circle"
+                                 actionListener="#{dlgLazyInscripciones.devolverMovimientos()}"/>
+            </h:panelGrid>
+            <p:dataTable id="dtmovimientos" paginator="true" lazy="true" scrollable="true" rows="7" filterEvent="enter" 
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                         resizableColumns="true" selection="#{dlgLazyInscripciones.movimientosSeleccionados}" rowKey="#{mov.id}" 
+                         value="#{dlgLazyInscripciones.lazy}" var="mov" emptyMessage="No se encontro Movimientos" 
+                         paginatorPosition="bottom" >
+                <p:column headerText="**" selectionMode="multiple" width="2%" />
+                <p:column headerText="Libro" filterBy="#{mov.libro.nombre}" filterStyle="width: 99%" >
+                    <p:outputLabel value="#{mov.libro.nombre}" style="text-transform: uppercase;"/>
+                </p:column>
+                <p:column headerText="Acto" filterBy="#{mov.acto.nombre}" filterStyle="width: 99%" >
+                    <p:outputLabel value="#{mov.acto.nombre}" style="text-transform: uppercase;"/>
+                </p:column>
+                <p:column headerText="Repertorio" filterBy="#{mov.numRepertorio}" sortBy="#{mov.numRepertorio}" 
+                          filterStyle="width: 95%" width="5" >
+                    <p:outputLabel value="#{mov.numRepertorio}"/>
+                </p:column>
+                <p:column headerText="Año.Rep." sortBy="#{mov.fechaRepertorio}" filterBy="#{mov.anioRep}" width="5">
+                    <h:outputText value="#{mov.fechaRepertorio}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Inscripción" filterBy="#{mov.numInscripcion}" sortBy="#{mov.numInscripcion}"  
+                          filterStyle="width: 95%" width="5" >
+                    <p:outputLabel value="#{mov.numInscripcion}"/>
+                </p:column>
+                <p:column headerText="Año.Ins." sortBy="#{mov.fechaInscripcion}" filterBy="#{mov.anioIns}" width="5">
+                    <h:outputText value="#{mov.fechaInscripcion}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+    </h:body>
+</html>

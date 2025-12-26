@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="CertificadoHistoriado" pageWidth="595" pageHeight="842" whenNoDataType="AllSectionsNoDetail" columnWidth="505" leftMargin="45" rightMargin="45" topMargin="10" bottomMargin="10" uuid="239ba6dc-edaa-45af-829a-d8b59f2a543d">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<parameter name="ID_CERTIFICADO" class="java.lang.Long"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["C:\\Users\\Anyelo\\Desktop\\NetBeansProjects\\portoviejo-registro\\src\\main\\webapp\\reportes\\registro\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="USER_NAME" class="java.lang.String"/>
+	<parameter name="NOMBRES" class="java.lang.String"/>
+	<parameter name="REGISTRADOR" class="java.lang.String"/>
+	<parameter name="HEADER_URL" class="java.lang.String"/>
+	<parameter name="FOOTER_URL" class="java.lang.String"/>
+	<parameter name="WATERMARK_URL" class="java.lang.String"/>
+	<parameter name="SOLICITANTE" class="java.lang.String"/>
+	<parameter name="USO_DOCUMENTO" class="java.lang.String"/>
+	<parameter name="FIRMA_DIGITAL" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select ficha.fecha_ape, ficha.num_ficha, ce.clave_catastral as codigo_predial, ce.linderos_registrales as linderos, ce.parroquia as nombre_parroquia,
+coalesce(en.apellidos, '') || ' ' || coalesce(en.nombres, '') as user_ingreso,
+(to_char(ce.fecha_emision, 'yyyy')||'-'||ce.num_tramite)
+as codigo_certificado, ce.num_certificado, ce.fecha_emision, ce.observacion
+as solvencia, liq.codigo_comprobante, parroquia.descripcion as parroquia,
+ce.fecha_creacion as fecha_certificado, coalesce(uc.apellidos, '') || ' ' || coalesce(uc.nombres, '') as user_certificado, ce.url_foto, ce.descripcion_bien,
+(select razon_reporte from app.reg_registrador where actual is true)
+as accion_personal, ce.cod_verificacion, liq.tramite_online,
+'https://www.rplojavirtual.gob.ec/api/certf/' || ce.cod_verificacion as qrcode,
+ce.num_tramite
+from app.reg_certificado ce
+left join app.reg_ficha as ficha on (ficha.id = ce.ficha)
+left join app.cat_parroquia as parroquia on (parroquia.id = ficha.parroquia)
+left join app.acl_user us on (us.usuario = ficha.user_ingreso)
+left join app.cat_ente en on (en.id = us.ente)
+left join app.acl_user cr on (cr.id = ce.user_creador)
+left join app.cat_ente uc on (uc.id = cr.ente)
+left join flow.regp_tareas_tramite tt on tt.id = ce.tarea_tramite
+left join flow.regp_liquidacion_detalles ld on ld.id = tt.detalle
+left join flow.regp_liquidacion liq on liq.id = ld.liquidacion
+where ce.id = $P{ID_CERTIFICADO}]]>
+	</queryString>
+	<field name="fecha_ape" class="java.sql.Timestamp"/>
+	<field name="num_ficha" class="java.lang.Long"/>
+	<field name="codigo_predial" class="java.lang.String"/>
+	<field name="linderos" class="java.lang.String"/>
+	<field name="nombre_parroquia" class="java.lang.String"/>
+	<field name="user_ingreso" class="java.lang.String"/>
+	<field name="codigo_certificado" class="java.lang.String"/>
+	<field name="num_certificado" class="java.lang.Long"/>
+	<field name="fecha_emision" class="java.sql.Timestamp"/>
+	<field name="solvencia" class="java.lang.String"/>
+	<field name="codigo_comprobante" class="java.lang.String"/>
+	<field name="parroquia" class="java.lang.String"/>
+	<field name="fecha_certificado" class="java.sql.Timestamp"/>
+	<field name="user_certificado" class="java.lang.String"/>
+	<field name="url_foto" class="java.lang.String"/>
+	<field name="descripcion_bien" class="java.lang.String"/>
+	<field name="accion_personal" class="java.lang.String"/>
+	<field name="cod_verificacion" class="java.lang.String"/>
+	<field name="tramite_online" class="java.lang.Boolean"/>
+	<field name="qrcode" class="java.lang.String"/>
+	<field name="num_tramite" class="java.lang.Long"/>
+	<background>
+		<band height="700" splitType="Stretch">
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="30" y="300" width="450" height="220" uuid="198b5e3d-5c0f-43ce-936a-3d1a530994ac"/>
+				<imageExpression><![CDATA[$P{WATERMARK_URL}]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<pageHeader>
+		<band height="70" splitType="Stretch">
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
+				<reportElement x="0" y="0" width="505" height="70" uuid="bdd18e95-8005-4f77-87a9-a69f4962f921"/>
+				<imageExpression><![CDATA[$P{HEADER_URL}]]></imageExpression>
+			</image>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="124" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" positionType="Float" x="0" y="69" width="250" height="16" uuid="aa1fe9cc-a910-45ed-a96e-f93ad00e45a5"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[PROPIETARIO(S):]]></text>
+			</staticText>
+			<subreport>
+				<reportElement x="0" y="85" width="365" height="38" uuid="5825a26a-b09f-4d79-9689-d4bef7e7dcf6"/>
+				<subreportParameter name="ID_CERTIFICADO">
+					<subreportParameterExpression><![CDATA[$P{ID_CERTIFICADO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "CertificadoHistoriaPropietarios.jasper"]]></subreportExpression>
+			</subreport>
+			<textField isBlankWhenNull="true">
+				<reportElement style="negrita" mode="Transparent" x="365" y="109" width="140" height="13" isPrintWhenDetailOverflows="true" uuid="4ae2eca3-4079-4e37-b563-2d408a6212e7"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+					<paragraph spacingAfter="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_parroquia} != null ? $F{nombre_parroquia} :
+$F{parroquia} != null ? $F{parroquia} : "NO CONSTA"]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="365" y="83" width="140" height="13" uuid="25267352-7d50-46aa-9113-2d0e823dbffe"/>
+				<box>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[java.lang.String.format("%08d", $F{num_ficha})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" positionType="Float" mode="Opaque" x="365" y="70" width="140" height="13" backcolor="#CCCCCC" uuid="2d582705-ce18-4554-a582-69eb3b497ccf"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[FICHA REGISTRAL Nº]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" positionType="Float" mode="Opaque" x="365" y="96" width="140" height="13" backcolor="#CCCCCC" uuid="905003e0-2d57-4ef8-8c10-b439078436ab"/>
+				<box>
+					<topPen lineWidth="0.0"/>
+					<leftPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[PARROQUIA]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" positionType="Float" x="0" y="25" width="95" height="14" uuid="8d0641b9-bde8-4297-bf39-2c7b80cd9722"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Nº de Certificado:]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="95" y="25" width="152" height="14" uuid="ffc79a03-8103-4eaf-acf9-910cb022af86"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[java.lang.String.format("%08d", $F{num_certificado})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" positionType="Float" x="247" y="25" width="95" height="14" uuid="d1a37d12-ec3d-4c17-8a58-0f61e832737a"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Ficha Registral:]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="342" y="25" width="162" height="14" uuid="c75030e2-4d27-4a07-bceb-012073879784"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[java.lang.String.format("%08d", $F{num_ficha})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" positionType="Float" x="0" y="39" width="95" height="14" uuid="bb3c14ef-dd95-4b2e-8c8a-1169a8cab6b5"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Fecha de Emisión:]]></text>
+			</staticText>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="95" y="39" width="152" height="14" uuid="72c11879-6913-47ae-bfe2-180da4704557"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{fecha_emision}]]></textFieldExpression>
+				<patternExpression><![CDATA["dd MMMMM yyyy HH:mm"]]></patternExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" positionType="Float" x="247" y="39" width="95" height="14" uuid="bbd69319-1bd4-4ea5-97a8-2a86a0a4f76a"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false"/>
+				</textElement>
+				<text><![CDATA[Clave Catastral:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="342" y="39" width="162" height="14" isPrintWhenDetailOverflows="true" uuid="a97bcea3-9998-49cb-b729-f533c5e9dc8e"/>
+				<textFieldExpression><![CDATA[$F{codigo_predial}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" mode="Opaque" x="0" y="53" width="505" height="16" forecolor="#000000" backcolor="#CCCCCC" uuid="e5048cef-94a9-408b-873f-d1a5e3c6f7f6"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12" isBold="false"/>
+				</textElement>
+				<text><![CDATA[CERTIFICADO HISTORIADO]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement style="negrita" x="0" y="0" width="247" height="14" isPrintWhenDetailOverflows="true" uuid="ede296e8-2aab-4afd-a3aa-9f56893687f5"/>
+				<textElement verticalAlignment="Middle">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[($F{tramite_online} ? "Trámite En Línea: " : "Trámite: ") +
+$F{codigo_certificado}]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement isPrintRepeatedValues="false" mode="Transparent" x="335" y="0" width="170" height="24" uuid="03e6bf78-1efe-4987-bac4-694765854f11"/>
+				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="Code39 (Extended)" drawText="false" checksumRequired="false">
+					<jr:codeExpression><![CDATA[$F{num_tramite}]]></jr:codeExpression>
+				</jr:barbecue>
+			</componentElement>
+		</band>
+		<band height="34" splitType="Stretch">
+			<staticText>
+				<reportElement style="negrita" positionType="Float" x="0" y="0" width="300" height="16" uuid="9b562ebe-f113-4a38-8c0a-ba3e26cb0233"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[DESCRIPCIÓN DEL BIEN INMUEBLE:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" mode="Transparent" x="20" y="16" width="485" height="16" uuid="5584ba5e-ed72-43bf-b7d6-a96ef143570f"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="10"/>
+					<paragraph spacingAfter="5"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descripcion_bien}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="75" splitType="Stretch">
+			<subreport runToBottom="false">
+				<reportElement positionType="Float" x="0" y="52" width="505" height="20" isRemoveLineWhenBlank="true" uuid="519fffd3-b0a0-423b-a672-a5e4c6bbe5d5"/>
+				<subreportParameter name="SUBREPORT_DIRINTERNO">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ID_CERTIFICADO">
+					<subreportParameterExpression><![CDATA[$P{ID_CERTIFICADO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "CertificadoHistoriaMovimientos.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="16" width="505" height="20" isRemoveLineWhenBlank="true" uuid="376731b4-9a94-40a7-89a0-fc7c6ac21a9b"/>
+				<subreportParameter name="ID_CERTIFICADO">
+					<subreportParameterExpression><![CDATA[$P{ID_CERTIFICADO}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "CertificadoHistoriaResumenMovimientos.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement style="negrita" positionType="Float" x="0" y="0" width="300" height="16" uuid="8947426b-6f82-4786-99d6-ea70930fec49"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[1.- RESUMEN DE MOVIMIENTOS REGISTRALES:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement style="negrita" positionType="Float" x="0" y="36" width="300" height="16" uuid="f5c3d37d-f4e5-4b23-b634-17e69b9d2cac"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="false" isUnderline="false"/>
+				</textElement>
+				<text><![CDATA[2.- DETALLE DE CADA MOVIMIENTO:]]></text>
+			</staticText>
+		</band>
+		<band height="120" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="negrita" positionType="Float" x="0" y="16" width="505" height="46" isRemoveLineWhenBlank="true" uuid="21a204bc-f311-4efc-88b5-70949bdea3cb"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle" markup="html">
+					<font size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["4.- EL PRESENTE CERTIFICADO SE LO EXTIENDE PARA LOS FINES SOLICITADOS POR " + $P{SOLICITANTE}.toUpperCase() + " EL MISMO QUE SERVIRÁ PARA " + $P{USO_DOCUMENTO}.toUpperCase() + " DE ACUERDO A LA SOLICITUD PRESENTADA POR EL USUARIO."]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="negrita" positionType="Float" x="0" y="62" width="505" height="55" isRemoveLineWhenBlank="true" uuid="db88bdd0-e828-4aea-9018-f48c23c659e6">
+					<printWhenExpression><![CDATA[$F{accion_personal} != null && !$F{accion_personal}.isEmpty()]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Justified" verticalAlignment="Top" markup="none">
+					<font size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["5.- " + $F{accion_personal}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="negrita" positionType="Float" x="0" y="0" width="505" height="16" isRemoveLineWhenBlank="true" uuid="9f4808d5-fc41-4097-a548-8e06bb6733b5"/>
+				<textElement textAlignment="Justified" verticalAlignment="Middle" markup="none">
+					<font size="10"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression><![CDATA["3.- " + $F{solvencia}.toUpperCase()]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="206" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="60" y="8" width="230" height="8" isPrintWhenDetailOverflows="true" uuid="dc47752f-481f-4377-a7c3-e419126d86c8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{NOMBRES}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH.mm.ss" isBlankWhenNull="true">
+				<reportElement x="60" y="15" width="230" height="8" isPrintWhenDetailOverflows="true" uuid="d34725a0-30ce-4dfa-9755-f5032474fa29"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="130" y="30" width="375" height="50" isPrintWhenDetailOverflows="true" uuid="d9eb9cd9-0ab4-4684-96a5-d7469ba33d9a"/>
+				<box leftPadding="3" rightPadding="3">
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<text><![CDATA[1. Los movimientos registrales, datos y fechas que constan en este documento son los que se refieren al inmueble que se certifica y que se encuentran vigentes hasta la fecha de emisión del mismo.
+2. Cualquier enmendadura, alteración o modificación al texto de este documento lo invalida.
+3. El interesado debe comunicar cualquier novedad en este documento al Registro de la Propiedad y Mercantil.
+4. La responsabilidad sobre la veracidad y autenticidad de los datos registrados, es exclusiva de la o el declarante cuando esta o este provee toda la información, en correspondecia al Art. 4 de la Ley de la SINARDAP.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="8" width="60" height="8" isPrintWhenDetailOverflows="true" uuid="0b43eecb-4d5d-47b2-b229-390bea885005"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Impreso por:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="15" width="60" height="8" isPrintWhenDetailOverflows="true" uuid="0990c6a2-728e-438f-a7fb-6d0a51a29a88"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<text><![CDATA[F. Impresión:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="1" width="60" height="8" isPrintWhenDetailOverflows="true" uuid="e6b2a575-f313-4281-858e-9ebf4bb417be"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Creado por:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="60" y="1" width="230" height="8" isPrintWhenDetailOverflows="true" uuid="61670b73-dfbf-48c7-a0f6-4cb70641dd19"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{user_certificado}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement style="negrita" x="0" y="150" width="250" height="28" isPrintWhenDetailOverflows="true" uuid="fee2cbcc-c0e4-45f7-809c-3348b296ef00"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{REGISTRADOR}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="30" width="130" height="50" isPrintWhenDetailOverflows="true" uuid="b5a57939-36a0-4870-a6bb-a99953fa9f5a"/>
+				<box>
+					<topPen lineWidth="1.0"/>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[Firma de Responsabilidad]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="22" width="60" height="8" isPrintWhenDetailOverflows="true" uuid="55ae536b-f4a0-4a62-b1c7-d1fbba7eb012"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Factura:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="60" y="22" width="230" height="8" isPrintWhenDetailOverflows="true" uuid="d9ff36c2-c877-44c0-ba7a-7ab3b58615c8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{codigo_comprobante}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="350" y="80" width="155" height="16" isPrintWhenDetailOverflows="true" uuid="52bb7a15-578d-40e4-af29-2bfa1981c370">
+					<printWhenExpression><![CDATA[$F{cod_verificacion} != null]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<text><![CDATA[Código de Verificación]]></text>
+			</staticText>
+			<textField>
+				<reportElement style="negrita" x="350" y="96" width="155" height="24" isPrintWhenDetailOverflows="true" uuid="3c745359-ecde-4d3f-a712-28dc5becdce4">
+					<printWhenExpression><![CDATA[$F{cod_verificacion} != null]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="18" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cod_verificacion}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="419" y="120" width="86" height="86" isPrintWhenDetailOverflows="true" uuid="b2033c1d-30bd-4e6b-b113-da66122b37cd">
+					<printWhenExpression><![CDATA[$F{cod_verificacion} != null]]></printWhenExpression>
+				</reportElement>
+				<imageExpression><![CDATA[com.google.zxing.client.j2se.MatrixToImageWriter.toBufferedImage(
+    new com.google.zxing.qrcode.QRCodeWriter().encode(
+        $F{qrcode},
+        com.google.zxing.BarcodeFormat.QR_CODE, 300, 300
+    ))]]></imageExpression>
+			</image>
+			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle" onErrorType="Blank">
+				<reportElement x="80" y="116" width="90" height="34" isPrintWhenDetailOverflows="true" uuid="ae4bc8d1-c586-4a13-9c15-944671a60eb3"/>
+				<imageExpression><![CDATA[$P{FIRMA_DIGITAL}]]></imageExpression>
+			</image>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="178" width="250" height="28" isPrintWhenDetailOverflows="true" uuid="3a935557-e7c9-4f65-b952-db282df9ceed">
+					<printWhenExpression><![CDATA[$P{FIRMA_DIGITAL} != null && !$P{FIRMA_DIGITAL}.isEmpty()]]></printWhenExpression>
+				</reportElement>
+				<box>
+					<topPen lineWidth="0.0"/>
+				</box>
+				<textElement verticalAlignment="Top" markup="html">
+					<font size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Digitalmente firmado por: <br/>" +
+"ENITH SILVANIA SALCEDO PALADINEZ"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="290" y="1" width="70" height="8" isPrintWhenDetailOverflows="true" uuid="3b8c4637-209d-4f9b-8b04-be8906bf2ae0"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Nro. Certificado:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="290" y="8" width="70" height="8" isPrintWhenDetailOverflows="true" uuid="fa8ddf30-9518-4171-9651-13d10c4d368e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Nro. de Ficha:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="290" y="15" width="70" height="8" isPrintWhenDetailOverflows="true" uuid="59d06314-2ee5-43de-89b7-63dfb1531e12"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Clave Catastral:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="290" y="22" width="70" height="8" isPrintWhenDetailOverflows="true" uuid="fd357658-6ed1-4853-b466-664323f00c67"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Fecha Emisión:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="360" y="1" width="144" height="8" isPrintWhenDetailOverflows="true" uuid="42f2ead9-a5fb-4e13-b64a-483028a3b383"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[java.lang.String.format("%08d", $F{num_certificado})]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="360" y="8" width="144" height="8" isPrintWhenDetailOverflows="true" uuid="78c51148-23f0-4738-82ed-a0ba5515d871"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[java.lang.String.format("%08d", $F{num_ficha})]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="360" y="15" width="144" height="8" isPrintWhenDetailOverflows="true" uuid="e2e8885d-666b-4a91-8f8f-6dadb87ec1e0"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{codigo_predial}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="360" y="22" width="144" height="8" isPrintWhenDetailOverflows="true" uuid="e5949d1a-2a99-4fc4-93e4-089421d3521e"/>
+				<textElement verticalAlignment="Middle">
+					<font size="6" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_emision}]]></textFieldExpression>
+				<patternExpression><![CDATA["dd MMMMM yyyy HH:mm"]]></patternExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="52" splitType="Stretch">
+			<textField>
+				<reportElement x="412" y="0" width="52" height="12" uuid="15595584-b0fb-42a2-8b14-c26e87bf4aa1"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Página: "+$V{PAGE_NUMBER}+" de"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="465" y="0" width="40" height="12" uuid="5235b8b5-8800-4915-bf6f-d819b4082772"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement style="negrita" x="0" y="0" width="405" height="12" uuid="dde73ce1-f54a-49c3-add8-9555a833b7b3"/>
+				<box rightPadding="2"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<text><![CDATA[VALIDEZ DEL CERTIFICADO TÉRMINO DE 60 DÍAS A PARTIR DE LA FECHA DE EMISIÓN]]></text>
+			</staticText>
+			<image scaleImage="FillFrame" hAlign="Left" vAlign="Middle">
+				<reportElement mode="Transparent" x="0" y="12" width="505" height="40" uuid="0b242c23-bcb4-4c9b-93e0-2a099bea3472"/>
+				<imageExpression><![CDATA[$P{FOOTER_URL}]]></imageExpression>
+			</image>
+		</band>
+	</pageFooter>
+</jasperReport>

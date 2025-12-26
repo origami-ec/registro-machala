@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+    <ui:define name="title">Trámite</ui:define>
+    <ui:define name="content">
+        <h:form id="formMain" prependId="false">
+            <div class="ui-g ui-fluid">
+                <div class="ui-g-12">
+                    <div class="car card-w-title Wid100" >
+                        <h1>
+                            <center>
+                                #{atenderSolicitudMB.historicoTramites.tipoTramite.descripcion}    <br/>
+                            </center>
+                        </h1>
+                        <h2>
+                            <center>
+                                #{atenderSolicitudMB.historicoTramites.tipoTramite.departamento.nombre}<br/>
+                            </center>
+                        </h2>
+                        <h3>
+                            <center>
+                                #{atenderSolicitudMB.taskDataByTaskID.name}<br/>
+                            </center>
+                        </h3>
+                    </div>
+                </div>  
+            </div> 
+            <p:tabView>
+                <p:tab title="Información">
+                    <p:panelGrid id="pnlInfo" columns="3" layout="grid" style="margin-top: 5px; width: 98%; vertical-align: top !important" >
+                        <h:panelGroup>
+                            <h:panelGrid columns="1" style="margin-top: 5px; width: 98%;">
+                                <h:panelGroup>
+                                    <p:outputLabel value="# Trámite" /><br/>
+                                    <p:outputLabel value="#{atenderSolicitudMB.historicoTramites.codigo}" style="font-weight: bold"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Solicitante" /><br/>
+                                    <p:outputLabel value="#{atenderSolicitudMB.solicitudServicios.enteSolicitante.nombres} #{notifSolicitanteParticipacionMB.solicitudServicios.enteSolicitante.apellidos}" rendered="#{notifInformeParticipacionMB.solicitudServicios.enteSolicitante.esPersona}" style="font-weight: bold"/>
+                                    <p:outputLabel value="#{atenderSolicitudMB.solicitudServicios.enteSolicitante.razonSocial} / #{notifSolicitanteParticipacionMB.solicitudServicios.enteSolicitante.nombreComercial}" rendered="#{!notifInformeParticipacionMB.solicitudServicios.enteSolicitante.esPersona}" style="font-weight: bold"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Fecha de Ingreso" /><br/>
+                                    <p:outputLabel value="#{atenderSolicitudMB.solicitudServicios.fechaCreacion}" style="font-weight: bold">
+                                        <f:convertDateTime pattern="dd-MM-yyyy HH:mm" />
+                                    </p:outputLabel>
+                                    <br/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Observación" /><br/>
+                                    <p:outputLabel value="#{atenderSolicitudMB.observacion}" style="font-weight: bold"/><br/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel  value="Fecha de visita de Inspección:" /><br/>
+                                    <p:calendar  value="#{atenderSolicitudMB.solicitudServicios.fechaMaximaRespuesta}" 
+                                                 mindate="sysdate" showOn="button" />
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:dataList value="#{atenderSolicitudMB.departamentosSolicitud}" var="deps">
+                                        #{deps.nombre}
+                                    </p:dataList>
+                                </h:panelGroup>
+                            </h:panelGrid>        
+                        </h:panelGroup>
+                        <h:panelGroup   style="vertical-align: top !important">
+                            <p:outputLabel for="observacion" value="Observación" style="font-weight: bold" /><br/>
+                            <p:inputTextarea id="observacion" value="#{atenderSolicitudMB.observacion}" rows="16" cols="120"/>
+                        </h:panelGroup>
+                    </p:panelGrid>
+                </p:tab>
+                <p:tab title="Documentos">
+                    <h:panelGroup id="panelDocs">
+                        <p:fieldset legend="Documentos">
+                            <p:dataTable id="docs" value="#{atenderSolicitudMB.documentos}" var="doc"
+                                         emptyMessage="No existen documentos" rowIndexVar="i">
+                                <p:column headerText="Fecha" style="width: 10%; text-align: center;">
+                                    <p:outputLabel value="#{doc.fechaCreacion}" >
+                                        <f:convertDateTime pattern="dd-MM-yyyy HH:mm:ss" />
+                                    </p:outputLabel>
+                                </p:column>
+                                <p:column headerText="Requisito" style="text-align: center;">
+                                    <p:outputLabel value="#{doc.requisito.nombre}" style="float: left;" />
+                                </p:column>
+                                <p:column headerText="Adjuntar Archivo" width="120"  >
+                                    <p:selectBooleanCheckbox value="#{doc.check}" rendered="#{doc.rutaArchivo != null}"/>
+                                </p:column>
+                                <p:column headerText="Acción" style="width: 10%; text-align: center;">
+                                    <center>
+                                        <p:commandButton  icon="pi pi-bookmark" styleClass="info-button text-button rounded-button p-mr-2 p-mb-2"
+                                                          actionListener="#{atenderSolicitudMB.getPDF(doc)}"/>    
+                                        <p:commandButton  icon="pi pi-download" styleClass="info-button text-button rounded-button p-mr-2 p-mb-2" 
+                                                          actionListener="#{atenderSolicitudMB.getDownloadFile(doc)}"/>    
+                                    </center>
+                                </p:column>
+                            </p:dataTable>
+                            <br/>
+                            <center>
+                                <p:commandButton  icon="pi pi-envelope" value="Enviar Correo a Solicitante" styleClass="info-button " 
+                                                  actionListener="#{atenderSolicitudMB.enviarCorreo()}"/>    
+                            </center>
+                        </p:fieldset>
+                    </h:panelGroup>
+                </p:tab>
+                <p:tab title="Observaciones">
+                    <p:dataTable value="#{atenderSolicitudMB.observaciones}" var="obs"
+                                 emptyMessage="No existen observaciones ingresadas" rowIndexVar="i">
+                        <p:column headerText="**" width="50">
+                            #{i+1}
+                        </p:column>
+                        <p:column headerText="Usuario" width="120">
+                            #{obs.userCre}
+                        </p:column>
+                        <p:column headerText="Fecha" width="120">
+                            <p:outputLabel value="#{obs.fecCre}" >
+                                <f:convertDateTime pattern="dd-MM-yyyy HH:mm" />
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Observación">
+                            #{obs.observacion}
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+            </p:tabView>
+            <center>
+                <p:commandButton value="Terminar Trámite"
+                                 icon="fa fa-check"
+                                 style="width: 150px; background: #0081cb;" 
+                                 actionListener="#{atenderSolicitudMB.completarTarea()}"
+                                 process="@form" update="formMain"/>
+                <p:commandButton value="Regresar"
+                                 icon="fa fa-check"
+                                 style="width: 150px; background: #db9486; margin-left: 10px" 
+                                 actionListener="#{atenderSolicitudMB.continuar()}"
+                                 process="@this" />
+            </center>
+        </h:form>
+    </ui:define>
+</ui:composition>

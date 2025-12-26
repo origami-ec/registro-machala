@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="comprobante_factura_subreport" language="groovy" pageWidth="169" pageHeight="297" columnWidth="169" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="3f60f481-3db4-4ef1-b0e1-e5e1f6341b74">
+	<property name="ireport.zoom" value="6.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ID_LIQ" class="java.lang.Long"/>
+	<queryString>
+		<![CDATA[select ac.nombre, det.cantidad as cant, det.valor_total, det.cuantia, det.avaluo, det.observacion, det.valor_unitario, det.descuento, det.base_imponible, ac.solvencia
+from flow.regp_liquidacion_detalles as det
+left join app.reg_acto as ac on (ac.id = det.acto)
+where det.liquidacion = $P{ID_LIQ}]]>
+	</queryString>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="cant" class="java.lang.Integer"/>
+	<field name="valor_total" class="java.math.BigDecimal"/>
+	<field name="cuantia" class="java.math.BigDecimal"/>
+	<field name="avaluo" class="java.math.BigDecimal"/>
+	<field name="observacion" class="java.lang.String"/>
+	<field name="valor_unitario" class="java.math.BigDecimal"/>
+	<field name="descuento" class="java.math.BigDecimal"/>
+	<field name="base_imponible" class="java.math.BigDecimal"/>
+	<field name="solvencia" class="java.lang.Boolean"/>
+	<detail>
+		<band height="11" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="0" width="169" height="11" isRemoveLineWhenBlank="true" uuid="bf66619d-bac6-4fcb-85f9-a2008e5568c4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="11" splitType="Stretch">
+			<textField pattern="###0">
+				<reportElement positionType="Float" x="0" y="0" width="16" height="11" isRemoveLineWhenBlank="true" uuid="9cc0e517-9c61-4998-9205-f69ee4ace919"/>
+				<textElement verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cant}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="139" y="0" width="30" height="11" isRemoveLineWhenBlank="true" uuid="6a14f3e7-6a77-4dd0-a414-10a41d61fe14"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_total}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="109" y="0" width="30" height="11" isRemoveLineWhenBlank="true" uuid="f7e17a6f-d4b6-4d0a-8907-078cd9f37b20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descuento}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="16" y="0" width="33" height="11" isRemoveLineWhenBlank="true" uuid="44a8044d-62b5-4aa7-8bee-fed8bec389f9">
+					<printWhenExpression><![CDATA[$F{solvencia} == false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{base_imponible}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="79" y="0" width="30" height="11" isRemoveLineWhenBlank="true" uuid="e30524d4-a6d0-444c-a290-e87e480d2efa"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descuento} + $F{valor_total}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="49" y="0" width="30" height="11" isRemoveLineWhenBlank="true" uuid="31a8452a-10f6-4ba8-93a7-80de349c9547"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_unitario}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

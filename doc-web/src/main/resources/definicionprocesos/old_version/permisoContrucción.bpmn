@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <collaboration id="Collaboration">
+    <participant id="permisoContrucción" name="PROCESO DE PERMISO DE CONSTRUCCIÓN PARA TRÁMITES EN LÍNEA - JEFATURA DE CENTRO HISTÓRICO" processRef="procesoPermisoContrucción"></participant>
+  </collaboration>
+  <process id="procesoPermisoContrucción" name="Proceso de Permiso de construcción para Tramites en Línea -Jefatura de Centro Histórico" isExecutable="true">
+    <laneSet id="laneSet_procesoPermisoContrucción">
+      <lane id="laneUsuario" name="Usuario">
+        <flowNodeRef>startevent1</flowNodeRef>
+      </lane>
+      <lane id="laneTécnicoArquitectónico" name="Técnico Arquitectónico">
+        <flowNodeRef>usertask1</flowNodeRef>
+        <flowNodeRef>exclusivegateway1</flowNodeRef>
+        <flowNodeRef>POficioObservaciones</flowNodeRef>
+        <flowNodeRef>PMemoVistoBueno</flowNodeRef>
+        <flowNodeRef>exclusivegateway2</flowNodeRef>
+        <flowNodeRef>PValoresPresupuesto</flowNodeRef>
+      </lane>
+      <lane id="laneTécnicoEstructural" name="Técnico Estructural">
+        <flowNodeRef>PNotificaciónEstructural</flowNodeRef>
+        <flowNodeRef>PRevisiónEstructural</flowNodeRef>
+        <flowNodeRef>exclusivegateway3</flowNodeRef>
+        <flowNodeRef>PNotificaciónObservaciones</flowNodeRef>
+      </lane>
+      <lane id="laneJefeCentroHistórico" name="Jefe de Centro Histórico">
+        <flowNodeRef>PVistoBuenoPropuesto</flowNodeRef>
+        <flowNodeRef>PFirmaSelloPlanos</flowNodeRef>
+      </lane>
+      <lane id="laneJefaturaRentas" name="Jefatura de Rentas">
+        <flowNodeRef>PEmisiónTítulosCrédito</flowNodeRef>
+        <flowNodeRef>PNotificaciónPago</flowNodeRef>
+      </lane>
+      <lane id="laneVentanillaCentroHistótico" name="Ventanilla de Centro Histótico">
+        <flowNodeRef>PRecepciónDocumentos</flowNodeRef>
+        <flowNodeRef>exclusivegateway4</flowNodeRef>
+        <flowNodeRef>PEntregaDocumentos</flowNodeRef>
+        <flowNodeRef>PNotificaciónFinTrámite</flowNodeRef>
+        <flowNodeRef>endevent1</flowNodeRef>
+      </lane>
+      <lane id="laneTécnicoArquitectónico" name="Técnico Arquitectónico">
+        <flowNodeRef>PMemoRegulación</flowNodeRef>
+      </lane>
+      <lane id="laneJefaturaRegControlUrbano" name="Jefatura de Regulación y Control Urbano">
+        <flowNodeRef>PRecepciónCarpeta</flowNodeRef>
+      </lane>
+      <lane id="laneTécnicoRegControlUrbano" name="Técnico de Regulación y Control Urbano">
+        <flowNodeRef>PRevisiónDocsPresupuestos</flowNodeRef>
+      </lane>
+      <lane id="laneJefaturaRentas" name="Jefatura de Rentas">
+        <flowNodeRef>PEmisiónTítulosCrédito</flowNodeRef>
+        <flowNodeRef>PNotificaciónPago</flowNodeRef>
+      </lane>
+      <lane id="laneSecretaríaRegulaciónControlUrbano" name="Secretaría de Regulación y Control Urbano">
+        <flowNodeRef>PEmisiónPermisoConstrucción</flowNodeRef>
+      </lane>
+      <lane id="laneJefeRegControlUrbano" name="Jefe de Regulación y Control Urbano">
+        <flowNodeRef>PFirmaDocsFísicos</flowNodeRef>
+      </lane>
+    </laneSet>
+    <startEvent id="startevent1" name="Start"></startEvent>
+    <sequenceFlow id="flow1" sourceRef="startevent1" targetRef="usertask1"></sequenceFlow>
+    <userTask id="usertask1" name="Revisíon Documento" activiti:assignee="${TécnicoArquitectónico}" activiti:formKey="/procesos/revisionDocumentosCat.xhtml" activiti:priority="${prioridad}"></userTask>
+    <exclusiveGateway id="exclusivegateway1" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow2" sourceRef="usertask1" targetRef="exclusivegateway1"></sequenceFlow>
+    <userTask id="POficioObservaciones" name="Oficio de Observaciones" activiti:assignee="${TécnicoArquitectónico}" activiti:formKey="/procesos/centroHistórico/permisoContrucción/oficioObservcionesPCo.xhtml" activiti:priority="${prioridad}"></userTask>
+    <sequenceFlow id="flow3" sourceRef="exclusivegateway1" targetRef="POficioObservaciones">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobarDocumento==1}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow4" sourceRef="POficioObservaciones" targetRef="usertask1"></sequenceFlow>
+    <userTask id="PMemoVistoBueno" name="Memo Visto Bueno" activiti:assignee="${TécnicoArquitectónico}" activiti:formKey="/procesos/centroHistórico/permisoContrucción/memoVistoBuenoPCo.xhtml" activiti:priority="${prioridad}"></userTask>
+    <sequenceFlow id="flow5" sourceRef="exclusivegateway1" targetRef="PMemoVistoBueno">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobarDocumento==0}]]></conditionExpression>
+    </sequenceFlow>
+    <exclusiveGateway id="exclusivegateway2" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow6" sourceRef="PMemoVistoBueno" targetRef="exclusivegateway2"></sequenceFlow>
+    <sequenceFlow id="flow7" sourceRef="exclusivegateway2" targetRef="PNotificaciónEstructural">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobarDocumento==1}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="PNotificaciónEstructural" name="Notificación Estructural" activiti:assignee="${TécnicoEstructural}" activiti:formKey="/procesos/centroHistórico/permisoContrucción/notificaciónEstructuralPCo.xhtml" activiti:priority="${prioridad}"></userTask>
+    <userTask id="PRevisiónEstructural" name="Revisión Estructural" activiti:assignee="${TécnicoEstructural}" activiti:formKey="/procesos/centroHistórico/permisoContrucción/revisiónEstructuralPCo.xhtml" activiti:priority="${prioridad}"></userTask>
+    <sequenceFlow id="flow8" sourceRef="PNotificaciónEstructural" targetRef="PRevisiónEstructural"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway3" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow9" sourceRef="PRevisiónEstructural" targetRef="exclusivegateway3"></sequenceFlow>
+    <userTask id="PNotificaciónObservaciones" name="Notificación de Observaciones" activiti:assignee="${TécnicoEstructural}" activiti:formKey="/procesos/centroHistórico/permisoContrucción/notificaciónObservacionesPCo.xhtml" activiti:priority="${prioridad}"></userTask>
+    <sequenceFlow id="flow10" sourceRef="exclusivegateway3" targetRef="PNotificaciónObservaciones">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobarDocumento==1}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow11" sourceRef="PNotificaciónObservaciones" targetRef="PRevisiónEstructural"></sequenceFlow>
+    <sequenceFlow id="flow12" sourceRef="exclusivegateway2" targetRef="PVistoBuenoPropuesto">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobarDocumento==0}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="PVistoBuenoPropuesto" name="Visto Bueno Propuesto" activiti:assignee="${JefeCentroHistórico}" activiti:formKey="/procesos/centroHistórico/permisoContrucción/vistoBuenoPropuestoPCo.xhtml" activiti:priority="${prioridad}"></userTask>
+    <sequenceFlow id="flow13" sourceRef="exclusivegateway3" targetRef="PVistoBuenoPropuesto">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobarDocumento==0}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow14" sourceRef="PVistoBuenoPropuesto" targetRef="PValoresPresupuesto"></sequenceFlow>
+    <userTask id="PValoresPresupuesto" name="Valores Presupuesto" activiti:assignee="${TécnicoArquitectónico}" activiti:formKey="/procesos/centroHistórico/permisoContrucción/valoresPresupuestoPCo.xhtml" activiti:priority="${prioridad}"></userTask>
+    <sequenceFlow id="flow15" sourceRef="PValoresPresupuesto" targetRef="PEmisiónTítulosCrédito"></sequenceFlow>
+    <userTask id="PEmisiónTítulosCrédito" name="Emisión de Títulos de Crédito" activiti:assignee="${JefaturaRentas}" activiti:formKey="/procesos/centroHistórico/permisoContrucción/emisiónTítulosCréditosPCo.xhtml" activiti:priority="${prioridad}"></userTask>
+    <userTask id="PNotificaciónPago" name="Notificación Pago" activiti:assignee="${JefaturaRentas}" activiti:formKey="/procesos/centroHistórico/permisoContrucción/notificaciónPagoPCo.xhtml" activiti:priority="${prioridad}"></userTask>
+    <sequenceFlow id="flow16" sourceRef="PEmisiónTítulosCrédito" targetRef="PNotificaciónPago"></sequenceFlow>
+    <userTask id="PFirmaSelloPlanos" name="Firma y Sello de Planos" activiti:assignee="${JefeCentroHistórico}" activiti:formKey="/procesos/centroHistórico/permisoContrucción/firmaSellosPlanosPCo.xhtml" activiti:priority="${prioridad}"></userTask>
+    <sequenceFlow id="flow17" sourceRef="PNotificaciónPago" targetRef="PRecepciónDocumentos"></sequenceFlow>
+    <userTask id="PRecepciónDocumentos" name="Recepción de Documentos" activiti:assignee="${VentanillaCentHistórico}" activiti:formKey="/procesos/centroHistórico/permisoContrucción/recepciónDocsPCo.xhtml" activiti:priority="${prioridad}"></userTask>
+    <sequenceFlow id="flow18" sourceRef="PRecepciónDocumentos" targetRef="PFirmaSelloPlanos"></sequenceFlow>
+    <sequenceFlow id="flow19" sourceRef="PFirmaSelloPlanos" targetRef="exclusivegateway4"></sequenceFlow>
+    <exclusiveGateway id="exclusivegateway4" name="Exclusive Gateway"></exclusiveGateway>
+    <sequenceFlow id="flow20" sourceRef="PFirmaSelloPlanos" targetRef="PEntregaDocumentos"></sequenceFlow>
+    <userTask id="PEntregaDocumentos" name="Entrega de Documentos" activiti:assignee="${VentanillaCentHistórico}" activiti:formKey="/procesos/centroHistórico/permisoContrucción/entregaDocsPCo.xhtml" activiti:priority="${prioridad}"></userTask>
+    <sequenceFlow id="flow21" sourceRef="exclusivegateway4" targetRef="PMemoRegulación">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobarDocumento==0}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="PMemoRegulación" name="Memo a Regulación" activiti:assignee="${TécnicoArquitectónico}" activiti:formKey="/procesos/centroHistórico/permisoContrucción/memoRegulaciónPCo.xhtml" activiti:priority="${prioridad}"></userTask>
+    <sequenceFlow id="flow22" sourceRef="exclusivegateway4" targetRef="PEntregaDocumentos">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${aprobarDocumento==1}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="PNotificaciónFinTrámite" name="Notificación Fin Trámite" activiti:assignee="${VentanillaCentHistórico}" activiti:formKey="/procesos/centroHistórico/permisoContrucción/notificaciónFinTrámitePCo.xhtml" activiti:priority="${prioridad}"></userTask>
+    <sequenceFlow id="flow23" sourceRef="PEntregaDocumentos" targetRef="PNotificaciónFinTrámite"></sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow24" sourceRef="PNotificaciónFinTrámite" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow25" sourceRef="PMemoRegulación" targetRef="PRecepciónCarpeta"></sequenceFlow>
+    <userTask id="PRecepciónCarpeta" name="Recepción de Carpeta" activiti:assignee="${JefaturaRegControlUrb}" activiti:formKey="/procesos/centroHistórico/permisoContrucción/recepciónCarpetaPCo.xhtml" activiti:priority="${prioridad}"></userTask>
+    <sequenceFlow id="flow26" sourceRef="PRecepciónCarpeta" targetRef="PRevisiónDocsPresupuestos"></sequenceFlow>
+    <userTask id="PRevisiónDocsPresupuestos" name="Revisión de Documentos y Presupuestos" activiti:assignee="${TécnicoRegControlUrb}" activiti:formKey="/procesos/centroHistórico/permisoContrucción/revisiónDocsPresupuestosPCo.xhtml" activiti:priority="${prioridad}"></userTask>
+    <sequenceFlow id="flow27" sourceRef="PRevisiónDocsPresupuestos" targetRef="PEmisiónTítulosCrédito"></sequenceFlow>
+    <userTask id="PEmisiónTítulosCrédito" name="Emisión de Títulos de Crédito" activiti:assignee="${JefaturaRentas}" activiti:formKey="/procesos/centroHistórico/permisoContrucción/emisiónTítulosCréditosPCo.xhtml" activiti:priority="${prioridad}"></userTask>
+    <userTask id="PNotificaciónPago" name="Notificación Pago" activiti:assignee="Notificación Pago" activiti:formKey="/procesos/centroHistórico/permisoContrucción/notificaciónPagoPCo.xhtml" activiti:priority="${prioridad}"></userTask>
+    <sequenceFlow id="flow28" sourceRef="PEmisiónTítulosCrédito" targetRef="PNotificaciónPago"></sequenceFlow>
+    <sequenceFlow id="flow29" sourceRef="PNotificaciónPago" targetRef="PEmisiónPermisoConstrucción"></sequenceFlow>
+    <userTask id="PEmisiónPermisoConstrucción" name="Emisión de Permiso de Construcción" activiti:assignee="${SecretaríaRegControlUrb}" activiti:formKey="/procesos/centroHistórico/permisoContrucción/emisiónPermisoConstrucciónPCo.xhtml" activiti:priority="${prioridad}"></userTask>
+    <sequenceFlow id="flow30" sourceRef="PEmisiónPermisoConstrucción" targetRef="PFirmaDocsFísicos"></sequenceFlow>
+    <userTask id="PFirmaDocsFísicos" name="Firma de Documentos Físicos" activiti:assignee="${JefeRegControlUrb}" activiti:formKey="/procesos/centroHistórico/permisoContrucción/FirmaDocsFísicosPCo.xhtml" activiti:priority="${prioridad}"></userTask>
+    <sequenceFlow id="flow31" sourceRef="PFirmaDocsFísicos" targetRef="PEntregaDocumentos"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_Collaboration">
+    <bpmndi:BPMNPlane bpmnElement="Collaboration" id="BPMNPlane_Collaboration">
+      <bpmndi:BPMNShape bpmnElement="permisoContrucción" id="BPMNShape_permisoContrucción">
+        <omgdc:Bounds height="3577.0" width="2460.0" x="110.0" y="110.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="laneUsuario" id="BPMNShape_laneUsuario">
+        <omgdc:Bounds height="280.0" width="2440.0" x="130.0" y="110.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="laneTécnicoArquitectónico" id="BPMNShape_laneTécnicoArquitectónico">
+        <omgdc:Bounds height="175.0" width="2430.0" x="130.0" y="2055.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="laneTécnicoEstructural" id="BPMNShape_laneTécnicoEstructural">
+        <omgdc:Bounds height="430.0" width="2440.0" x="130.0" y="831.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="laneJefeCentroHistórico" id="BPMNShape_laneJefeCentroHistórico">
+        <omgdc:Bounds height="229.0" width="2440.0" x="130.0" y="1261.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="laneJefaturaRentas" id="BPMNShape_laneJefaturaRentas">
+        <omgdc:Bounds height="285.0" width="2430.0" x="130.0" y="2800.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="laneVentanillaCentroHistótico" id="BPMNShape_laneVentanillaCentroHistótico">
+        <omgdc:Bounds height="217.0" width="2430.0" x="130.0" y="1839.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="laneJefaturaRegControlUrbano" id="BPMNShape_laneJefaturaRegControlUrbano">
+        <omgdc:Bounds height="285.0" width="2430.0" x="130.0" y="2230.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="laneTécnicoRegControlUrbano" id="BPMNShape_laneTécnicoRegControlUrbano">
+        <omgdc:Bounds height="285.0" width="2430.0" x="130.0" y="2515.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="laneSecretaríaRegulaciónControlUrbano" id="BPMNShape_laneSecretaríaRegulaciónControlUrbano">
+        <omgdc:Bounds height="301.0" width="2430.0" x="130.0" y="3085.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="laneJefeRegControlUrbano" id="BPMNShape_laneJefeRegControlUrbano">
+        <omgdc:Bounds height="301.0" width="2430.0" x="130.0" y="3386.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="startevent1" id="BPMNShape_startevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="510.0" y="229.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="usertask1" id="BPMNShape_usertask1">
+        <omgdc:Bounds height="60.0" width="131.0" x="460.0" y="459.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway1" id="BPMNShape_exclusivegateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="710.0" y="468.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="POficioObservaciones" id="BPMNShape_POficioObservaciones">
+        <omgdc:Bounds height="55.0" width="121.0" x="670.0" y="639.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PMemoVistoBueno" id="BPMNShape_PMemoVistoBueno">
+        <omgdc:Bounds height="61.0" width="105.0" x="940.0" y="559.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway2" id="BPMNShape_exclusivegateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="972.0" y="719.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PNotificaciónEstructural" id="BPMNShape_PNotificaciónEstructural">
+        <omgdc:Bounds height="60.0" width="131.0" x="670.0" y="890.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PRevisiónEstructural" id="BPMNShape_PRevisiónEstructural">
+        <omgdc:Bounds height="55.0" width="131.0" x="670.0" y="1030.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway3" id="BPMNShape_exclusivegateway3">
+        <omgdc:Bounds height="40.0" width="40.0" x="930.0" y="1037.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PNotificaciónObservaciones" id="BPMNShape_PNotificaciónObservaciones">
+        <omgdc:Bounds height="55.0" width="141.0" x="665.0" y="1180.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PVistoBuenoPropuesto" id="BPMNShape_PVistoBuenoPropuesto">
+        <omgdc:Bounds height="61.0" width="111.0" x="1180.0" y="1380.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PValoresPresupuesto" id="BPMNShape_PValoresPresupuesto">
+        <omgdc:Bounds height="60.0" width="121.0" x="1580.0" y="719.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PEmisiónTítulosCrédito" id="BPMNShape_PEmisiónTítulosCrédito">
+        <omgdc:Bounds height="71.0" width="160.0" x="1610.0" y="2924.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PNotificaciónPago" id="BPMNShape_PNotificaciónPago">
+        <omgdc:Bounds height="72.0" width="121.0" x="1930.0" y="2924.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PFirmaSelloPlanos" id="BPMNShape_PFirmaSelloPlanos">
+        <omgdc:Bounds height="65.0" width="131.0" x="1820.0" y="1378.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PRecepciónDocumentos" id="BPMNShape_PRecepciónDocumentos">
+        <omgdc:Bounds height="80.0" width="140.0" x="1170.0" y="1891.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="exclusivegateway4" id="BPMNShape_exclusivegateway4">
+        <omgdc:Bounds height="40.0" width="40.0" x="1870.0" y="1940.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PEntregaDocumentos" id="BPMNShape_PEntregaDocumentos">
+        <omgdc:Bounds height="60.0" width="111.0" x="2100.0" y="1931.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PMemoRegulación" id="BPMNShape_PMemoRegulación">
+        <omgdc:Bounds height="61.0" width="121.0" x="1830.0" y="2114.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PNotificaciónFinTrámite" id="BPMNShape_PNotificaciónFinTrámite">
+        <omgdc:Bounds height="55.0" width="111.0" x="2290.0" y="1933.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="2490.0" y="1943.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PRecepciónCarpeta" id="BPMNShape_PRecepciónCarpeta">
+        <omgdc:Bounds height="61.0" width="121.0" x="1630.0" y="2344.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PRevisiónDocsPresupuestos" id="BPMNShape_PRevisiónDocsPresupuestos">
+        <omgdc:Bounds height="71.0" width="140.0" x="1620.0" y="2644.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PEmisiónPermisoConstrucción" id="BPMNShape_PEmisiónPermisoConstrucción">
+        <omgdc:Bounds height="71.0" width="140.0" x="1920.0" y="3224.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="PFirmaDocsFísicos" id="BPMNShape_PFirmaDocsFísicos">
+        <omgdc:Bounds height="71.0" width="151.0" x="1920.0" y="3524.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="527.0" y="264.0"></omgdi:waypoint>
+        <omgdi:waypoint x="525.0" y="459.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="591.0" y="489.0"></omgdi:waypoint>
+        <omgdi:waypoint x="710.0" y="488.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="730.0" y="508.0"></omgdi:waypoint>
+        <omgdi:waypoint x="730.0" y="639.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="670.0" y="666.0"></omgdi:waypoint>
+        <omgdi:waypoint x="525.0" y="667.0"></omgdi:waypoint>
+        <omgdi:waypoint x="525.0" y="519.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="750.0" y="488.0"></omgdi:waypoint>
+        <omgdi:waypoint x="992.0" y="488.0"></omgdi:waypoint>
+        <omgdi:waypoint x="992.0" y="559.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="992.0" y="620.0"></omgdi:waypoint>
+        <omgdi:waypoint x="992.0" y="719.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="1012.0" y="739.0"></omgdi:waypoint>
+        <omgdi:waypoint x="990.0" y="757.0"></omgdi:waypoint>
+        <omgdi:waypoint x="990.0" y="803.0"></omgdi:waypoint>
+        <omgdi:waypoint x="735.0" y="803.0"></omgdi:waypoint>
+        <omgdi:waypoint x="735.0" y="890.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="735.0" y="950.0"></omgdi:waypoint>
+        <omgdi:waypoint x="735.0" y="1030.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
+        <omgdi:waypoint x="801.0" y="1057.0"></omgdi:waypoint>
+        <omgdi:waypoint x="930.0" y="1057.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
+        <omgdi:waypoint x="950.0" y="1077.0"></omgdi:waypoint>
+        <omgdi:waypoint x="950.0" y="1208.0"></omgdi:waypoint>
+        <omgdi:waypoint x="806.0" y="1207.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+        <omgdi:waypoint x="735.0" y="1180.0"></omgdi:waypoint>
+        <omgdi:waypoint x="735.0" y="1085.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
+        <omgdi:waypoint x="1012.0" y="739.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1234.0" y="739.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1235.0" y="1380.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
+        <omgdi:waypoint x="970.0" y="1057.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1117.0" y="1056.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1117.0" y="1410.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1180.0" y="1410.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+        <omgdi:waypoint x="1291.0" y="1410.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1290.0" y="1407.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1290.0" y="1406.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1467.0" y="1408.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1468.0" y="748.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1580.0" y="749.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="1701.0" y="749.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1642.0" y="778.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1638.0" y="1562.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1301.0" y="1564.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="1240.0" y="1600.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1240.0" y="1728.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
+        <omgdi:waypoint x="1240.0" y="1783.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1240.0" y="1891.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow18" id="BPMNEdge_flow18">
+        <omgdi:waypoint x="1310.0" y="1931.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1310.0" y="1932.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1707.0" y="1929.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1706.0" y="1409.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1820.0" y="1410.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow19" id="BPMNEdge_flow19">
+        <omgdi:waypoint x="1885.0" y="1443.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1890.0" y="1940.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow20" id="BPMNEdge_flow20">
+        <omgdi:waypoint x="1951.0" y="1410.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2155.0" y="1410.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2155.0" y="1931.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow21" id="BPMNEdge_flow21">
+        <omgdi:waypoint x="1890.0" y="1980.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1890.0" y="2114.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow22" id="BPMNEdge_flow22">
+        <omgdi:waypoint x="1910.0" y="1960.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2100.0" y="1961.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow23" id="BPMNEdge_flow23">
+        <omgdi:waypoint x="2211.0" y="1961.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2290.0" y="1960.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow24" id="BPMNEdge_flow24">
+        <omgdi:waypoint x="2401.0" y="1960.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2490.0" y="1960.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow25" id="BPMNEdge_flow25">
+        <omgdi:waypoint x="1890.0" y="2175.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1890.0" y="2276.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1690.0" y="2276.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1690.0" y="2344.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow26" id="BPMNEdge_flow26">
+        <omgdi:waypoint x="1690.0" y="2405.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1690.0" y="2644.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow27" id="BPMNEdge_flow27">
+        <omgdi:waypoint x="1690.0" y="2644.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1240.0" y="1600.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow28" id="BPMNEdge_flow28">
+        <omgdi:waypoint x="1240.0" y="1600.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1240.0" y="1728.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow29" id="BPMNEdge_flow29">
+        <omgdi:waypoint x="1240.0" y="1783.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1990.0" y="3224.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow30" id="BPMNEdge_flow30">
+        <omgdi:waypoint x="1990.0" y="3295.0"></omgdi:waypoint>
+        <omgdi:waypoint x="1995.0" y="3524.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow31" id="BPMNEdge_flow31">
+        <omgdi:waypoint x="2071.0" y="3559.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2154.0" y="3558.0"></omgdi:waypoint>
+        <omgdi:waypoint x="2155.0" y="1991.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

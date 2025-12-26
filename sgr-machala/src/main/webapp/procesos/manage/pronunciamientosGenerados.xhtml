@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Pronunciamientos Jurídicos</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2>PRONUNCIAMIENTOS JURÍDICOS REGISTRADAS</h2></center>
+            <p:dataTable paginator="true" lazy="true" rows="15" style="text-align: center" rowsPerPageTemplate="15,30,50"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords}" filterEvent="enter"
+                         value="#{pronunciamientoGenerados.pronunciamientos}" var="pron" emptyMessage="No se encontró Fichas" >
+                <p:column headerText="Nro Trámite" filterBy="#{pron.tramite.numTramite}" width="100">
+                    #{pron.tramite.numTramite}
+                </p:column>
+                <p:column headerText="Nro Documento" filterBy="#{pron.numeroDocumento}" width="100">
+                    #{pron.numeroDocumento}
+                </p:column>
+                <p:column headerText="Fecha de Registro" width="150">
+                    <h:outputText value="#{pron.fechaIngreso}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Nombres del Solicitante" >
+                    #{pron.para.nombreCompleto}
+                </p:column>
+                <p:column headerText="Tipo Trámite" width="150" >
+                    #{pron.tramite.tipoTramite.descripcion}
+                </p:column>
+                <p:column headerText="Usuario" width="100" >
+                    #{pron.elaborado}
+                </p:column>
+                <!--<p:column headerText="Fecha Retiro" width="100">
+                    <h:outputText value="# {pron.fechaRetiro}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Fecha Reingreso" width="100">
+                    <h:outputText value="# {pron.fechaReingreso}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </h:outputText>
+                </p:column>-->
+                <p:column headerText="Acciones" width="90">
+                    <p:commandButton icon="pi pi-pencil" style="background-color: darkcyan;"
+                                     actionListener="#{pronunciamientoGenerados.editarObjeto(pron)}" title="Editar"/>
+                    <p:spacer width="15" />
+                    <p:commandButton icon="pi pi-file-pdf" style="background-color: orangered;" title="Visualizar Pronunciamiento"
+                                     actionListener="#{pronunciamientoGenerados.generarReporte(pron.id)}" />
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog id="dlgNotaDevolutiva" header="Editar Pronunciamiento Jurídico" widgetVar="dlgNotaDevolutiva" 
+                  width="700" modal="true" closable="true" closeOnEscape="true" >
+            <h:form id="frmNota">
+                <center>
+                    <h:outputLabel value="Pronunciamiento Jurídico: " style="color: green !important; font-size: 20px; font-weight: bolder"/>
+                    <h:outputLabel value="#{pronunciamientoGenerados.pronunciamiento.numeroDocumento}" style="color: green !important; font-size: 20px; font-weight: bolder"/>
+                </center>
+                <h:panelGrid columns="1" style="font-size: 16px;width: 100%;">
+                    <p:textEditor widgetVar="editorNotaDevolutiva" secure="false"
+                                  value="#{pronunciamientoGenerados.pronunciamiento.detalle}"
+                                  style="margin-bottom:10px; width: 100%; height: 350px; "
+                                  placeholder="Escriba aquí el contenido de documento.">
+                        <f:facet name="toolbar">
+                            <span class="ql-formats">
+                                <button class="ql-bold" title="Negrita"></button>
+                                <button class="ql-italic" title="Cursiva"></button>
+                                <button class="ql-underline" title="Subrayado"></button>
+                            </span>
+                            <span class="ql-formats">
+                                <button class="ql-list" value="ordered" title="Numeración"></button>
+                                <button class="ql-list" value="bullet" title="Viñeta"></button>
+                                <!--<button class="ql-indent" value="-1" title="Disminuir Sangría"></button>-->
+                                <!--<button class="ql-indent" value="+1" title="Aumentar Sangría"></button>-->
+                            </span>
+                        </f:facet>
+                    </p:textEditor>
+                </h:panelGrid><br/><br/><br/>
+                <center>
+                    <p:commandButton value="Guardar" icon="pi pi-save" 
+                                     actionListener="#{pronunciamientoGenerados.actualizarObjeto()}"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

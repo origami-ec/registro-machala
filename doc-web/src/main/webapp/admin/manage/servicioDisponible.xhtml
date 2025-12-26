@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co"
+                xmlns="http://www.w3.org/1999/xhtml">
+    <ui:define name="title">Servicio disponible</ui:define>
+    <ui:define name="content">
+        <h:form id="formUsuarios" prependId="false">
+            <center><h2>Servicio disponible</h2></center>
+
+            <h:panelGrid columns="1" >
+                <h:panelGroup>
+                    <p:outputLabel value="Descripción"/><br/>
+                    <p:inputText value="#{serviciosDisponibleMB.servicioDisponible.descripcion}"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:outputLabel value="Estado"/><br/>
+                    <p:selectBooleanCheckbox value="#{serviciosDisponibleMB.servicioDisponible.estado}"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:outputLabel value=""/>
+                    <p:commandButton value="Grabar"  actionListener="#{serviciosDisponibleMB.guardar()}"/>
+                </h:panelGroup>
+            </h:panelGrid>
+
+        </h:form>
+
+
+    </ui:define>
+</ui:composition>

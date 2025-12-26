@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Consulta Dinarp</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h3 style="font-weight: bolder;">CONSULTA DINARP</h3></center>
+            <h:panelGrid columns="5" style="font-weight: bolder;font-size: 14px;margin: 0 auto;">
+                Nro de Identificacion:
+                <p:spacer height="1" width="20"/>
+                <p:inputText value="#{consultaDinardap.documento}"/>
+                <p:spacer height="1" width="20"/>
+                <p:commandButton value="Buscar" icon="pi pi-search" update="mainForm" 
+                                 actionListener="#{consultaDinardap.consultarDatosDinarp()}"/>
+            </h:panelGrid>
+            <br/>
+            <p:tabView rendered="#{consultaDinardap.respuesta.cedula ne null}">
+                <p:tab title="Documento Digital">
+                    <p:card rendered="#{consultaDinardap.respuesta.cedula ne null}" 
+                            style="width:550px; border:1px solid #000; padding:15px; border-radius:10px; background-color: lightgoldenrodyellow;margin: 0 auto;" >
+                        <p:panelGrid columns="2" style="width:100%; align-items: start;">
+                            <p:graphicImage value="#{consultaDinardap.respuesta.fotoCedula}" stream="false" 
+                                            style="width:140px; height:180px;margin: 0 auto;" />
+                            <h:panelGroup>
+                                <h:outputText value="Cédula: " style="font-weight:bold;"/>
+                                <h:outputText value="#{consultaDinardap.respuesta.cedula}" /><br/>
+                                <br/>
+                                <h:outputText value="Nombre: " style="font-weight:bold;" />
+                                <h:outputText value="#{consultaDinardap.respuesta.nombre}" /><br/>
+                                <br/>
+                                <h:outputText value="Condición: " style="font-weight:bold;"/>
+                                <h:outputText value="#{consultaDinardap.respuesta.condicionCiudadano}" /><br/>
+                                <br/>
+                                <h:outputText value="Estado Civil: " style="font-weight:bold;"/>
+                                <h:outputText value="#{consultaDinardap.respuesta.estadoCivil}" /><br/>
+                                <h:panelGroup rendered="#{consultaDinardap.respuesta.conyuge.length() > 0}">
+                                    <br/>
+                                    <h:outputText value="Conyuge: " style="font-weight:bold;" 
+                                                  rendered="#{consultaDinardap.respuesta.conyuge.length() > 0}"/>
+                                    <h:outputText value="#{consultaDinardap.respuesta.conyuge}" 
+                                                  rendered="#{consultaDinardap.respuesta.conyuge.length() > 0}" /><br/>
+                                </h:panelGroup>
+                                <br/>
+                                <h:outputText value="Fecha de Nacimiento: " style="font-weight:bold;"/>
+                                <h:outputText value="#{consultaDinardap.respuesta.fechaNacimiento}" /><br/>
+                                <br/>
+                                <h:outputText value="Nombre Madre: " style="font-weight:bold;"/>
+                                <h:outputText value="#{consultaDinardap.respuesta.nombreMadre}" /><br/>
+                                <br/>
+                                <h:outputText value="Nombre Padre: " style="font-weight:bold;"/>
+                                <h:outputText value="#{consultaDinardap.respuesta.nombrePadre}" /><br/>
+                                <br/>
+                                <h:outputText value="Profesión: " style="font-weight:bold;"/>
+                                <h:outputText value="#{consultaDinardap.respuesta.profesion}" /><br/>
+                            </h:panelGroup>
+                        </p:panelGrid>
+                        <p:divider />
+                        <h:outputText value="Registro Civil - Ecuador" style="text-align:center; font-size:12px; font-style:italic;" />
+                    </p:card>
+                </p:tab>
+                <p:tab title="Datos DINARP">
+                    <h:panelGrid style="width: 40%;margin: 0 auto;font-weight: bolder;" columns="1">
+                        Nombre Completo:
+                        <p:inputText readonly="true" value="#{consultaDinardap.respuesta.nombre}" style="width: 100%;"/>
+                        Condición Ciudadano:
+                        <p:inputText readonly="true" value="#{consultaDinardap.respuesta.condicionCiudadano}" style="width: 100%;"/>
+                        Profesión:
+                        <p:inputText readonly="true" value="#{consultaDinardap.respuesta.profesion}" style="width: 100%;"/>
+                        Estado Civil:
+                        <p:inputText readonly="true" value="#{consultaDinardap.respuesta.estadoCivil}" style="width: 100%;"/>
+                        Conyuge:
+                        <p:inputText readonly="true" value="#{consultaDinardap.respuesta.conyuge}" style="width: 100%;"/>
+                        Nombre Madre:
+                        <p:inputText readonly="true" value="#{consultaDinardap.respuesta.nombreMadre}" style="width: 100%;"/>
+                        Nombre Padre:
+                        <p:inputText readonly="true" value="#{consultaDinardap.respuesta.nombrePadre}" style="width: 100%;"/>
+                        Fecha de Nacimiento:
+                        <p:inputText readonly="true" value="#{consultaDinardap.respuesta.fechaNacimiento}" style="width: 100%;"/>
+                        Fecha de Matrimonio:
+                        <p:inputText readonly="true" value="#{consultaDinardap.respuesta.fechaMatrimonio}" style="width: 100%;"/>
+                        Fecha de Defunción:
+                        <p:inputText readonly="true" value="#{consultaDinardap.respuesta.fechaDefuncion}" style="width: 100%;"/>
+                        Fecha de Inscripción de Defunción:
+                        <p:inputText readonly="true" value="#{consultaDinardap.respuesta.fechaInscripcionDefuncion}" style="width: 100%;"/>
+                        <!--Código Dactilar:
+                        <p:inputText readonly="true" value="# {consultaDinardap.respuesta.individualDactilar}" style="width: 100%;"/>-->
+                        Foto:
+                        <p:inputTextarea readonly="true" value="#{consultaDinardap.respuesta.foto}" style="width: 100%;" 
+                                         rows="10" autoResize="false" />
+                        Firma:
+                        <p:inputTextarea readonly="true" value="#{consultaDinardap.respuesta.firma}" style="width: 100%;" 
+                                         rows="10" autoResize="false" />
+                    </h:panelGrid>
+                </p:tab>
+            </p:tabView>
+        </h:form>
+    </ui:define>
+</ui:composition>

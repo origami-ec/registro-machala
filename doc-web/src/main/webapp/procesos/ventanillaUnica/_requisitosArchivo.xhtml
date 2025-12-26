@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:comp="http://xmlns.jcp.org/jsf/composite/dialog"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <center>
+        <p:outputLabel value="#{iniciarTramiteArchivoMB.item.nombre}" 
+                       style="font-size: 16px; font-weight: bolder" rendered="#{iniciarTramiteArchivoMB.tipoTramite.interno}"/>
+        <p:outputLabel value="#{iniciarTramiteArchivoMB.tipoTramite.descripcion}" 
+                       style="font-size: 16px; font-weight: bolder" rendered="#{!iniciarTramiteArchivoMB.tipoTramite.interno}"/>
+    </center>
+    <br></br>
+    <p:fieldset legend="Requisitos">
+        <h:panelGrid  columns="2" style="width: 100%;"  columnClasses="thirty-percent, seventy-percent" >
+            <h:panelGroup >
+                <p:inputTextarea   cols="35" rows="6" placeholder="Ingrese una observación" value="#{iniciarTramiteArchivoMB.observacion}" 
+                                   style="text-transform: uppercase;"/>
+            </h:panelGroup>
+            <h:panelGroup >
+                <p:dataTable id="dtRequisitos"
+                             value="#{iniciarTramiteArchivoMB.requisitosModelList}" var="dato"
+                             widgetVar="dtDatos"  rowIndexVar="i"
+                             rowStyleClass="#{dato.serviciosRequisitos.requerido ? 'old' : null}"
+                             emptyMessage="No existen registros"  style="font-size: 12px; ">
+                    <p:column headerText="**" width="7">
+                        <center>
+                            <h:outputText value="#{i + 1}"/>
+                        </center>
+                    </p:column>
+                    <p:column headerText="Nombre"  >
+                        <h:outputText value="#{dato.serviciosRequisitos.nombre}"/><br/>
+                        <h:outputText value="#{dato.file.name}"/>
+                    </p:column>
+                    <p:column headerText="Requerido">
+                        <h:outputText value="#{dato.serviciosRequisitos.requerido? 'Sí':'No'}"/>
+                    </p:column>
+                    <p:column headerText="Acciones" width="70">
+                        <center> 
+                            <p:commandButton title="Buscar Archivo" icon="fa fa-upload" 
+                                             styleClass="rounded-button text-button" 
+                                             actionListener="#{iniciarTramiteArchivoMB.abrirDlgArchivos(dato)}" />
+                            <p:spacer width="2"/>
+                            <p:commandButton title="Borrar Archivo" icon="fa fa-trash" 
+                                             styleClass="rounded-button text-button" 
+                                             actionListener="#{dato.setFile(null)}" 
+                                             update=":formMain:dtRequisitos" disabled="#{dato.file eq null}" />
+                        </center>
+                    </p:column>
+                </p:dataTable>
+            </h:panelGroup>
+        </h:panelGrid>
+
+    </p:fieldset>
+    <br></br><br></br>
+    <p:fieldset legend="Usuarios">
+        <p:panelGrid columns="1" layout="grid">
+            <p:outputLabel value="El usuario se asignará automaticamente" 
+                           style="margin-top: 10px; margin-bottom: 10px; font-weight: bold; font-size: 15px"
+                           rendered="#{!iniciarTramiteArchivoMB.eleccionUsuarios}"/>
+            <h:panelGroup rendered="#{iniciarTramiteArchivoMB.eleccionUsuarios}">
+                <p:outputLabel value="Usuario asignado" 
+                               style="margin-top: 10px; margin-bottom: 10px; font-weight: bold; font-size: 15px"
+                               rendered="#{iniciarTramiteArchivoMB.eleccionUsuarios and iniciarTramiteArchivoMB.existeResponsable}"/>
+
+                <p:dataTable id="dtUsuarios" widgetVar="dtUsuarios"
+                             value="#{iniciarTramiteArchivoMB.userList}" var="user"
+                             rendered="#{iniciarTramiteArchivoMB.existeResponsable}"
+                             rowKey="#{user.id}" reflow="true" rowIndexVar="i"
+                             emptyMessage="No existen responsables"  style="font-size: 12px">
+                    <p:column headerText="Usuario" filterBy="#{user.usuario.user}">
+                        <h:outputText value="#{user.usuario.user}"/>
+                    </p:column>
+                    <p:column headerText="Nombres" filterBy="#{user.usuario.ente.nombreCompleto}">
+                        <h:outputText value="#{user.usuario.ente.nombreCompleto}"/><br/>
+                    </p:column>
+                    <p:column headerText="Rol">
+                        <h:outputText value="#{user.rol.nombre}"/>
+                    </p:column>
+                </p:dataTable>
+
+                <p:dataTable id="dtUsuariosSelect" widgetVar="dtUsuariosSelect"
+                             value="#{iniciarTramiteArchivoMB.userList}" var="TasksUser"
+                             filterEvent="enter"
+                             paginator="true" rowsPerPageTemplate="10,50,100" 
+                             paginatorPosition="bottom" rows="10" 
+                             rendered="#{!iniciarTramiteArchivoMB.existeResponsable}"
+                             rowKey="#{TasksUser.id}" reflow="true"
+                             selection="#{iniciarTramiteArchivoMB.userSelect}" rowIndexVar="i"
+                             emptyMessage="No existen registros"  style="font-size: 12px">
+                    <p:column headerText="Usuario" filterBy="#{TasksUser.usuario.user}">
+                        <h:outputText value="#{TasksUser.usuario.user}"/>
+                    </p:column>
+                    <p:column headerText="Nombres" filterBy="#{TasksUser.usuario.ente.nombreCompleto}">
+                        <h:outputText value="#{TasksUser.usuario.ente.nombreCompleto}" style="font-weight: bold"/><br/>
+                    </p:column>
+                    <p:column headerText="Rol" width="70">
+                        <h:outputText value="#{TasksUser.rol.nombre}"/>
+                    </p:column>
+                    <p:column headerText="***" style="text-align: center" width="40" 
+                              selectionMode="single"/>
+                </p:dataTable>
+            </h:panelGroup>
+            <!--            <p:fieldset style="margin: auto;">
+                            <p:commandButton value="Notificar" icon="fa fa-fw fa-envelope"  style=" margin-top: 10px "
+                                             actionListener="# {iniciarTramiteArchivoMB.openDlgNotificar()}" />
+                            <p:spacer width="5"/>
+                            <p:commandButton value="Limpiar" icon="fa fa-fw fa-repeat" update="dataListUserNotif" style=" margin-top: 10px "
+                                             actionListener="# {iniciarTramiteArchivoMB.limpiarNotificaciones()}" />
+                            <p:dataList id="dataListUserNotif"
+                                        emptyMessage="No existen usuarios agregados"
+                                        value="# {iniciarTramiteArchivoMB.usuariosNotificacionSelect}" var="u" styleClass="noBorders">
+                                # {u.usuario.ente.nombreCompleto} 
+                                <p:spacer width="3" />
+                                <p:commandLink title="Eliminar" actionListener="# {iniciarTramiteArchivoMB.eliminarUsuarioNotificacion(u)}"
+                                               update="dataListUserNotif">
+                                    <i class="fa fa-fw fa-close" style="font-size: 1.5em; margin-right: 8px; color: red;"></i>
+                                </p:commandLink>
+                            </p:dataList>
+                        </p:fieldset>-->
+
+
+        </p:panelGrid>
+    </p:fieldset> 
+    <div align="rigth">
+        <p:commandButton value="Iniciar Trámite" icon="fa fa-play-circle"  
+                         actionListener="#{iniciarTramiteArchivoMB.iniciarTramiteActiviti()}" 
+                         process="@form"
+                         style="width: auto; margin-top: 10px" styleClass="p-mr-2"/>
+    </div>
+</html>
+

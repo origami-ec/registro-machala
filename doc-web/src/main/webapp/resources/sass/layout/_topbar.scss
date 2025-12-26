@@ -1,0 +1,213 @@
+.topbar {
+    position: fixed;
+    width: 100%;
+    left: 0;
+    top: 0;
+    color: $topbarLeftTextColor;
+    height: 60px;
+    padding: 0px 15px;
+    z-index: 100;
+    box-shadow: 0 0px 6px 0px rgba(0, 0, 0, 0.12);
+    @include box-sizing(border-box);
+    @include background-gradient-left2right($topbarLeftBgColor, $topbarRightBgColor);
+
+    .topbar-wrapper {
+        @include flex();
+        @include flex-align-center();
+        @include flex-justify-between();
+        height: 100%;
+
+        .topbar-left {
+            @include flex();
+            @include flex-align-center();
+            a {
+                color: $topbarLeftTextColor;
+            }
+            .topbar-logo {
+                img {
+                    height: 44px;
+                }
+            }
+            #menu-button {
+                font-size: 20px;
+                margin-left: 48px;
+                @include transition(color .3s);
+                
+                &:hover {
+                    color: darken($topbarLeftTextColor, 15%);
+                }
+            }
+            
+            .topbar-search-icon {
+                font-size: 16px;
+                vertical-align: middle;
+                margin-left: 36px;
+                margin-right: 12px;
+            }
+            
+            .topbar-search {
+                vertical-align: middle;
+                border: 0 none;
+                background-color: transparent;
+                color: $topbarLeftTextColor;
+                @include transition(color .3s);
+                font-size: 13px;
+                
+                &:focus {
+                    outline: 0 none;
+                }
+                            
+                &::-webkit-input-placeholder {color:$topbarLeftTextColor;}
+                &:-moz-placeholder           {color:$topbarLeftTextColor;}
+                &::-moz-placeholder          {color:$topbarLeftTextColor;}
+                &:-ms-input-placeholder      {color:$topbarLeftTextColor;} 
+            }
+        }
+
+        .topbar-right {
+            #user-display {
+                text-align: right;
+                margin-top: 2px;
+        
+                img {
+                    vertical-align: middle;
+                    width: 40px;
+                    margin-right: 8px;
+                }
+                
+                .username {
+                    vertical-align: middle;
+                    margin-right: 16px;
+                    font-size:14px;
+                    color:$topbarRightTextColor;
+                }
+            }
+
+            #topbar-menu {
+                display: none;
+                position: absolute;
+                right: 15px;
+                top: 60px;
+                width: 250px;
+                list-style-type: none;
+                padding: 0;
+                margin: 0;
+                background-color: #ffffff;
+                -webkit-animation-duration: .5s;
+                -moz-animation-duration: .5s;
+                animation-duration: .5s;
+                box-shadow: 0 0px 6px 0px rgba(0, 0, 0, 0.12);
+                
+                &.topbar-menu-visible {
+                    display: block;
+                }
+                
+                > li {
+                    a {
+                        color: #6C7276;
+                        padding: 10px 16px;
+                        display: block;
+                        
+                        i {
+                            display: inline-block;
+                            vertical-align: middle;
+                        }
+                        
+                        span {
+                            margin-left: 6px;
+                            display: inline-block;
+                            vertical-align: middle;
+                        }
+                        
+                        img {
+                            display: inline-block;
+                            vertical-align: middle;
+                        }
+                        
+                        .topbar-badge {
+                            float: right;
+                            background-color: $accentColor;
+                            padding: 2px 8px;
+                            display: block;
+                            margin-top: -2px;
+                            color: #ffffff;
+                            @include border-radius($borderRadius);
+                        }
+                        
+                        &:hover {
+                            background-color: #F6F9FB;
+                        }
+                    }
+                    
+                    ul {
+                        list-style-type: none;
+                        padding: 0;
+                        margin: 0;
+                        display: none;
+                        
+                        a {
+                            padding-left: 32px;
+                        }
+                    }
+                    
+                    &.menuitem-active {
+                        > a {
+                            color: $primaryColor;
+                        }
+                    }
+                }
+            }
+        }
+        
+    }
+    
+   
+    
+   
+}
+
+@media (max-width: $tabletBreakpoint) {
+    .topbar {
+        .topbar-wrapper {
+            .topbar-left {
+                width: 100%;
+
+                .topbar-logo {
+                    width: 144px;
+                    display: block;
+                    margin: 0 auto;
+                }
+                
+                .topbar-search-icon, .topbar-search {
+                    display: none;
+                }
+                
+                #menu-button {
+                    font-size: 24px;
+                    position: absolute;
+                    margin: 0;
+                    left: 15px;
+                    top: 0;
+                    height: 100%;
+                    align-items: center;
+                    display: flex;
+                
+                }
+            }
+        }
+       
+        
+        #user-display {
+            position: absolute;
+            top: 0;
+            height: 100%;
+            align-items: center;
+            display: flex;
+            right: 15px;
+            .username {
+                display: none;
+            }
+        }
+    }
+    
+}

@@ -1,0 +1,219 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:co="http://xmlns.jcp.org/jsf/composite/co">
+    <ui:define name="title">Certificados Emitidos</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h1>CERTIFICADOS GENERADOS</h1></center>
+            <p:dataTable paginator="true" lazy="true" rows="20" rowsPerPageTemplate="20,50,100" resizableColumns="false" 
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         value="#{certificadosRp.certificados}" var="f" filterEvent="enter" >
+                <p:column headerText="No Certificado" filterBy="#{f.numCertificado}" sortBy="#{f.numCertificado}" 
+                          width="150" filterStyle="width: 95%">
+                    <h:outputText  value="#{f.numCertificado}"/>
+                </p:column>
+                <p:column headerText="No Ficha" filterBy="#{f.ficha.numFicha}" width="150" filterStyle="width: 95%">
+                    <h:outputText  value="#{f.ficha.numFicha}"/>
+                </p:column>
+                <p:column headerText="No Tramite" filterBy="#{f.numTramite}" sortBy="#{f.numTramite}" width="150" 
+                          filterStyle="width: 95%">
+                    <h:outputText  value="#{f.numTramite}"/>
+                </p:column>
+                <p:column headerText="Fecha de Emision" sortBy="#{f.fechaEmision}" width="150">
+                    <h:outputText value="#{f.fechaEmision}">
+                        <f:convertDateTime pattern="dd/MM/yyyy HH:mm"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Usuario Certificador" width="80">
+                    <h:outputText value="#{f.userCreador.usuario}"/>
+                </p:column>
+                <p:column headerText="Tipo Certificado">
+                    <h:outputText value="#{f.claseCertificado}"/>
+                </p:column>
+                <p:column headerText="Doc." width="40">
+                    <p:commandButton icon="pi pi-file-pdf" style="background-color: orangered;" 
+                        actionListener="#{certificadosRp.generarCertificadoBorrador(f)}" />
+                </p:column>                          
+                <p:column headerText="Editar" width="40">
+                    <p:commandButton icon="pi pi-pencil" style="background-color: darkcyan;" 
+                        actionListener="#{certificadosRp.editCertificado(f)}" />
+                </p:column>
+                <p:column headerText="Firmar" width="40" rendered="#{certificadosRp.habilitarFirma}">
+                    <p:commandButton icon="pi pi-sign-in" style="background-color: darkkhaki;" 
+                        actionListener="#{certificadosRp.firmarDocumentoCertificado(f)}" />
+                </p:column>
+                <p:column headerText="Habilitar" width="40" rendered="#{certificadosRp.habilitarEdicion}">
+                    <p:commandButton icon="pi pi-folder-open" style="background-color: darkolivegreen;" 
+                        actionListener="#{certificadosRp.showDlgEditar(f)}" />
+                </p:column>
+            </p:dataTable>
+            
+            <!--<p:tabView>
+                <p:tab title="Certificados Generados">
+
+                </p:tab>
+                <p:tab title="Busqueda en Bienes Raices" rendered="false">
+                    <p:panelGrid columns="6" styleClass="noBorder">
+                        Cedula/Ruc:
+                        <p:inputText value="# {certificadosRp.cedula}"/>
+                        Nombres:
+                        <p:inputText value="# {certificadosRp.nombres}" size="40"/>
+                        <p:commandButton value="Buscar" actionListener="# {certificadosRp.buscarPropietarios()}" update="dtCertsProps"/>
+                    </p:panelGrid>
+                    <p:dataTable id="dtCertsProps" paginator="true" lazy="true" rows="20" rowsPerPageTemplate="20,50,100" style="text-align: center"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 value="# {certificadosRp.certificados2}" var="prop" filterEvent="enter">
+                        <p:column headerText="No Certificado" filterBy="# {prop.numCertificado}" sortBy="# {prop.numCertificado}" width="150" filterStyle="width: 95%">
+                            <h:outputText  value="# {prop.numCertificado}"/>
+                        </p:column>
+                        <p:column headerText="No Ficha" filterBy="# {prop.ficha.numFicha}" width="150" filterStyle="width: 95%">
+                            <h:outputText  value="# {prop.ficha.numFicha}"/>
+                        </p:column>
+                        <p:column headerText="No Tramite" filterBy="# {prop.numTramite}" sortBy="# {prop.numTramite}" width="150" filterStyle="width: 95%">
+                            <h:outputText  value="# {prop.numTramite}"/>
+                        </p:column>
+                        <p:column headerText="Fecha de Emision" sortBy="# {prop.fechaEmision}">
+                            <h:outputText value="# {prop.fechaEmision}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Tipo Certificado">
+                            <h:outputText value="# {f.claseCertificado}"/>
+                        </p:column>
+                        <p:column headerText="Ver" width="50">
+                            <p:commandLink actionListener="# {certificadosRp.showDlgView(prop)}">
+                                <p:graphicImage value="/resources/icons/abrir.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Doc." width="50">
+                            <p:commandLink actionListener="# {certificadosRp.generarCertificado(prop, true)}">
+                                <p:graphicImage value="/resources/icons/documento.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Scan." width="50">
+                            <p:commandLink actionListener="# {certificadosRp.visualizaDocumento(prop)}">
+                                <p:graphicImage value="/resources/icons/reporte.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Busqueda por Personas" rendered="false">
+                    <p:panelGrid columns="7" styleClass="noBorder">
+                        Cedula/Ruc:
+                        <p:inputText value="# {certificadosRp.cedula2}"/>
+                        Nombres:
+                        <p:inputText value="# {certificadosRp.nombres2}" size="30"/>
+                        Apellidos:
+                        <p:inputText value="# {certificadosRp.apellidos2}" size="30"/>
+                        <p:commandButton value="Buscar" actionListener="# {certificadosRp.buscarCertificados()}" update="dtCertsList"/>
+                    </p:panelGrid>
+                    <p:dataTable id="dtCertsList" paginator="true" rows="20" style="text-align: center" value="# {certificadosRp.lista}"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink}"
+                                 var="list" filterEvent="enter">
+                        <p:column headerText="No Certificado" width="150">
+                            <h:outputText  value="# {list.numerocertificado}"/>
+                        </p:column>
+                        <p:column headerText="No Ficha" width="150">
+                            <h:outputText  value="# {list.numeroficha}"/>
+                        </p:column>
+                        <p:column headerText="No Tramite" width="150">
+                            <h:outputText  value="# {list.numerotramite}"/>
+                        </p:column>
+                        <p:column headerText="Fecha de Emision">
+                            <h:outputText value="# {list.fechaemision}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Tipo Certificado">
+                            <h:outputText value="# {f.claseCertificado}"/>
+                        </p:column>
+                        <p:column headerText="Doc." width="50">
+                            <p:commandLink actionListener="# {certificadosRp.generarCertificado2(list.idcertificado)}">
+                                <p:graphicImage value="/resources/icons/documento.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="Scan." width="50">
+                            <p:commandLink actionListener="# {certificadosRp.visualizaDocumento2(list.idcertificado)}">
+                                <p:graphicImage value="/resources/icons/reporte.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+            </p:tabView>-->
+        </h:form>
+
+        <p:dialog id="dlgViewContent" widgetVar="dlgViewCert" header="Visualizar Certificado" resizable="false" position="center">
+            <h:form id="formView">
+                <p:panelGrid styleClass="noBorder" columns="6">
+                    No Certificado:
+                    <p:inputText value="#{certificadosRp.cert.numCertificado}" readonly="true"/>
+                    No Tramite:
+                    <p:inputText value="#{certificadosRp.cert.numTramite}" readonly="true"/>
+                    Fecha de Emision:
+                    <p:inputText value="#{certificadosRp.cert.fechaEmision}" readonly="true">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </p:inputText>
+                </p:panelGrid>
+                <p:panelGrid styleClass="noBorder" columns="1">
+                    <p:inputTextarea value="#{certificadosRp.cert.observacion}" cols="100" rows="10" autoResize="false" 
+                                     style="color: #000000;font-size: 12px;" readonly="true"/>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+
+        <p:dialog id="dlgHabilitarEdicion" widgetVar="dlgHabilitarEdicion" 
+                  header="Habilitar Edición de Certificado"
+                  closeOnEscape="true" closable="true"
+                  resizable="false" modal="true" position="center">
+            <h:form id="formHabilitar">
+                <h:panelGrid columns="3" style="font-weight: bolder">
+                    <h:panelGroup>
+                        <p:outputLabel value="No Certificado:" /> <br></br>
+                        <p:inputText value="#{certificadosRp.cert.numCertificado}" readonly="true"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="No Tramite:" /> <br></br>
+                        <p:inputText value="#{certificadosRp.cert.numTramite}" readonly="true"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value=" Fecha de Emision:" /> <br></br>
+                        <p:inputText value="#{certificadosRp.cert.fechaEmision}" readonly="true">
+                            <f:convertDateTime pattern="dd/MM/yyyy"/>
+                        </p:inputText>
+                    </h:panelGroup>
+                </h:panelGrid>
+                <h:panelGrid columns="1" style="font-weight: bolder">
+                    <h:panelGroup>
+                        <p:outputLabel for="observacion" value="Observación" /> <br></br>
+                        <p:inputTextarea id="observacion" required="true" value="#{certificadosRp.observacion}" rows="5"
+                                         cols="60" autoResize="false"
+                                         style="width: 100%" maxlength="900"/>
+                    </h:panelGroup>
+                </h:panelGrid>
+                <br></br>
+                <center>
+                    <h:panelGrid  columns="3">
+                        <h:panelGroup>
+                            <p:commandButton value="Aceptar" actionListener="#{certificadosRp.aceptarEdicion(true)}" update="formHabilitar"/>
+                        </h:panelGroup>
+                        <p:spacer width="10"/>
+                        <h:panelGroup>
+                            <p:commandButton value="Cancelar" actionListener="#{certificadosRp.aceptarEdicion(false)}"/>    
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </center>
+                <br></br>
+            </h:form>
+        </p:dialog>
+
+
+    </ui:define>
+</ui:composition>

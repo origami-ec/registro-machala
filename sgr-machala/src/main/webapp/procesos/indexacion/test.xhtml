@@ -1,0 +1,15 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="header_page">Ingreso de Datos Masivos</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <h:outputText value="#{test.text}" escape="false"  style="width: 400px !important;" />
+            <p:textEditor value="#{test.text}" />
+        </h:form>
+    </ui:define>
+</ui:composition>

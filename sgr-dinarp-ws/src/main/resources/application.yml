@@ -1,0 +1,8 @@
+server:
+  port: 8790
+    
+spring:
+  application:
+    name: sigeri-dinarp
+  main:
+    allow-bean-definition-overriding: true

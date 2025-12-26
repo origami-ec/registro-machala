@@ -1,0 +1,147 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:poue="http://primefaces.org/ui/extensions">
+    <h:head>
+        <title>Búsqueda de documentos</title>
+        <ui:include src="styleTemplete.xhtml" />
+    </h:head>
+    <h:body>
+        <h:form id="formMain" > 
+
+            <p:panelGrid id="pnlIndex" columns="2" columnClasses="forty-percent, sixty-percent" styleClass="ui-panelgrid-blank" style="width: 90% !important; margin-left: 70px" >
+                <h:panelGroup id="pnlIndicesDatos">
+                    <p:outputLabel value="# trámite" style="width: 100%; font-weight: bolder"/><br/>
+                    <p:inputText id="numTramite" value="#{dlgDocumentos.numTramite}"  style="width: 100%" /> <br/>
+                    <p:outputLabel value="Indexación: " style="width: 100%; font-weight: bolder"/><br/>
+                    <p:selectOneMenu value="#{dlgDocumentos.indice}" converter="dtoConverter" style="width: 100%">
+                        <p:ajax update="dtIndicesFrm" />
+                        <f:selectItem itemLabel="Seleccione" itemValue="#{null}" noSelectionOption="true"/>
+                        <f:selectItems var="i" value="#{dlgDocumentos.indices}" itemLabel="#{i.descripcion}" itemValue="#{i}"/>
+                    </p:selectOneMenu><br/>
+                    <p:outputLabel value="Búsqueda mediante descripción del documento" style="width: 100%; font-weight: bolder"/><br/>
+                    <p:inputText id="descripcionArchivo" value="#{dlgDocumentos.indice.descripcionArchivo}"  style="width: 100%" /> <br/><br/>
+                    <center>
+                        <p:commandButton value="Consultar indice"
+                                         process="@this, descripcionArchivo, numTramite"
+                                         update="formMain:dtDocsBusqueda"
+                                         actionListener="#{dlgDocumentos.buscarArchivos()}" styleClass="rounded-button" icon="fa fa-search"/>
+                    </center>
+                </h:panelGroup>
+                <h:panelGroup id="pnlIndicesDet">
+                    <p:dataTable id="dtIndicesFrm" var="index" value="#{dlgDocumentos.indice.campos}" editable="true" lazy="false" style="width: 90% !important; margin-left: 70px"> 
+                        <p:column headerText="Descripción" width="100">
+                            <p:outputLabel value="* " style="color: red" rendered="#{index.obligatorio}"/>
+                            <p:outputLabel value="#{index.descripcion}" />
+                        </p:column>
+                        <p:column headerText="Detalle">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <p:outputLabel value="#{index.detalle}"/>
+                                </f:facet>
+                                <f:facet name="input">
+                                    <br/>
+                                    <p:inputText id="modelInput" value="#{index.detalle}" style="width:100%;"
+                                                 rendered="#{index.tipoDato eq 'TEXTO'}"/>
+                                    <p:inputText id="text2" value="#{index.detalle}" rendered="#{index.tipoDato eq 'NUMERO'}" style="width:100%;">
+                                        <p:keyFilter mask="num" />
+                                    </p:inputText>
+                                    <p:selectBooleanButton onLabel="SI" offLabel="NO" value="#{index.detalle}" rendered="#{index.tipoDato eq 'LOGICO'}"
+                                                           onIcon="pi pi-check" offIcon="pi pi-times" style="width:6rem;" />
+
+                                    <p:calendar id="datetime" value="#{index.detalle}"  style="width:100%; " 
+                                                showOn="button" placeholder="yyyy-MM-dd" navigator="true"
+                                                pattern="yyyy-MM-dd" rendered="#{index.tipoDato eq 'FECHA'}">
+                                        <f:convertDateTime pattern="yyyy-MM-dd" />
+                                    </p:calendar>
+
+                                    <p:selectOneMenu value="#{index.detalle}"  style="width:100%;" rendered="#{index.tipoDato eq 'CATEGORIA'}"> 
+                                        <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                        <f:selectItems var="i" value="#{index.categorias}" itemLabel="#{i}" itemValue="#{i}"/>
+                                    </p:selectOneMenu>
+                                    <br/>
+
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        <p:column style="width:6rem" headerText="***">
+                            <p:rowEditor editTitle="Editar #{index.descripcion}" cancelTitle="Cancelar" saveTitle="Actualizar datos #{index.descripcion}"/>
+                        </p:column>
+                    </p:dataTable>
+                </h:panelGroup>
+            </p:panelGrid>
+            <br/>
+            <h:panelGroup id="pnlDtBusqueda">
+                <p:dataTable id="dtDocsBusqueda" reflow="true" paginator="true" lazy="false" rows="10"  widgetVar="dtDocs"
+                             rowsPerPageTemplate="10,20,30" 
+                             rowIndexVar="i"
+                             rowKey="#{archivo.id}"
+                             filterEvent="enter"
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             value="#{dlgDocumentos.archivosBusqueda}" var="archivo" 
+                             emptyMessage="No se encontró ningún archivo"   style="width: 90% !important; margin-left: 70px"
+                             paginatorPosition="bottom" tableStyle="table-layout:auto">
+                    <p:column headerText="***" width="20">
+                        <p:outputLabel value="#{i + 1}" />
+                    </p:column>
+                    <p:column headerText="***" width="20">
+                        <p:rowToggler/>
+                    </p:column> 
+                    <p:column headerText="Tipo" > 
+                        <p:outputLabel value="#{archivo.tipoIndexacion}" />
+                    </p:column>
+                    <p:column headerText="# trámite" width="170" filterBy="#{archivo.numTramite}">
+                        <p:outputLabel value="#{archivo.numTramite}"/>
+                    </p:column> 
+                    <p:column headerText="Tipo de trámite" filterBy="#{archivo.tramite}">
+                        <p:outputLabel value="#{archivo.tramite}" />
+                    </p:column>
+                    <p:column headerText="Descripción del documento" filterBy="#{archivo.detalleDocumento}">
+                        <p:outputLabel value="#{archivo.detalleDocumento}" />
+                    </p:column>
+                    <p:column headerText="Archivo" filterBy="#{archivo.nombre}" width="160" >
+                        <p:outputLabel value="Archivo: " style="font-weight: bolder"/>
+                        <p:outputLabel value="#{archivo.nombre}" /> <br/>
+                        <p:outputLabel value="Peso: " style="font-weight: bolder"/>
+                        <p:outputLabel value="#{archivo.peso}" /><br/>
+                        <p:outputLabel value="Fecha: " style="font-weight: bolder"/>
+                        <p:outputLabel value="#{archivo.fecha}">
+                            <f:convertDateTime pattern="dd-MM-yyyy HH:mm" />
+                        </p:outputLabel>
+                    </p:column> 
+                    <p:column headerText="Acciones" width="170">
+                        <center>
+                            <p:commandLink  actionListener="#{dlgDocumentos.visualizarDocumento(archivo)}"
+                                            styleClass="edit" style="margin-right: 10px" title="Visualizar documento">
+                                <i class="fa fa-file-pdf-o" style="font-size: 1.2em; margin-right: 5px;"></i>
+                            </p:commandLink> 
+                            <p:spacer width="10" />
+                            <p:commandLink  actionListener="#{dlgDocumentos.seleccionarDocumento(archivo)}"
+                                            styleClass="edit" style="margin-right: 10px" title="Seleccionar documento">
+                                <i class="fa fa-angle-right" style="font-size: 1.2em; margin-right: 5px;"></i>
+                            </p:commandLink> 
+                        </center>
+                    </p:column>
+                    <p:rowExpansion>
+
+                        <p:dataList value="#{archivo.detalles}" var="det">
+                            <p:outputLabel value="#{det.descripcion} " style="font-weight: bolder" /> 
+                            <p:outputLabel value="#{det.detalle}" rendered="#{det.tipoDato ne 'FECHA'}"/> 
+                            <p:outputLabel value="#{det.detalle}" rendered="#{det.tipoDato eq 'FECHA'}">
+                                <f:convertDateTime pattern="yyyy-MM-dd" />
+                            </p:outputLabel>
+                        </p:dataList>
+
+                    </p:rowExpansion>
+                </p:dataTable>
+            </h:panelGroup>
+
+
+
+        </h:form>
+    </h:body>
+</html>

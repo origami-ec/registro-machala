@@ -1,0 +1,38 @@
+{
+    "name": "firma-app",
+    "version": "1.0.0",
+    "description": "AppDesktop top Sign ",
+    "main": "main.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "electron ."
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Xndy/firma-app.git"
+    },
+    "keywords": [
+        "firma"
+    ],
+    "author": "OrigamiEC",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/Xndy/firma-app/issues"
+    },
+    "homepage": "https://github.com/Xndy/firma-app#readme",
+    "devDependencies": {
+        "electron": "^15.5.7",
+        "electron-packager": "^15.5.1",
+        "electron-reloader": "^1.2.1",
+        "font-awesome": "^4.7.0"
+    },
+    "dependencies": {
+        "axios": "^0.23.0",
+        "bootstrap": "^5.0.0",
+        "electron-json-storage": "^4.5.0",
+        "electron-progressbar": "^2.0.1",
+        "image-clipper": "^0.4.4",
+        "pg": "^8.7.1",
+        "sharp": "^0.30.3"
+    }
+}

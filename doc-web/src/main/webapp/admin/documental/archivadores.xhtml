@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/bpmTemplate.xhtml">
+    <ui:define name="title">Archivadores</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2>Documental: ARCHIVADORES</h2></center>
+            <div style="margin: 0 auto; width: 900px;" align="right">
+                <p:commandButton value="Archivador Raíz" actionListener="#{archivadores.showDlgRoot()}" icon="fa fa-plus-circle"/>
+            </div><br/>
+            <p:treeTable value="#{archivadores.root}" var="nodo" paginator="true" rows="10" style="width: 1000px; margin: 0 auto;">
+                <p:column headerText="Nombre">
+                    <h:outputText value="#{nodo.descripcion}" />
+                </p:column>
+                <p:column headerText="Descripción">
+                    <h:outputText value="#{nodo.comentario}" />
+                </p:column>
+                <p:column headerText="Ruta Carpeta">
+                    <h:outputText value="#{nodo.folderName}" />
+                </p:column>
+                <p:column headerText="Estado" width="50">
+                    <h:outputText value="#{nodo.estado}" />
+                </p:column>
+                <p:column headerText="Orden" width="50">
+                    <h:outputText value="#{nodo.orden}" />
+                </p:column>
+                <p:column headerText="Opciones" width="50">
+                    <p:commandLink title="Editar Archivador" class="btnTranparent editar" actionListener="#{archivadores.showDlgEdit(nodo)}">
+                        <i class="fa fa-edit" />
+                    </p:commandLink>
+                    <p:spacer height="1" width="10"/>
+                    <p:commandLink title="Agregar hijo" class="btnTranparent nuevo" actionListener="#{archivadores.showDlgNew(nodo)}">
+                        <i class="fa fa-plus-circle" />
+                    </p:commandLink>
+                </p:column>
+            </p:treeTable>
+        </h:form>
+
+        <p:dialog showHeader="false" modal="true" widgetVar="dlgEdicion">
+            <h:form id="formEdit">
+                <h5 style="margin-top: 0;text-align: center;">Editar Archivador</h5>
+                <p:panelGrid columns="2" styleClass="ui-panelgrid-blank form-group" style="font-size: 14px;font-weight: bolder;color: blue;">
+                    Nombre:
+                    <p:inputText value="#{archivadores.archivador.descripcion}" style="width: 200px;"/>
+                    Descripcion:
+                    <p:inputText value="#{archivadores.archivador.comentario}" style="width: 200px;"/>
+                    Carpeta:
+                    <p:inputText value="#{archivadores.archivador.folderName}" style="width: 200px;" readonly="true"/>
+                    Orden:
+                    <p:spinner value="#{archivadores.archivador.orden}" stepFactor="1" style="width: 200px;"/>
+                    Estado:
+                    <p:selectOneMenu value="#{archivadores.archivador.estado}" style="width: 200px;">
+                        <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                        <f:selectItem itemLabel="Activo" itemValue="A" />
+                        <f:selectItem itemLabel="Inactivo" itemValue="I" />
+                    </p:selectOneMenu>
+                </p:panelGrid>
+                <div align="center">
+                    <p:commandButton value="Guardar" actionListener="#{archivadores.updateArchivador()}" icon="fa fa-save"/>
+                    <p:spacer height="1" width="20"/>
+                    <p:commandButton value="Cancelar" icon="fa fa-close" oncomplete="PF('dlgEdicion').hide();"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog showHeader="false" modal="true" widgetVar="dlgNuevoArchivador">
+            <h:form id="formNewArchivador">
+                <h5 style="margin-top: 0;text-align: center;">Nuevo Archivador</h5>
+                <p:panelGrid columns="2" styleClass="ui-panelgrid-blank form-group" style="font-size: 14px;font-weight: bolder;color: blue;">
+                    Nombre:
+                    <p:inputText value="#{archivadores.temp.descripcion}" style="width: 200px;"/>
+                    Descripcion:
+                    <p:inputText value="#{archivadores.temp.comentario}" style="width: 200px;"/>
+                    Orden:
+                    <p:spinner value="#{archivadores.temp.orden}" stepFactor="1" style="width: 200px;"/>
+                    Estado:
+                    <p:selectOneMenu value="#{archivadores.temp.estado}" style="width: 200px;">
+                        <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                        <f:selectItem itemLabel="Activo" itemValue="A" />
+                        <f:selectItem itemLabel="Inactivo" itemValue="I" />
+                    </p:selectOneMenu>
+                </p:panelGrid>
+                <div align="center">
+                    <p:commandButton value="Guardar" actionListener="#{archivadores.saveArchivador()}" icon="fa fa-save"/>
+                    <p:spacer height="1" width="20"/>
+                    <p:commandButton value="Cancelar" icon="fa fa-close" oncomplete="PF('dlgNuevoArchivador').hide();"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

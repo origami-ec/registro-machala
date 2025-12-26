@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:poue="http://primefaces.org/ui/extensions">
+
+    <h:head>
+        <title>Firma Digital</title>
+        <ui:include src="styleTemplete.xhtml" />
+    </h:head>
+    <h:body>            
+        <h:form id="mainForm" prependId="false">
+            <center>
+                <h:panelGroup >
+                    <center>
+                        <p:commandButton value="Cargar Documento" update="mainForm" icon="fa fa-check" rendered="#{dlgFirmaDigitalBeans.imagenPDF}" actionListener="#{dlgFirmaDigitalBeans.obtenerPdfEnImages()}"/>
+                    </center>
+                </h:panelGroup>
+                <p:dataGrid  id="dtPdfs" value="#{dlgFirmaDigitalBeans.imagenesPdfs}" var="imagen"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rendered="#{dlgFirmaDigitalBeans.imagenPDF}"
+                             columns="1" layout="grid" emptyMessage="Cargar Documento."
+                             rows="1" paginator="true" 
+                             style="width: 100% !important; height: 400px">
+
+                    <p:graphicImage id="img" value="#{imagen.url}"  style="border: 1px solid; border-color: #39414b" />
+                    <poue:imageAreaSelect id="areaSelect"
+                                          for="img" 
+                                          minHeight="50" minWidth="150"
+                                          maxWidth="150" maxHeight="50" 
+                                          widgetVar="areaSelct"
+                                          handles="true">
+                        <p:ajax event="selectEnd" listener="#{dlgFirmaDigitalBeans.selectEndListener}"/>
+                    </poue:imageAreaSelect>
+                </p:dataGrid>
+            </center>
+        </h:form>
+    </h:body>
+</html>

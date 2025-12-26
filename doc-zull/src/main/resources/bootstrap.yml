@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: ws-zuul
+  profiles:
+    #active: dev
+    #active: test
+    active: prod
+  cloud:
+    config:
+      uri: http://10.10.10.13:8888/
+#      uri: http://app-config-server:7777

@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/bpmTemplate.xhtml">
+    <ui:define name="title">Tipo Documental</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2>Documental: TIPO DOCUMENTOS</h2></center>
+            <div style="margin: 0 auto; width: 700px;" align="right">
+                <p:commandButton value="Tipo Documento" actionListener="#{tipoDocumentos.showDlgNew()}" icon="fa fa-plus-circle"/>
+            </div><br/>
+            <p:dataTable id="dtTipoDocumento" var="tdoc" style="width: 700px;margin: 0 auto;" paginator="true" lazy="true" 
+                         rows="15" filterEvent="enter" value="#{tipoDocumentos.lazy}" resizableColumns="true">
+                <p:column headerText="Nombre" width="100">
+                    <h:outputText value="#{tdoc.nombre}"/>
+                </p:column>
+                <p:column headerText="Código" width="60">
+                    <h:outputText value="DOC00#{tdoc.id}"/>
+                </p:column>
+                <p:column headerText="Descripción" width="200">
+                    <h:outputText value="#{tdoc.descripcion}"/>
+                </p:column>
+                <p:column headerText="Opciones" style="text-align: center;" width="50">
+                    <p:commandLink title="Agregar Detalles" actionListener="#{tipoDocumentos.showDlgEdit(tdoc)}">
+                        <i class="fa fa-plus-circle"/>
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog header="Nuevo Tipo de Documento" modal="true" widgetVar="dlgNewTipo">
+            <h:form id="formNewTipo">
+                <p:panelGrid columns="2" styleClass="ui-panelgrid-blank form-group" style="font-size: 14px;font-weight: bolder;">
+                    Nombre:
+                    <p:inputText value="#{tipoDocumentos.tipo.nombre}" style="width: 200px;"/>
+                    Descripcion:
+                    <p:inputText value="#{tipoDocumentos.tipo.descripcion}" style="width: 200px;"/>
+                </p:panelGrid>
+                <div align="center">
+                    <p:commandButton value="Guardar" actionListener="#{tipoDocumentos.saveTipoDoc()}" icon="fa fa-save"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Agregar tipo de dato" modal="true" widgetVar="dlgEditTipo">
+            <h:form id="formEditTipo">
+                <p:panel header="TIPO DOCUMENTO: #{tipoDocumentos.tipo.nombre}" >
+                    <p:panelGrid columns="6" styleClass="ui-panelgrid-blank form-group" >
+                        Opcional:
+                        <p:selectBooleanCheckbox value="#{tipoDocumentos.tdd.opcional}" />
+                        Orden:
+                        <p:spinner value="#{tipoDocumentos.tdd.orden}" stepFactor="1" style="width: 100px;"/>
+                        Tipo Dato:
+                        <p:selectOneRadio value="#{tipoDocumentos.tdd.tipoDetalle}">
+                            <f:selectItem itemLabel="Simple" itemValue="#{1}" />
+                            <f:selectItem itemLabel="Lista" itemValue="#{2}" />
+                            <f:selectItem itemLabel="Objeto" itemValue="#{3}" />
+                            <p:ajax event="change" update="fieldTipoDato"/>
+                        </p:selectOneRadio>
+                    </p:panelGrid>
+                    <p:panelGrid id="fieldTipoDato" columns="5" styleClass="ui-panelgrid-blank form-group" >
+                        Nombre:
+                        <p:inputText value="#{tipoDocumentos.tdd.nombre}" style="width: 150px;"/>
+                        Tipo Dato:
+                        <p:selectOneMenu value="#{tipoDocumentos.tdd.tipoDato}" style="width: 150px;" converter="dtoConverter" 
+                                         rendered="#{tipoDocumentos.tdd.tipoDetalle eq 1}" >
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                            <f:selectItems value="#{tipoDocumentos.datosSimple}" var="ds" itemLabel="#{ds.nombre}" itemValue="#{ds}"/>
+                        </p:selectOneMenu>
+                        <p:selectOneMenu value="#{tipoDocumentos.tdd.tipoDato}" style="width: 150px;" converter="dtoConverter" 
+                                         rendered="#{tipoDocumentos.tdd.tipoDetalle eq 2}" >
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                            <f:selectItems value="#{tipoDocumentos.datosLista}" var="dsl" itemLabel="#{dsl.nombre}" itemValue="#{dsl}"/>
+                        </p:selectOneMenu>
+                        <p:selectOneMenu value="#{tipoDocumentos.tdd.tipoDocumentoHijo}" style="width: 150px;" converter="dtoConverter" 
+                                         rendered="#{tipoDocumentos.tdd.tipoDetalle eq 3}" >
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                            <f:selectItems value="#{tipoDocumentos.documentos}" var="docs" itemLabel="#{docs.nombre}" itemValue="#{docs}"/>
+                        </p:selectOneMenu>
+                        <p:commandButton value="Agregar Detalle" style="float: right;"  icon="fa fa-plus-circle" 
+                                         actionListener="#{tipoDocumentos.agregarDetalle()}" />
+                    </p:panelGrid>
+                </p:panel>
+                <p:dataTable value="#{tipoDocumentos.list}" var="tip" paginator="true" rows="5" style="width: 650px;" paginatorPosition="bottom">
+                    <p:column headerText="Nombre">
+                        #{tip.nombre}
+                    </p:column>
+                    <p:column headerText="Tipo Dato">
+                        <p:outputLabel value="#{tip.tipoDato.nombre}" rendered="#{tip.tipoDato ne null}"/>
+                        <p:outputLabel value="Objeto" rendered="#{tip.tipoDato eq null}"/>
+                    </p:column>
+                    <p:column headerText="Estado" width="40">
+                        #{tip.estado}
+                    </p:column>
+                    <p:column headerText="Orden" width="40">
+                        #{tip.orden}
+                    </p:column>
+                    <p:column headerText="Editar" width="40" style="text-align: center;">
+                        <p:commandLink title="Editar Archivador" class="btnTranparent editar" disabled="true">
+                            <i class="fa fa-edit blue2 Fs18" />
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

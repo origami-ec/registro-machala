@@ -1,0 +1,1024 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Proceso Actualización Fichas</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <style>
+                .procesado {
+                    background-color: green !important;
+                    color: #192a37 !important;
+                }
+                .sinProcesar {
+                    background-color: pink !important;
+                    color: #192a37 !important;
+                }
+            </style>
+            <center><h2>PROCESO DE ACTUALIZACIÓN DE FICHAS</h2></center>
+            <h:panelGrid columns="7" style="font-weight: bolder;font-size: 16px;margin: 0 auto;">
+                Ficha Desde:
+                <p:inputNumber value="#{procesoActualizacionFichas.desde}" decimalPlaces="0" thousandSeparator="" 
+                               modifyValueOnWheel="false" />
+                <p:spacer width="20"/>
+                Ficha Hasta:
+                <p:inputNumber value="#{procesoActualizacionFichas.hasta}" decimalPlaces="0" thousandSeparator="" 
+                               modifyValueOnWheel="false" />
+                <p:spacer width="20"/>
+                <p:commandButton value="Buscar" icon="pi pi-search" update="dtFichaLazy" 
+                                 actionListener="#{procesoActualizacionFichas.filtarLazy()}"/>
+            </h:panelGrid>
+            <p:dataTable paginator="true" lazy="true" rows="15" rowsPerPageTemplate="15,30,50" resizableColumns="false"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}" id="dtFichaLazy"
+                         value="#{procesoActualizacionFichas.listadoFichas}" var="fic" emptyMessage="No se encontró Fichas" 
+                         filterEvent="enter" >
+                <p:column headerText="FICHA" filterBy="#{fic.numFicha}" sortBy="#{fic.numFicha}" 
+                          width="80" filterStyle="width: 99%">
+                    <h:outputText  value="#{fic.numFicha}"/>
+                </p:column>
+                <p:column headerText="OPCIONES DEL PROCESO" width="100">
+                    <p:panelGrid columns="3" styleClass="ui-noborder">
+                        <p:commandLink actionListener="#{procesoActualizacionFichas.showDlgFichaSelect(fic)}" 
+                                       title="Visualizar Datos" >
+                            <i class="pi pi-folder" style="font-size: 1.5em; margin-right: 5px;"></i>
+                        </p:commandLink>
+
+                        <p:commandLink actionListener="#{procesoActualizacionFichas.imprimirFichaRegistral(fic)}" 
+                                       title="Generar Reporte" rendered="#{!procesoActualizacionFichas.rol_supervisor}">
+                            <i class="pi pi-file-pdf" style="font-size: 1.5em; margin-right: 5px;color: orangered;"></i>
+                        </p:commandLink>
+
+                        <p:commandLink actionListener="#{procesoActualizacionFichas.showDlgProcesoFichas(fic)}" 
+                                       title="Codificar Ficha" rendered="#{procesoActualizacionFichas.rol_codificador}">
+                            <i class="pi pi-qrcode" style="font-size: 1.5em; margin-right: 5px;color: darkolivegreen;"></i>
+                        </p:commandLink>
+
+                        <p:commandLink actionListener="#{procesoActualizacionFichas.showDlgControlCalidad(fic)}" 
+                                       title="Control de Calidad" rendered="#{procesoActualizacionFichas.rol_control_calidad}">
+                            <i class="pi pi-bolt" style="font-size: 1.5em; margin-right: 5px;color: darkcyan;"></i>
+                        </p:commandLink>
+
+                        <p:commandLink actionListener="#{procesoActualizacionFichas.showDlgVisualizar(fic)}" 
+                                       title="Visualizar Proceso" rendered="#{procesoActualizacionFichas.rol_supervisor}">
+                            <i class="pi pi-eye" style="font-size: 1.5em; margin-right: 5px;color: orangered;"></i>
+                        </p:commandLink>
+
+                        <p:commandLink actionListener="#{procesoActualizacionFichas.showObservacionesProceso(fic)}" 
+                                       title="Observaciones del Proceso">
+                            <i class="pi pi-list" style="font-size: 1.5em; margin-right: 5px;color: darkorange;"></i>
+                        </p:commandLink>
+
+                        <p:commandLink actionListener="#{procesoActualizacionFichas.showDlgSupervision(fic)}" 
+                                       title="Cambio de Estado">
+                            <i class="pi pi-sync" style="font-size: 1.5em; margin-right: 5px;color: darkmagenta;"></i>
+                        </p:commandLink>
+                    </p:panelGrid>
+                </p:column>
+                <p:column headerText="Clave Catastral" filterBy="#{fic.claveCatastral}" filterStyle="width: 95%" 
+                          rendered="false" >
+                    <h:outputText  value="#{fic.claveCatastral}"/>
+                </p:column>
+                <p:column headerText="Código Predio" filterBy="#{fic.fichaMatriz}" filterStyle="width: 95%"
+                          rendered="false" width="100">
+                    <h:outputText  value="#{fic.fichaMatriz}"/>
+                </p:column>
+                <p:column headerText="Parroquia" filterBy="#{fic.parroquia.descripcion}" filterStyle="width: 95%" 
+                          width="80" rendered="false">
+                    <h:outputText value="#{fic.parroquia.descripcion}"/>
+                </p:column>
+                <p:column headerText="ESTADO PROCESO" width="80">
+                    <p:outputLabel value="PENDIENTE" rendered="#{fic.fichaProceso eq null}"/>
+                    <p:outputLabel value="#{fic.fichaProceso.estado.valor}" rendered="#{fic.fichaProceso ne null}"/>
+                </p:column>
+                <p:column headerText="ESTADO VINCULADO" width="80">
+                    <p:outputLabel value="SI" rendered="#{fic.fichaProceso.vinculado}"/>
+                    <p:outputLabel value="NO" rendered="#{!fic.fichaProceso.vinculado}"/>
+                </p:column>
+                <p:column headerText="REVISADO POR SUPERVISOR" width="100">
+                    <p:outputLabel value="SI" rendered="#{fic.fichaProceso.revisado}"/>
+                    <p:outputLabel value="NO" rendered="#{!fic.fichaProceso.revisado}"/>
+                </p:column>
+                <p:column headerText="TIPO DE CODIGO REGISTRADO" width="100">
+                    <p:outputLabel value="CAMPOSANTO" style="background-color: darksalmon;font-weight: bolder;"
+                                   rendered="#{fic.descripcionBien.toUpperCase().contains('CAMPOSANTO') }"/>
+                    <br/>
+                    <ui:repeat value="#{fic.codigosFichaCollection}" var="cods">
+                        <p:outputLabel value="#{cods.tipo.codename} &lt;br/&gt;" escape="false" 
+                                       style="background-color: greenyellow;font-weight: bolder;"/>
+                    </ui:repeat>
+                </p:column>
+                <p:column headerText="DESCRIPCIÓN DEL BIEN INMUEBLE" filterBy="#{fic.descripcionBien}" 
+                          filterStyle="width: 95%" filterMatchMode="contains">
+                    <h:outputText value="Clave Catastral: " style="font-weight: bolder;"/>
+                    <h:outputText value="#{fic.claveCatastral}" /><br/>
+                    <h:outputText value="Código Predio: " style="font-weight: bolder;"/>
+                    <h:outputText value="#{fic.fichaMatriz}"/><br/>
+                    <h:outputText value="Ubicación: " style="font-weight: bolder;"/>
+                    <h:outputText value="#{fic.descripcionBien}"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog id="dlgInformacionFicha" header="FICHA REGISTRAL" widgetVar="dlgFichaSelect" 
+                  resizable="false" modal="true" closeOnEscape="true" height="520" width="800">
+            <h:form id="formFichaSelect">
+                <h:panelGrid style="font-weight: bolder;width: 100%;" columns="3">
+                    <h:panelGroup>
+                        Nro. de Ficha:<br/>
+                        <p:inputText value="#{procesoActualizacionFichas.fichaSel.numFicha}" readonly="true" style="width: 100%"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Parroquia:<br/>
+                        <p:inputText value="#{procesoActualizacionFichas.fichaSel.parroquia.descripcion}" readonly="true" style="width: 100%"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Tipo Bien:<br/>
+                        <p:inputText value="#{procesoActualizacionFichas.fichaSel.uafTipoBien.descripcion}" readonly="true" style="width: 100%"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Clave Catastral:<br/>
+                        <p:inputText value="#{procesoActualizacionFichas.fichaSel.claveCatastral}" readonly="true" style="width: 100%"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Código de Predio:<br/>
+                        <p:inputText value="#{procesoActualizacionFichas.fichaSel.fichaMatriz}" readonly="true" style="width: 100%"/>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="false">
+                        Área Terreno:<br/>
+                        <p:inputText value="#{procesoActualizacionFichas.fichaSel.areaTerreno}" readonly="true" style="width: 100%"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Fecha de Creación:<br/>
+                        <p:inputText value="#{procesoActualizacionFichas.fichaSel.fechaApe}" readonly="true" 
+                                     style="width: 100%;text-transform: uppercase;">
+                            <f:convertDateTime pattern="dd-MMMM-yyyy"/>
+                        </p:inputText>
+                    </h:panelGroup>
+                </h:panelGrid>
+                <p:tabView>
+                    <p:tab title="Movimientos Registrales">
+                        <p:dataTable value="#{procesoActualizacionFichas.movimientos}" var="mov" scrollable="true" 
+                                     scrollHeight="240" rowIndexVar="rowIndex" resizableColumns="true">
+                            <p:column headerText="No" width="30">
+                                #{rowIndex+1}
+                            </p:column>
+                            <p:column headerText="Libro">
+                                <p:outputLabel id="libroMovFicha" value="#{mov.movimiento.libro.nombre}" 
+                                               style="text-transform: uppercase;"/>
+                                <p:tooltip for="libroMovFicha" value="#{mov.movimiento.libro.nombre}" position="top" />
+                            </p:column>
+                            <p:column headerText="Acto" >
+                                <p:outputLabel id="actoMovFicha" value="#{mov.movimiento.acto.nombre}" style="text-transform: uppercase;"/>
+                                <p:tooltip for="actoMovFicha" value="#{mov.movimiento.acto.nombre}" position="top" />
+                            </p:column>
+                            <p:column headerText="Tomo" width="30">
+                                <p:outputLabel value="#{mov.movimiento.numTomo}"/>
+                            </p:column>
+                            <p:column headerText="Repertorio" width="70">
+                                <p:outputLabel value="#{mov.movimiento.numRepertorio}"/>
+                            </p:column>
+                            <p:column headerText="Inscripción" width="70">
+                                <p:outputLabel value="#{mov.movimiento.numInscripcion}"/>
+                            </p:column>
+                            <p:column headerText="Fec.Inscripc." width="70">
+                                <p:outputLabel value="#{mov.movimiento.fechaInscripcion}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="***" width="50">
+                                <p:commandLink actionListener="#{procesoActualizacionFichas.showDlgMovSelect(mov.movimiento)}"
+                                               title="Ver Datos de Inscripción">
+                                    <i class="pi pi-book" style="font-size: 1.5em; margin-right: 5px;color: darkgreen;"></i>
+                                </p:commandLink>
+                                <p:commandLink actionListener="#{procesoActualizacionFichas.consultaYura(mov.movimiento)}"
+                                               title="Digitalización Yura">
+                                    <i class="pi pi-file-pdf" style="font-size: 1.5em; margin-right: 5px;color: orangered;"></i>
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Descripción">
+                        <p:panel header="Ubicación del Bien">
+                            <p:inputTextarea value="#{procesoActualizacionFichas.fichaSel.descripcionBien}" 
+                                             style="width: 100%;" rows="6" readonly="true" autoResize="false"/>
+                        </p:panel>
+                    </p:tab>
+                    <p:tab title="Linderos Registrales">
+                        <p:dataTable id="dtLinderos" value="#{procesoActualizacionFichas.fichaSel.regFichaLinderosCollection}" 
+                                     scrollable="true" scrollHeight="240" lazy="false" var="lin" rowIndexVar="rowIndex" reflow="true" >
+                            <p:column headerText="Tipo" width="40">
+                                <p:outputLabel value="#{lin.tipo.descripcion}" />
+                            </p:column>
+                            <p:column headerText="Lindero">
+                                <p:outputLabel value="#{lin.linderante}" />
+                            </p:column>
+                            <p:column headerText="Longitud" width="150">
+                                <p:outputLabel value="CON: #{lin.longitud} MTS." rendered="#{lin.longitud gt 0}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+
+                    <p:tab title="Propietarios" rendered="false">
+                        <p:dataTable value="#{procesoActualizacionFichas.fichaSel.regFichaPropietariosCollection}" var="pro" rowIndexVar="rowIndexProp" 
+                                     resizableColumns="true" style="text-align: center" scrollable="true" scrollHeight="240">
+                            <p:column headerText="No" width="30">
+                                #{rowIndexProp+1}
+                            </p:column>
+                            <p:column headerText="CI/RUC" width="150">
+                                <p:outputLabel value="#{pro.propietario.cedRuc}"/>
+                            </p:column>
+                            <p:column headerText="Nombre" >
+                                <p:outputLabel value="#{pro.propietario.nombre}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                </p:tabView>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgTipoFicha" header="Nueva Ficha Registral" modal="true" resizable="false">
+            <h:form id="formTipoFicha">
+                <p:panelGrid styleClass="ui-panelgrid-blank form-group form-elements" columns="1" >
+                    <p:selectOneRadio value="#{procesoActualizacionFichas.newTipoFicha}" layout="grid" columns="1" disabled="true"
+                                      converter="entityConverter">
+                        <f:selectItems value="#{procesoActualizacionFichas.tiposFichas}" var="ntf" itemLabel="#{ntfic.nombre}" itemValue="#{ntf}"/>
+                    </p:selectOneRadio>
+
+                </p:panelGrid>
+                <center>
+                    <p:commandButton actionListener="#{procesoActualizacionFichas.redirectFichaNueva()}" value="Nueva Ficha" icon="pi pi-home"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Proceso de Actualización de Fichas Registrales" widgetVar="dlgProcesoFichas" modal="true" 
+                  width="800" resizable="false" closeOnEscape="false" position="top" closable="false">
+            <h:form id="formProcesoFicha">
+                <h:panelGrid columns="3" style="font-weight: bolder;font-size: 20px;margin: 0 auto;">
+                    Nro de Ficha:
+                    <p:spacer width="20" />
+                    <p:outputLabel value="#{procesoActualizacionFichas.fichaSel.numFicha}" 
+                                   style="font-weight: bolder;color: blue;font-size: 20px;"/>
+                </h:panelGrid>
+                <p:tabView id="tabMain">
+                    <p:tab title="Códigos">
+
+                        <h:panelGrid columns="1" style="width: 100%;">
+                            <p:outputLabel value="Ubicación del Bien:" style="font-weight: bolder;"/>
+                            <p:inputTextarea value="#{procesoActualizacionFichas.fichaSel.descripcionBien}" style="width: 100%" 
+                                             readonly="true" autoResize="false"/>
+                            <p:outputLabel value="** Campos obligatorios" style="color: red;font-weight: bolder;"/>
+                        </h:panelGrid>
+
+                        <h:panelGroup id="pnlCodigos">
+                            <h:panelGrid columns="3" style="font-weight: bolder;font-size: 16px;width: 100%;" >
+                                <h:panelGroup>
+                                    <p:outputLabel value="**" style="color: red;"/><p:outputLabel value="Tipo Código:"/><br/>
+                                    <p:selectOneMenu value="#{procesoActualizacionFichas.nuevoCodigo.tipo}" converter="entityConverter" 
+                                                     style="display: block; margin-top: 3px; min-width: 0px !important; width: 150px !important">
+                                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                                        <f:selectItems value="#{procesoActualizacionFichas.tipoCodigosPredio}" var="tcp" 
+                                                       itemLabel="#{tcp.valor}" itemValue="#{tcp}" />
+                                        <p:ajax update="pnlCodigos" event="change"/>
+                                    </p:selectOneMenu>
+                                </h:panelGroup>
+
+                                <h:panelGroup rendered="#{procesoActualizacionFichas.nuevoCodigo.tipo.codename ne 'URBANISTICO'}">
+                                    <p:outputLabel value="**" style="color: red;"/><p:outputLabel value="Código:"/><br/>
+                                    <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.codigo}" style="width: 400px;"/>
+                                </h:panelGroup>
+
+                                <h:panelGroup rendered="#{procesoActualizacionFichas.nuevoCodigo.tipo.codename eq 'URBANISTICO'}">
+                                    <p:outputLabel value="**" style="color: red;"/><p:outputLabel value="Ciudadela:"/><br/>
+                                    <p:selectOneMenu value="#{procesoActualizacionFichas.nuevoCodigo.urb}" converter="entityConverter"
+                                                     filter="true" filterMatchMode="contains" style="width: 400px;">
+                                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                                        <f:selectItems value="#{procesoActualizacionFichas.barrios}" var="bar" 
+                                                       itemLabel="#{bar.nombre}" itemValue="#{tcp}" />
+                                        <p:ajax update="formProcesoFicha" event="change"/>
+                                    </p:selectOneMenu>
+                                </h:panelGroup>
+
+                                <h:panelGroup>
+                                    <br/>
+                                    <p:commandButton icon="pi pi-save" value="Guardar Código" update="formProcesoFicha" 
+                                                     actionListener="#{procesoActualizacionFichas.guardarCodigoFicha()}"/>
+                                </h:panelGroup>
+                            </h:panelGrid>
+                            <h:panelGroup rendered="#{procesoActualizacionFichas.nuevoCodigo.tipo.codename eq 'URBANISTICO'}">
+                                <h:panelGrid columns="5" style="width: 100%;font-weight: bolder;">
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Etapa:" /><br/>
+                                        <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.etapa}" size="15"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="**" style="color: red;"/><p:outputLabel value="Mz:"/><br/>
+                                        <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.mz}" size="15"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="**" style="color: red;"/><p:outputLabel value="Lote:"/><br/>
+                                        <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.villa}" size="15"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Edificio:" /><br/>
+                                        <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.edificio}" size="15"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Piso:" /><br/>
+                                        <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.piso}" size="15"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Departamento:" /><br/>
+                                        <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.departamento}" size="15"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Oficina:" /><br/>
+                                        <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.oficina}" size="15"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Local:" /><br/>
+                                        <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.local}" size="15"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Parqueo:" /><br/>
+                                        <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.parqueo}" size="15"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Villa - Townhouse:" /><br/>
+                                        <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.townhouse}" size="15"/>
+                                    </h:panelGroup>
+                                </h:panelGrid>
+                            </h:panelGroup>
+                        </h:panelGroup>
+
+                        <p:dataTable id="dtCodigosFicha" value="#{procesoActualizacionFichas.codigosFicha}" var="pcf" 
+                                     scrollable="true" scrollHeight="400" >
+                            <p:column headerText="Tipo" width="100">
+                                <p:outputLabel value="#{pcf.tipo.valor}"/>
+                            </p:column>
+                            <p:column headerText="Código" >
+                                <p:outputLabel value="#{pcf.codigoCompleto}"/>
+                            </p:column>
+                            <p:column headerText="***" width="80">
+                                <p:commandButton icon="pi pi-pencil" style="background-color: darkgoldenrod;" update="formProcesoFicha" 
+                                                 actionListener="#{procesoActualizacionFichas.corregirCodigo(pcf)}" title="Editar"/>
+                                <p:spacer width="5"/>
+                                <p:commandButton icon="pi pi-trash" style="background-color: darkred;" update="dtCodigosFicha" 
+                                                 actionListener="#{procesoActualizacionFichas.inactivarCodigo(pcf)}" title="Eliminar"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Linderos">
+                        <p:outputLabel value="** Campos obligatorios" style="color: red;font-weight: bolder;"/>
+                        <p:fieldset legend="Datos de la Ficha">
+                            <h:panelGrid columns="4" style="width: 100%;font-weight: bolder;" >
+                                <h:panelGroup>
+                                    <p:outputLabel value="**" style="color: red;font-weight: bolder;"/>
+                                    <p:outputLabel value="Área:" /><br/>
+                                    <p:inputNumber value="#{procesoActualizacionFichas.fichaProceso.area}" 
+                                                   modifyValueOnWheel="false" 
+                                                   decimalSeparator="." thousandSeparator="," decimalPlaces="4" />
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="**" style="color: red;font-weight: bolder;"/>
+                                    <p:outputLabel value="Unidad de Medida:" /><br/>
+                                    <p:selectOneMenu value="#{procesoActualizacionFichas.fichaProceso.unidadMedida}" 
+                                                     converter="entityConverter">  
+                                        <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                                        <f:selectItems value="#{procesoActualizacionFichas.unidades}" var="uni" 
+                                                       itemLabel="#{uni.valor}" itemValue="#{uni}"/>
+                                    </p:selectOneMenu>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Alícuota:" /><br/>
+                                    <p:inputNumber value="#{procesoActualizacionFichas.fichaProceso.alicuota}" 
+                                                   modifyValueOnWheel="false" 
+                                                   maxValue="100" decimalSeparator="." thousandSeparator="," decimalPlaces="2" />
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <br/>
+                                    <p:commandButton value="Actualizar" icon="pi pi-save" style="background-color: darkgoldenrod;" 
+                                                     actionListener="#{procesoActualizacionFichas.updateDatosFicha()}" />
+                                </h:panelGroup>
+                            </h:panelGrid>
+                        </p:fieldset>
+
+                        <h:panelGrid id="pnlLindero" columns="3" style="font-weight: bolder;width: 100%;">
+                            <h:panelGroup>
+                                <p:outputLabel value="**" style="color: red;font-weight: bolder;"/>Tipo Lindero:<br/>
+                                <p:selectOneMenu value="#{procesoActualizacionFichas.lindero.tipo}" converter="entityConverter" 
+                                                 style="width: 150px;">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                                    <f:selectItems value="#{procesoActualizacionFichas.tiposLinderos}" var="tl" 
+                                                   itemLabel="#{tl.descripcion}" itemValue="#{tl}" />
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="**" style="color: red;font-weight: bolder;"/>Lindero:<br/>
+                                <p:inputText value="#{procesoActualizacionFichas.lindero.linderante}" size="50"/>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="false">
+                                Longitud:<br/>
+                                <p:inputNumber value="#{procesoActualizacionFichas.lindero.longitud}" 
+                                               decimalSeparator="." thousandSeparator="," decimalPlaces="2" /> 
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <br/>
+                                <p:commandButton value="Guardar" icon="pi pi-save" update="pnlLindero,dtLinderosControl" 
+                                                 actionListener="#{procesoActualizacionFichas.updateLindero()}" />
+                            </h:panelGroup>
+                        </h:panelGrid>
+
+                        <p:dataTable id="dtLinderosControl" value="#{procesoActualizacionFichas.linderos}" 
+                                     scrollable="true" scrollHeight="180" lazy="false" var="pflin" 
+                                     rowIndexVar="rowIndex" reflow="true" >
+                            <p:column headerText="Tipo" width="40">
+                                <p:outputLabel value="#{pflin.tipo.descripcion}" />
+                            </p:column>
+                            <p:column headerText="Lindero">
+                                <p:outputLabel value="#{pflin.linderante}" />
+                            </p:column>
+                            <p:column headerText="Longitud" width="100" rendered="false">
+                                <p:outputLabel value="CON: #{pflin.longitud} MTS." rendered="#{pflin.longitud gt 0}"/>
+                            </p:column>
+                            <p:column headerText="***" width="40">
+                                <p:commandButton icon="pi pi-pencil" title="Editar" update="formProcesoFicha:tabMain:pnlLindero" 
+                                                 actionListener="#{procesoActualizacionFichas.selectLindero(pflin)}"/>
+                            </p:column>
+                        </p:dataTable>
+
+                    </p:tab>
+                </p:tabView>
+
+                <h:panelGrid columns="1" style="margin: 0 auto;">
+                    <p:commandButton value="Cerrar Ventana" icon="pi pi-times-circle" 
+                                     actionListener="#{procesoActualizacionFichas.actualizarLazy()}"/>
+                    <!--<p:spacer width="20"/>
+                    <p:commandButton value="Enviar a Control" icon="pi pi-bolt" 
+                                     style="background-color: darkolivegreen;"
+                                     actionListener="# {procesoActualizacionFichas.pasarTareaControl()}"/>-->
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgCiudadela" header="Nueva Ciudadela" modal="true" resizable="false" width="300">
+            <h:form id="formCiudadela">
+                <p:panelGrid styleClass="ui-panelgrid-blank form-group form-elements" columns="1" 
+                             style="font-weight: bolder;width: 100%;">
+                    Parroquia:
+                    <p:selectOneMenu value="#{procesoActualizacionFichas.ciudadela.parroquia}" converter="entityConverter" 
+                                     filter="true" filterMatchMode="contains" style="width: 100%;">
+                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                        <f:selectItems value="#{procesoActualizacionFichas.parroquias}" var="par" 
+                                       itemLabel="#{par.descripcion}" itemValue="#{par}" />
+                    </p:selectOneMenu>
+                    Nombre:
+                    <p:inputText value="#{procesoActualizacionFichas.ciudadela.nombre}" style="width: 100%;"/>
+                </p:panelGrid><br/>
+                <center>
+                    <p:commandButton actionListener="#{procesoActualizacionFichas.guardarCiudadela()}" 
+                                     value="Guardar Ciudadela" icon="pi pi-save"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgMovimientoRegistral" header="MOVIMIENTO REGISTRAL" widgetVar="dlgMovRegSelec" position="left top"
+                  resizable="false" closeOnEscape="true" width="800" height="450" modal="true">
+            <h:form id="formMovRegSelec">
+                <p:fieldset legend="Datos de la Inscripcion">
+                    <p:panelGrid style="width: 100%;font-size: 13px;font-weight: bolder;">
+                        <p:row>
+                            <p:column>
+                                Num.Inscrip.:
+                                <p:outputLabel value="#{procesoActualizacionFichas.movimiento.numInscripcion}"/>
+                            </p:column>
+                            <p:column>
+                                Fecha Inscrip.:
+                                <p:outputLabel value="#{procesoActualizacionFichas.movimiento.fechaInscripcion}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column>
+                                Num.Rep.:
+                                <p:outputLabel  value="#{procesoActualizacionFichas.movimiento.numRepertorio}"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                Libro:
+                                <p:outputLabel value="#{procesoActualizacionFichas.movimiento.libro.nombre}"/>
+                            </p:column>
+                            <p:column colspan="2">
+                                Acto:
+                                <p:outputLabel value="#{procesoActualizacionFichas.movimiento.acto.nombre}"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                Tomo:
+                                <p:outputLabel value="#{procesoActualizacionFichas.movimiento.numTomo}"/>
+                            </p:column>
+                            <p:column>
+                                Folio Inicio:
+                                <p:outputLabel value="#{procesoActualizacionFichas.movimiento.folioInicio}"/>
+                            </p:column>
+                            <p:column>
+                                Folio Fin:
+                                <p:outputLabel value="#{procesoActualizacionFichas.movimiento.folioFin}"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                Canton:
+                                <p:outputLabel value="#{procesoActualizacionFichas.movimiento.domicilio.nombre}"/>
+                            </p:column>
+                            <p:column>
+                                Fech/Otorg.:
+                                <p:outputLabel value="#{procesoActualizacionFichas.movimiento.fechaOto}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column>
+                                Not./Juz.:
+                                <p:outputLabel value="#{procesoActualizacionFichas.movimiento.enteJudicial.nombre}"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column colspan="3">
+                                Escri/Juicio/Resolu:
+                                <p:outputLabel value="#{procesoActualizacionFichas.movimiento.escritJuicProvResolucion}"/>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:fieldset>
+                <p:tabView id="tabDet">
+                    <p:tab title="Intervinientes">
+                        <p:dataTable emptyMessage="No hay datos para mostrar..." var="inter" scrollable="true" 
+                                     resizableColumns="true" value="#{procesoActualizacionFichas.clientes}" scrollHeight="200" 
+                                     rowIndexVar="indexIntv" id="dtInterv">
+                            <p:column headerText="No" width="25">
+                                #{indexIntv+1}
+                            </p:column>
+                            <p:column headerText="C.I/R.U.C" width="100">
+                                <p:outputLabel value="#{inter.enteInterv.cedRuc}"/>
+                            </p:column>
+                            <p:column headerText="Nombres">
+                                <p:outputLabel id="nombreInterv" value="#{inter.enteInterv.nombre}"/>
+                                <p:tooltip for="nombreInterv" value="#{inter.enteInterv.nombre}" position="top" />
+                            </p:column>
+                            <p:column headerText="Papel" width="100">
+                                <p:outputLabel id="papelInterv" value="#{inter.papel.papel}"/>
+                                <p:tooltip for="papelInterv" value="#{inter.papel.papel}" position="top" />
+                            </p:column>
+                            <p:column headerText="Estado" width="80">
+                                <p:outputLabel id="estadoInterv" value="#{inter.estado}"/>
+                                <p:tooltip for="estadoInterv" value="#{inter.estado}" position="top" />
+                            </p:column>
+                            <p:column headerText="Domicilio" width="80">
+                                <p:outputLabel id="domicilioInterv" value="#{inter.domicilio.nombre}"/>
+                                <p:tooltip for="domicilioInterv" value="#{inter.domicilio.nombre}" position="top" />
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Bienes">
+                        <p:dataTable value="#{procesoActualizacionFichas.fichas}" var="fich" style="width: 100%;" id="dtBienes" 
+                                     scrollable="true" scrollHeight="200" rowIndexVar="rowIndex" resizableColumns="true" 
+                                     emptyMessage="No se encontraron elementos..." >
+                            <p:column headerText="No" width="25">
+                                #{rowIndex+1}
+                            </p:column>
+                            <p:column headerText="No Ficha" width="100">
+                                <p:outputLabel value="#{fich.numFicha}"/>
+                            </p:column>
+                            <p:column headerText="***" width="30">
+                                <p:commandLink actionListener="#{procesoActualizacionFichas.showDlgFichaSelect(fich)}" title="visualizar datos ficha">
+                                    <i class="pi pi-folder-open" style="font-size: 1.5em; margin-right: 5px;color: darkred;"></i>
+                                </p:commandLink>
+                            </p:column>
+                            <p:column headerText="Ubicación bien inmueble" width="2000">
+                                <h:outputText id="descFicha" value="#{fich.descripcionBien}"/>
+                                <p:tooltip for="descFicha" value="#{fich.descripcionBien}" position="top" />
+                            </p:column>
+                            <p:column headerText="Linderos" width="2500" style="text-align: left;" rendered="false">
+                                <h:outputText value="#{fich.linderos}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Observación">
+                        <p:inputTextarea id="textAreaObs" value="#{procesoActualizacionFichas.movimiento.observacion}" readonly="true" 
+                                         autoResize="false" scrollHeight="200" style="width: 100%; height: 150px;"/>
+                    </p:tab>
+                    <p:tab title="Referencias">
+                        <p:dataTable style="text-align: center;width: 100%" scrollable="true" scrollHeight="200" rowIndexVar="indexMovRef" 
+                                     value="#{procesoActualizacionFichas.movimiento.regMovimientoReferenciaCollection}" var="movRef" lazy="false"
+                                     emptyMessage="Movimiento sin referencia(s)." resizableColumns="true" id="dtReferencias">
+                            <p:column headerText="No" width="20">
+                                #{indexMovRef+1}
+                            </p:column>
+                            <p:column headerText="Libro">
+                                <p:outputLabel value="#{movRef.movimientoReferencia.libro.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Acto">
+                                <p:outputLabel value="#{movRef.movimientoReferencia.acto.nombre}"/>
+                            </p:column>
+                            <p:column headerText="Repertorio" width="80">
+                                <p:outputLabel value="#{movRef.movimientoReferencia.numRepertorio}"/>
+                            </p:column>
+                            <p:column headerText="Inscripción" width="80">
+                                <p:outputLabel value="#{movRef.movimientoReferencia.numInscripcion}"/>
+                            </p:column>
+                            <p:column headerText="Fecha Insc." width="80">
+                                <p:outputLabel value="#{movRef.movimientoReferencia.fechaInscripcion}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                </p:outputLabel>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Documentos">
+                        <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" 
+                                     style="font-weight: bolder;text-align: center;margin: 0 auto;">
+                            <p:outputLabel value="Digitalización"/>
+                            <p:commandLink  actionListener="#{procesoActualizacionFichas.integracionYura()}" >
+                                <p:graphicImage value="/resources/icons/documents.png" height="100"/>
+                            </p:commandLink>
+                        </p:panelGrid>
+                    </p:tab>
+                </p:tabView>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Proceso de Control de Calidad" widgetVar="dlgControlCalidad" modal="true" 
+                  width="800" resizable="false" closeOnEscape="false" position="top" closable="false">
+            <h:form id="formControlCalidad">
+                <h:panelGrid columns="3" style="font-weight: bolder;font-size: 20px;margin: 0 auto;">
+                    Nro de Ficha:
+                    <p:spacer width="20" />
+                    <p:outputLabel value="#{procesoActualizacionFichas.fichaSel.numFicha}" 
+                                   style="font-weight: bolder;color: blue;font-size: 20px;"/>
+                </h:panelGrid>
+                <p:tabView id="tabMain">
+                    <p:tab title="Códigos">
+
+                        <h:panelGrid columns="1" style="width: 100%;">
+                            <p:outputLabel value="Ubicación del Bien:" style="font-weight: bolder;"/>
+                            <p:inputTextarea value="#{procesoActualizacionFichas.fichaSel.descripcionBien}" style="width: 100%" 
+                                             readonly="true" autoResize="false"/>
+                            <p:outputLabel value="** Campos obligatorios" style="color: red;font-weight: bolder;"/>
+                        </h:panelGrid>
+
+                        <h:panelGroup id="pnlCodigos">
+                            <h:panelGrid columns="3" style="font-weight: bolder;font-size: 16px;width: 100%;" >
+                                <h:panelGroup>
+                                    <p:outputLabel value="**" style="color: red;"/><p:outputLabel value="Tipo Código:"/><br/>
+                                    <p:selectOneMenu value="#{procesoActualizacionFichas.nuevoCodigo.tipo}" converter="entityConverter" 
+                                                     style="display: block; margin-top: 3px; min-width: 0px !important; width: 150px !important">
+                                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                                        <f:selectItems value="#{procesoActualizacionFichas.tipoCodigosPredio}" var="tcp" 
+                                                       itemLabel="#{tcp.valor}" itemValue="#{tcp}" />
+                                        <p:ajax update="pnlCodigos" event="change"/>
+                                    </p:selectOneMenu>
+                                </h:panelGroup>
+
+                                <h:panelGroup rendered="#{procesoActualizacionFichas.nuevoCodigo.tipo.codename ne 'URBANISTICO'}">
+                                    <p:outputLabel value="**" style="color: red;"/><p:outputLabel value="Código:"/><br/>
+                                    <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.codigo}" style="width: 400px;"/>
+                                </h:panelGroup>
+
+                                <h:panelGroup rendered="#{procesoActualizacionFichas.nuevoCodigo.tipo.codename eq 'URBANISTICO'}">
+                                    <p:outputLabel value="**" style="color: red;"/><p:outputLabel value="Ciudadela:"/><br/>
+                                    <p:selectOneMenu value="#{procesoActualizacionFichas.nuevoCodigo.urb}" converter="entityConverter"
+                                                     filter="true" filterMatchMode="contains" style="width: 400px;">
+                                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                                        <f:selectItems value="#{procesoActualizacionFichas.barrios}" var="bar" 
+                                                       itemLabel="#{bar.nombre}" itemValue="#{tcp}" />
+                                        <p:ajax update="formControlCalidad" event="change"/>
+                                    </p:selectOneMenu>
+                                </h:panelGroup>
+
+                                <h:panelGroup>
+                                    <br/>
+                                    <p:commandButton icon="pi pi-save" value="Guardar Código" update="formControlCalidad" 
+                                                     actionListener="#{procesoActualizacionFichas.guardarCodigoFicha()}"/>
+                                </h:panelGroup>
+                            </h:panelGrid>
+                            <h:panelGroup rendered="#{procesoActualizacionFichas.nuevoCodigo.tipo.codename eq 'URBANISTICO'}">
+                                <h:panelGrid columns="5" style="width: 100%;font-weight: bolder;">
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Etapa:" /><br/>
+                                        <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.etapa}" size="15"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="**" style="color: red;"/><p:outputLabel value="Mz:"/><br/>
+                                        <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.mz}" size="15"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="**" style="color: red;"/><p:outputLabel value="Lote:"/><br/>
+                                        <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.villa}" size="15"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Edificio:" /><br/>
+                                        <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.edificio}" size="15"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Piso:" /><br/>
+                                        <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.piso}" size="15"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Departamento:" /><br/>
+                                        <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.departamento}" size="15"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Oficina:" /><br/>
+                                        <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.oficina}" size="15"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Local:" /><br/>
+                                        <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.local}" size="15"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Parqueo:" /><br/>
+                                        <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.parqueo}" size="15"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Villa - Townhouse:" /><br/>
+                                        <p:inputText value="#{procesoActualizacionFichas.nuevoCodigo.townhouse}" size="15"/>
+                                    </h:panelGroup>
+                                </h:panelGrid>
+                            </h:panelGroup>
+                        </h:panelGroup>
+
+                        <p:dataTable id="dtCodigosFicha" value="#{procesoActualizacionFichas.codigosFicha}" var="pcf" 
+                                     scrollable="true" scrollHeight="400" >
+                            <p:column headerText="Tipo" width="100">
+                                <p:outputLabel value="#{pcf.tipo.valor}"/>
+                            </p:column>
+                            <p:column headerText="Código" >
+                                <p:outputLabel value="#{pcf.codigoCompleto}"/>
+                            </p:column>
+                            <p:column headerText="***" width="80">
+                                <p:commandButton icon="pi pi-pencil" style="background-color: darkgoldenrod;" update="formControlCalidad" 
+                                                 actionListener="#{procesoActualizacionFichas.corregirCodigo(pcf)}" title="Editar"/>
+                                <p:spacer width="5"/>
+                                <p:commandButton icon="pi pi-trash" style="background-color: darkred;" update="dtCodigosFicha" 
+                                                 actionListener="#{procesoActualizacionFichas.inactivarCodigo(pcf)}" title="Eliminar"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Linderos">
+                        <p:outputLabel value="** Campos obligatorios" style="color: red;font-weight: bolder;"/>
+                        <p:fieldset legend="Datos de la Ficha">
+                            <h:panelGrid columns="4" style="width: 100%;font-weight: bolder;" >
+                                <h:panelGroup>
+                                    <p:outputLabel value="**" style="color: red;font-weight: bolder;"/>
+                                    <p:outputLabel value="Área:" /><br/>
+                                    <p:inputNumber value="#{procesoActualizacionFichas.fichaProceso.area}" 
+                                                   modifyValueOnWheel="false" 
+                                                   decimalSeparator="." thousandSeparator="," decimalPlaces="4" />
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="**" style="color: red;font-weight: bolder;"/>
+                                    <p:outputLabel value="Unidad de Medida:" /><br/>
+                                    <p:selectOneMenu value="#{procesoActualizacionFichas.fichaProceso.unidadMedida}" 
+                                                     converter="entityConverter">  
+                                        <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                                        <f:selectItems value="#{procesoActualizacionFichas.unidades}" var="uni" 
+                                                       itemLabel="#{uni.valor}" itemValue="#{uni}"/>
+                                    </p:selectOneMenu>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Alícuota:" /><br/>
+                                    <p:inputNumber value="#{procesoActualizacionFichas.fichaProceso.alicuota}" 
+                                                   modifyValueOnWheel="false" 
+                                                   maxValue="100" decimalSeparator="." thousandSeparator="," decimalPlaces="2" />
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <br/>
+                                    <p:commandButton value="Actualizar" icon="pi pi-save" style="background-color: darkgoldenrod;" 
+                                                     actionListener="#{procesoActualizacionFichas.updateDatosFicha()}" />
+                                </h:panelGroup>
+                            </h:panelGrid>
+                        </p:fieldset>
+
+                        <h:panelGrid id="pnlLindero" columns="3" style="font-weight: bolder;width: 100%;">
+                            <h:panelGroup>
+                                <p:outputLabel value="**" style="color: red;font-weight: bolder;"/>Tipo Lindero:<br/>
+                                <p:selectOneMenu value="#{procesoActualizacionFichas.lindero.tipo}" converter="entityConverter" 
+                                                 style="width: 150px;">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                                    <f:selectItems value="#{procesoActualizacionFichas.tiposLinderos}" var="tl" 
+                                                   itemLabel="#{tl.descripcion}" itemValue="#{tl}" />
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="**" style="color: red;font-weight: bolder;"/>Lindero:<br/>
+                                <p:inputText value="#{procesoActualizacionFichas.lindero.linderante}" size="50"/>
+                            </h:panelGroup>
+                            <h:panelGroup rendered="false">
+                                Longitud:<br/>
+                                <p:inputNumber value="#{procesoActualizacionFichas.lindero.longitud}" 
+                                               decimalSeparator="." thousandSeparator="," decimalPlaces="2" /> 
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <br/>
+                                <p:commandButton value="Guardar" icon="pi pi-save" update="pnlLindero,dtLinderosControl" 
+                                                 actionListener="#{procesoActualizacionFichas.updateLindero()}" />
+                            </h:panelGroup>
+                        </h:panelGrid>
+
+                        <p:dataTable id="dtLinderosControl" value="#{procesoActualizacionFichas.linderos}" 
+                                     scrollable="true" scrollHeight="180" lazy="false" var="pflin" 
+                                     rowIndexVar="rowIndex" reflow="true" >
+                            <p:column headerText="Tipo" width="40">
+                                <p:outputLabel value="#{pflin.tipo.descripcion}" />
+                            </p:column>
+                            <p:column headerText="Lindero">
+                                <p:outputLabel value="#{pflin.linderante}" />
+                            </p:column>
+                            <p:column headerText="Longitud" width="100" rendered="false">
+                                <p:outputLabel value="CON: #{pflin.longitud} MTS." rendered="#{pflin.longitud gt 0}"/>
+                            </p:column>
+                            <p:column headerText="***" width="40">
+                                <p:commandButton icon="pi pi-pencil" title="Editar" update="formControlCalidad:tabMain:pnlLindero" 
+                                                 actionListener="#{procesoActualizacionFichas.selectLindero(pflin)}"/>
+                            </p:column>
+                        </p:dataTable>
+
+                    </p:tab>
+                </p:tabView>
+
+                <h:panelGrid columns="1" style="margin: 0 auto;">
+                    <!--<p:commandButton value="Regresar a Codificación" icon="pi pi-ban" 
+                                     actionListener="# {procesoActualizacionFichas.regresarProcesoPendiente()}"
+                                     style="background-color: darkred;" />
+                    <p:spacer width="20"/>-->
+                    <p:commandButton value="Cerrar Ventana" icon="pi pi-times-circle" 
+                                     actionListener="#{procesoActualizacionFichas.actualizarLazy()}"/>
+                    <!--<p:spacer width="20"/>
+                    <p:commandButton value="Marcar como Aprobado" icon="pi pi-flag-fill" 
+                                     actionListener="# {procesoActualizacionFichas.pasarProcesoAprobado()}"
+                                     style="background-color: darkgoldenrod;" />-->
+                </h:panelGrid>
+
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Visualizar Proceso" widgetVar="dlgVisualizarProceso" modal="true" 
+                  width="800" resizable="false" position="top" >
+            <h:form id="formVisualizarProceso">
+                <h:panelGrid columns="3" style="font-weight: bolder;font-size: 20px;margin: 0 auto;">
+                    Nro de Ficha:
+                    <p:spacer width="20" />
+                    <p:outputLabel value="#{procesoActualizacionFichas.fichaSel.numFicha}" 
+                                   style="font-weight: bolder;color: blue;font-size: 20px;"/>
+                </h:panelGrid>
+                <p:tabView id="tabMain">
+                    <p:tab title="Códigos">
+
+                        <h:panelGrid columns="1" style="width: 100%;">
+                            <p:outputLabel value="Ubicación del Bien:" style="font-weight: bolder;"/>
+                            <p:inputTextarea value="#{procesoActualizacionFichas.fichaSel.descripcionBien}" style="width: 100%" 
+                                             readonly="true" autoResize="false"/>
+                        </h:panelGrid>
+
+                        <p:dataTable id="dtCodigosFicha" value="#{procesoActualizacionFichas.codigosFicha}" var="pcf" 
+                                     scrollable="true" scrollHeight="400" >
+                            <p:column headerText="Tipo" width="100">
+                                <p:outputLabel value="#{pcf.tipo.valor}"/>
+                            </p:column>
+                            <p:column headerText="Código" >
+                                <p:outputLabel value="#{pcf.codigoCompleto}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Linderos">
+
+                        <p:fieldset legend="Datos de la Ficha">
+                            <h:panelGrid columns="3" style="width: 100%;font-weight: bolder;" >
+                                <h:panelGroup>
+                                    <p:outputLabel value="Área:" /><br/>
+                                    <p:inputNumber value="#{procesoActualizacionFichas.fichaProceso.area}" 
+                                                   modifyValueOnWheel="false" readonly="true"
+                                                   decimalSeparator="." thousandSeparator="," decimalPlaces="4" />
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Unidad de Medida:" /><br/>
+                                    <p:selectOneMenu value="#{procesoActualizacionFichas.fichaProceso.unidadMedida}" 
+                                                     converter="entityConverter" disabled="true">  
+                                        <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                                        <f:selectItems value="#{procesoActualizacionFichas.unidades}" var="uni" 
+                                                       itemLabel="#{uni.valor}" itemValue="#{uni}"/>
+                                    </p:selectOneMenu>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Alícuota:" /><br/>
+                                    <p:inputNumber value="#{procesoActualizacionFichas.fichaProceso.alicuota}" 
+                                                   modifyValueOnWheel="false" readonly="true"
+                                                   maxValue="100" decimalSeparator="." thousandSeparator="," decimalPlaces="2" />
+                                </h:panelGroup>
+                            </h:panelGrid>
+                        </p:fieldset>
+
+                        <p:dataTable id="dtLinderosControl" value="#{procesoActualizacionFichas.linderos}" 
+                                     scrollable="true" scrollHeight="180" lazy="false" var="pflin" 
+                                     rowIndexVar="rowIndex" reflow="true" >
+                            <p:column headerText="Tipo" width="40">
+                                <p:outputLabel value="#{pflin.tipo.descripcion}" />
+                            </p:column>
+                            <p:column headerText="Lindero">
+                                <p:outputLabel value="#{pflin.linderante}" />
+                            </p:column>
+                            <p:column headerText="Longitud" width="100">
+                                <p:outputLabel value="CON: #{pflin.longitud} MTS." rendered="#{pflin.longitud gt 0}"/>
+                            </p:column>
+                        </p:dataTable>
+
+                    </p:tab>
+                </p:tabView>
+
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgSupervisor" modal="true" resizable="false" width="600" closeOnEscape="false" 
+                  showHeader="false" closable="false">
+            <center>
+                <p:outputLabel value="CODIFICAR FICHA" style="font-weight: bolder;font-size: 20px;"
+                               rendered="#{procesoActualizacionFichas.rol_codificador}"/>
+                <p:outputLabel value="CONTROL DE CALIDAD" style="font-weight: bolder;font-size: 20px;"
+                               rendered="#{procesoActualizacionFichas.rol_control_calidad}"/>
+                <p:outputLabel value="SUPERVISAR TRÁMITE" style="font-weight: bolder;font-size: 20px;"
+                               rendered="#{procesoActualizacionFichas.rol_supervisor}"/>
+            </center>
+            <h:form id="formSupervisor">
+                <p:panelGrid styleClass="ui-panelgrid-blank form-group form-elements" columns="1" 
+                             style="font-weight: bolder;width: 100%;">
+                    Ingresar Observación:
+                    <p:inputTextarea style="width: 100%" value="#{procesoActualizacionFichas.comentarioIngresado}"/>
+                </p:panelGrid>
+
+                <h:panelGrid columns="3" style="margin: 0 auto;" rendered="#{procesoActualizacionFichas.rol_codificador}">
+                    <p:commandButton value="Cerrar Ventana" icon="pi pi-times-circle" 
+                                     oncomplete="PF('dlgSupervisor').hide()"/>
+                    <p:spacer width="20"/>
+                    <p:commandButton value="Enviar a Control" icon="pi pi-bolt" 
+                                     style="background-color: darkolivegreen;"
+                                     actionListener="#{procesoActualizacionFichas.pasarTareaControl()}"/>
+                </h:panelGrid>
+
+                <h:panelGrid columns="5" style="margin: 0 auto;" rendered="#{procesoActualizacionFichas.rol_control_calidad}">
+                    <p:commandButton value="Regresar a Codificación" icon="pi pi-ban" 
+                                     actionListener="#{procesoActualizacionFichas.regresarProcesoPendiente()}"
+                                     style="background-color: darkred;" />
+                    <p:spacer width="20"/>
+                    <p:commandButton value="Cerrar Ventana" icon="pi pi-times-circle" 
+                                     actionListener="#{procesoActualizacionFichas.actualizarLazy()}"/>
+                    <p:spacer width="20"/>
+                    <p:commandButton value="Marcar como Aprobado" icon="pi pi-flag-fill" 
+                                     actionListener="#{procesoActualizacionFichas.pasarProcesoAprobado()}"
+                                     style="background-color: darkgoldenrod;" />
+                </h:panelGrid>
+
+                <h:panelGrid columns="5" style="margin: 0 auto;" rendered="#{procesoActualizacionFichas.rol_supervisor}">
+                    <p:commandButton value="Regresar a Control" icon="pi pi-ban" 
+                                     actionListener="#{procesoActualizacionFichas.regresarControlCalidad()}"
+                                     style="background-color: darkred;" />
+                    <p:spacer width="20"/>
+                    <p:commandButton value="Cerrar Ventana" icon="pi pi-times-circle" 
+                                     oncomplete="PF('dlgSupervisor').hide()"/>
+                    <p:spacer width="20"/>
+                    <p:commandButton value="Marcar como Revisado" icon="pi pi-flag" 
+                                     style="background-color: darkgoldenrod;"
+                                     actionListener="#{procesoActualizacionFichas.cambiarEstadoRevisado()}"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Observaciones del Proceso" widgetVar="dlgObservaciones" resizable="false"
+                  closeOnEscape="true" modal="true" width="700" position="top">
+            <h:form id="formObservaciones">
+                <h:panelGrid columns="1" style="margin: 0 auto;">
+                    <p:outputLabel value="Nro de Ficha: #{procesoActualizacionFichas.fichaSel.numFicha}" 
+                                   style="font-weight: bolder;font-size: 16px;"/>
+                </h:panelGrid>
+                <p:dataTable value="#{procesoActualizacionFichas.observaciones}" var="obs" scrollable="true" 
+                             emptyMessage="Sin comentarios del proceso." scrollHeight="350" >
+                    <p:column headerText="Observacion">
+                        <p:outputLabel value="#{obs.observacion}"/>
+                    </p:column>
+                    <p:column headerText="Usuario" width="100">
+                        <p:outputLabel value="#{obs.usuario}"/>
+                    </p:column>
+                    <p:column headerText="Fecha" width="100">
+                        <p:outputLabel value="#{obs.fecha}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

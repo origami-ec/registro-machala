@@ -1,0 +1,147 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:co="http://xmlns.jcp.org/jsf/composite/co">
+    <ui:define name="title">Digitalizar Libros</ui:define>
+    <ui:define name="content">
+        <h:form id="formFolios">
+            <center><h2 style="font-weight: bolder;">DIGITALIZAR LIBROS</h2></center>
+
+            <h:panelGrid columns="4" style="margin: 0 auto;">
+                <h:panelGroup>
+                    <p:outputLabel value="Libro:" style="font-weight: bolder;"/><br/>
+                    <p:selectOneMenu value="#{revisarFolios.libro}" converter="entityConverter" filter="true">
+                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />  
+                        <f:selectItems value="#{revisarFolios.regLibroList}" var="libro" itemLabel="#{libro.nombre}" itemValue="#{libro}"/>  
+                    </p:selectOneMenu>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:outputLabel value="Fecha Desde:" style="font-weight: bolder;"/><br/>
+                    <p:calendar value="#{revisarFolios.inscripcionDesde}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy" 
+                                mask="true" navigator="true"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:outputLabel value="Fecha Hasta:" style="font-weight: bolder;"/><br/>
+                    <p:calendar value="#{revisarFolios.inscripcionHasta}" pattern="dd/MM/yyyy" placeholder="dd/MM/yyyy" 
+                                mask="true" navigator="true"/>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <br/><p:commandButton value="Consultar" actionListener="#{revisarFolios.consultarFolios()}" 
+                                          icon="pi pi-search" update="formFolios"/>
+                </h:panelGroup>
+
+            </h:panelGrid>
+
+            <p:dataTable id="dtFolios" reflow="true" paginator="true" lazy="true" rows="30" rowsPerPageTemplate="30,50,100" 
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         value="#{revisarFolios.foliosLazy}" var="folio" emptyMessage="No se encontró ningún Item." rowIndexVar="index"
+                         filterEvent="enter" >
+                <p:column headerText="No" width="25">
+                    #{index+1}
+                </p:column>
+                <p:column headerText="Libro" >
+                    <h:outputText  value="#{folio.libro.nombre}" style="text-transform: uppercase;"/>
+                </p:column>
+                <p:column headerText="Acto" >
+                    <h:outputText  value="#{folio.acto.nombre}" style="text-transform: uppercase;"/>
+                </p:column>
+                <p:column headerText="Nro de Repertorio" width="80">
+                    <h:outputText value="#{folio.numRepertorio}"/>
+                </p:column>
+                <p:column headerText="Nro de Inscripción" width="80">
+                    <h:outputText value="#{folio.numInscripcion}"/>
+                </p:column>
+                <p:column headerText="Fecha de Inscripción" width="80">
+                    <h:outputText value="#{folio.fechaInscripcion}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Nro de Tomo" width="60">
+                    <h:outputText value="#{folio.numTomo}"/>
+                </p:column>
+                <p:column headerText="Folio Inicio" width="60">
+                    <h:outputText value="#{folio.folioInicio}"/>
+                </p:column>
+                <p:column headerText="Folio Fin" width="60">
+                    <h:outputText value="#{folio.folioFin}"/>
+                </p:column>
+                <p:column headerText="Estado" width="80">
+                    <h:outputText value="DIGITALIZADO" rendered="#{folio.digitalizacion ne null}" 
+                                  style="background-color: greenyellow;font-weight: bolder;"/>
+                    <h:outputText value="SIN DOCUMENTO" rendered="#{folio.digitalizacion eq null}" 
+                                  style="background-color: darksalmon;font-weight: bolder;"/>
+                </p:column>
+                <p:column headerText="Opciones" width="80">
+                    <p:commandButton icon="pi pi-folder" title="Visualizae Documentos" style="background-color: darkolivegreen;"
+                                     actionListener="#{revisarFolios.showDlgvisualizarDoc(folio)}" />
+                    <p:spacer width="10"/>
+                    <p:commandButton icon="pi pi-upload" title="Subir Documentos" style="background-color: darkred;"
+                                     actionListener="#{revisarFolios.showDlgCargarDoc(folio)}" />
+                </p:column>
+            </p:dataTable>
+
+        </h:form>
+
+        <p:dialog widgetVar="dlgDocs" header="Cargar Documento" modal="true" width="800" height="300" 
+                  resizable="false" position="center" closable="false" closeOnEscape="false">
+            <h:form id="formDocs">
+                <h:panelGrid style="margin: 0 auto;width: 100%;" columns="1">
+                    <p:outputLabel value="ESPERE A QUE LA VENTANA SE CIERRE!!!" 
+                                   style="font-weight: bolder;color: #0033FF;font-size: 16px;"/>
+                    <p:outputLabel value="Nro. de Inscripción: #{revisarFolios.movimiento.numInscripcion}" 
+                                   style="font-weight: bolder;font-size: 16px;"/>
+                    <p:fileUpload listener="#{revisarFolios.handleUpload}" 
+                                  mode="advanced" 
+                                  fileLimit="1" 
+                                  dragDropSupport="false" 
+                                  sizeLimit="10000000000" 
+                                  label="Seleccionar" 
+                                  uploadLabel="Subir" 
+                                  style="width: auto;" 
+                                  cancelLabel="Cancelar" 
+                                  allowTypes="/(\.|\/)(pdf)$/" />
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="DOCUMENTOS DIGITALIZADOS" widgetVar="dlgVerInfo" resizable="false" 
+                  closeOnEscape="true" modal="true" width="700" height="500">
+            <h:form id="formInfo">
+                <h:panelGrid columns="2">
+                    <p:outputLabel value="Nro. de Inscripción:" style="font-weight: bold; font-size: 18px;color: #d2322d"/>
+                    <p:outputLabel value="#{revisarFolios.movimiento.numInscripcion}" style="font-weight: bold; font-size: 18px;"/>
+                </h:panelGrid>
+                <p:dataTable value="#{revisarFolios.documentos}" style="text-align: center;" scrollable="true" 
+                             emptyMessage="Sin documentos digitalizados." scrollHeight="300" var="doc1" paginator="true" reflow="true" 
+                             rows="5" paginatorAlwaysVisible="false" >
+                    <p:column headerText="Transaccion">
+                        <p:outputLabel value="#{doc1.oidFile}"/>
+                    </p:column>
+                    <p:column headerText="Fecha" width="120">
+                        <p:outputLabel value="#{doc1.fechaCreacion}"><f:convertDateTime pattern="dd-MM-yyyy HH:mm"/></p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Usuario">
+                        <p:outputLabel value="#{doc1.usuario}"/>
+                    </p:column>
+                    <p:column headerText="Estado">
+                        <p:outputLabel value="ACTIVO" rendered="#{doc1.estado}" 
+                                       style="background-color: greenyellow;font-weight: bolder;"/>
+                        <p:outputLabel value="INACTIVO" rendered="#{!doc1.estado}" 
+                                       style="background-color: darksalmon;font-weight: bolder;"/>
+                    </p:column>
+                    <p:column headerText="Descargar" width="80">
+                        <p:commandButton icon="pi pi-download" title="Visualizar" style="background-color: darkolivegreen;"
+                                         actionListener="#{revisarFolios.downLoadDoc(doc1.oidFile)}" />
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

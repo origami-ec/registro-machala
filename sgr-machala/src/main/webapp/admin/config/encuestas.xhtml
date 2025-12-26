@@ -1,0 +1,280 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Balcón de Servicios al Ciudadano</ui:define>
+    <ui:define name="content">
+        <center><h2>CONFIGURACIÓN DE FORMULARIOS - BALCÓN DE SERVICIOS</h2></center>
+        <h:form>
+            <p:accordionPanel>
+                <p:tab title="FORMULARIOS REGISTRADOS" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <p:panelGrid style="margin: 0 auto;width: 700px;">
+                        <p:row>
+                            <p:column width="50">
+                                <p:outputLabel value="Código" style="font-size: 16px;font-weight: bolder;color: blue;"/>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="Nombre del Formulario" style="font-size: 16px;font-weight: bolder;color: blue;"/>
+                            </p:column>
+                            <p:column width="50">
+                                <p:outputLabel value="Acciones" style="font-size: 16px;font-weight: bolder;color: blue;"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column width="50">
+                                <p:outputLabel value="1.-" style="font-size: 14px;font-weight: bolder;"/>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="Formulario para la encuesta de satistacción del servicio." 
+                                               style="font-size: 14px;font-weight: bolder;"/>
+                            </p:column>
+                            <p:column width="50">
+                                <p:commandButton icon="pi pi-trash" style="background-color: orangered;"/>
+                                <p:spacer width="20"/>
+                                <p:commandButton icon="pi pi-pencil" style="background-color: darkkhaki;"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column width="50">
+                                <p:outputLabel value="2.-" style="font-size: 14px;font-weight: bolder;"/>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="Formulario para la encuesta del producto ofrecido." 
+                                               style="font-size: 14px;font-weight: bolder;"/>
+                            </p:column>
+                            <p:column width="50">
+                                <p:commandButton icon="pi pi-trash" style="background-color: orangered;"/>
+                                <p:spacer width="20"/>
+                                <p:commandButton icon="pi pi-pencil" style="background-color: darkkhaki;"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column width="50">
+                                <p:outputLabel value="3.-" style="font-size: 14px;font-weight: bolder;"/>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="Formulario para las quejas, reclamos y sugerencias de ciudadanos." 
+                                               style="font-size: 14px;font-weight: bolder;"/>
+                            </p:column>
+                            <p:column width="50">
+                                <p:commandButton icon="pi pi-trash" style="background-color: orangered;"/>
+                                <p:spacer width="20"/>
+                                <p:commandButton icon="pi pi-pencil" style="background-color: darkkhaki;"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column width="50">
+                                <p:outputLabel value="4.-" style="font-size: 14px;font-weight: bolder;"/>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="Formulario de Denuncias." 
+                                               style="font-size: 14px;font-weight: bolder;"/>
+                            </p:column>
+                            <p:column width="50">
+                                <p:commandButton icon="pi pi-trash" style="background-color: orangered;"/>
+                                <p:spacer width="20"/>
+                                <p:commandButton icon="pi pi-pencil" style="background-color: darkkhaki;"/>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:tab>
+                <p:tab title="PREGUNTAS DE FORMULARIO" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <h:panelGrid columns="5" style="margin: 0 auto;">
+                        <p:outputLabel value="Formulario:" style="font-size: 16px;font-weight: bolder;"/>
+                        <p:spacer width="20"/>
+                        <p:selectOneMenu>
+                            <f:selectItem itemLabel="Formulario para la encuesta de satistacción del servicio." />
+                        </p:selectOneMenu>
+                        <p:spacer width="20"/>
+                        <p:commandButton value="Nueva Pregunta" icon="pi pi-plus"/>
+                    </h:panelGrid>
+                    <p:panelGrid style="margin: 0 auto;width: 700px;">
+                        <p:row>
+                            <p:column width="50">
+                                <p:outputLabel value="Secuencia" style="font-size: 16px;font-weight: bolder;color: blue;"/>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="Pregunta" style="font-size: 16px;font-weight: bolder;color: blue;"/>
+                            </p:column>
+                            <p:column width="50">
+                                <p:outputLabel value="Acciones" style="font-size: 16px;font-weight: bolder;color: blue;"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column width="50">
+                                <p:outputLabel value="1.-" style="font-size: 14px;font-weight: bolder;"/>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="¿Se encuentra satisfecho con nuestra atención al cliente?" 
+                                               style="font-size: 14px;font-weight: bolder;"/>
+                            </p:column>
+                            <p:column width="50">
+                                <p:commandButton icon="pi pi-trash" style="background-color: orangered;"/>
+                                <p:spacer width="20"/>
+                                <p:commandButton icon="pi pi-pencil" style="background-color: darkkhaki;"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column width="50">
+                                <p:outputLabel value="2.-" style="font-size: 14px;font-weight: bolder;"/>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="¿Recomendaría nuestra marca a un amigo o familiar?" 
+                                               style="font-size: 14px;font-weight: bolder;"/>
+                            </p:column>
+                            <p:column width="50">
+                                <p:commandButton icon="pi pi-trash" style="background-color: orangered;"/>
+                                <p:spacer width="20"/>
+                                <p:commandButton icon="pi pi-pencil" style="background-color: darkkhaki;"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column width="50">
+                                <p:outputLabel value="3.-" style="font-size: 14px;font-weight: bolder;"/>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="¿El uso de nuestra página web es fácil? " 
+                                               style="font-size: 14px;font-weight: bolder;"/>
+                            </p:column>
+                            <p:column width="50">
+                                <p:commandButton icon="pi pi-trash" style="background-color: orangered;"/>
+                                <p:spacer width="20"/>
+                                <p:commandButton icon="pi pi-pencil" style="background-color: darkkhaki;"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column width="50">
+                                <p:outputLabel value="4.-" style="font-size: 14px;font-weight: bolder;"/>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="¿La respuesta brindada estuvo dentro del tiempo estimado de entrega? " 
+                                               style="font-size: 14px;font-weight: bolder;"/>
+                            </p:column>
+                            <p:column width="50">
+                                <p:commandButton icon="pi pi-trash" style="background-color: orangered;"/>
+                                <p:spacer width="20"/>
+                                <p:commandButton icon="pi pi-pencil" style="background-color: darkkhaki;"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column width="50">
+                                <p:outputLabel value="5.-" style="font-size: 14px;font-weight: bolder;"/>
+                            </p:column>
+                            <p:column>
+                                <p:outputLabel value="¿Nuestra atención en línea es igual de eficiente que en las sucursales? " 
+                                               style="font-size: 14px;font-weight: bolder;"/>
+                            </p:column>
+                            <p:column width="50">
+                                <p:commandButton icon="pi pi-trash" style="background-color: orangered;"/>
+                                <p:spacer width="20"/>
+                                <p:commandButton icon="pi pi-pencil" style="background-color: darkkhaki;"/>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                </p:tab>
+                <p:tab title="RESPUESTAS DE FORMULARIO" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <center>
+                        <p:outputLabel value="ESCALA DE SATISFACCIÓN" style="font-size: 20px; font-weight: bolder;color: blue;"/>
+                    </center>
+
+                    <p:panelGrid columns="5" styleClass="ui-panelgrid-blank" style="margin: 0 auto;">
+
+                        <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                            <p:outputLabel value="5. Totalmente Satisfecho" style="font-size: 16px; font-weight: bolder;"/>
+                            <p:commandLink>
+                                <p:graphicImage value="/resources/encuesta/muySatisfecho.png" height="100" />
+                            </p:commandLink>
+                        </p:panelGrid>
+
+                        <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                            <p:outputLabel value="4. Satisfecho" style="font-size: 16px; font-weight: bolder;"/>
+                            <p:commandLink>
+                                <p:graphicImage value="/resources/encuesta/bastanteSatisfecho.png" height="100" />
+                            </p:commandLink>
+                        </p:panelGrid>
+
+                        <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                            <p:outputLabel value="3. Algo Satisfecho" style="font-size: 16px; font-weight: bolder;"/>
+                            <p:commandLink>
+                                <p:graphicImage value="/resources/encuesta/satisfecho.png" height="100" />
+                            </p:commandLink>
+                        </p:panelGrid>
+
+                        <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                            <p:outputLabel value="2. Insatisfecho" style="font-size: 16px; font-weight: bolder;"/>
+                            <p:commandLink>
+                                <p:graphicImage value="/resources/encuesta/pocoSatisfecho.png" height="100" />
+                            </p:commandLink>
+                        </p:panelGrid>
+
+                        <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                            <p:outputLabel value="1. Totalmente Insatisfecho" style="font-size: 16px; font-weight: bolder;"/>
+                            <p:commandLink>
+                                <p:graphicImage value="/resources/encuesta/muyInsatisfecho.png" height="100" />
+                            </p:commandLink>
+                        </p:panelGrid>
+
+                    </p:panelGrid>
+
+                    <center>
+                        <p:outputLabel value="ESCALA DE VALOR" rendered="false"
+                                       style="font-size: 20px; font-weight: bolder;color: blue;"/>
+                    </center>
+                    <p:panelGrid columns="5" styleClass="ui-panelgrid-blank" style="margin: 0 auto;" rendered="false">
+
+                        <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                            <p:outputLabel value="5. Excelente" style="font-size: 16px; font-weight: bolder;"/>
+                            <p:commandLink>
+                                <p:graphicImage value="/resources/encuesta/muySatisfecho.png" height="100" />
+                            </p:commandLink>
+                        </p:panelGrid>
+
+                        <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                            <p:outputLabel value="4. Bueno" style="font-size: 16px; font-weight: bolder;"/>
+                            <p:commandLink>
+                                <p:graphicImage value="/resources/encuesta/bastanteSatisfecho.png" height="100" />
+                            </p:commandLink>
+                        </p:panelGrid>
+
+                        <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                            <p:outputLabel value="3. Regular" style="font-size: 16px; font-weight: bolder;"/>
+                            <p:commandLink>
+                                <p:graphicImage value="/resources/encuesta/satisfecho.png" height="100" />
+                            </p:commandLink>
+                        </p:panelGrid>
+
+                        <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                            <p:outputLabel value="2. Malo" style="font-size: 16px; font-weight: bolder;"/>
+                            <p:commandLink>
+                                <p:graphicImage value="/resources/encuesta/pocoSatisfecho.png" height="100" />
+                            </p:commandLink>
+                        </p:panelGrid>
+
+                        <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" style="text-align: center;margin: 0 auto;">
+                            <p:outputLabel value="1. Pésimo" style="font-size: 16px; font-weight: bolder;"/>
+                            <p:commandLink>
+                                <p:graphicImage value="/resources/encuesta/muyInsatisfecho.png" height="100" />
+                            </p:commandLink>
+                        </p:panelGrid>
+
+                    </p:panelGrid>
+                </p:tab>
+                <p:tab title="REPORTES DE CALIFICACIÓN DE ATENCIÓN AL CLIENTE" 
+                       titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <h:panelGrid columns="1" style="margin: 0 auto;text-align: center;" >
+                        <p:outputLabel value="SELECCIONA EL TIPO DE REPORTE"
+                                       style="font-size: 20px; font-weight: bolder;color: blue;"/>
+                        <p:selectOneRadio>
+                            <f:selectItem itemLabel="Reporte de estado de quejas y reclamos" />
+                            <f:selectItem itemLabel="Reporte de denuncias ciudadanas" />
+                        </p:selectOneRadio>
+                        <p:commandButton value="Generar Reporte" icon="pi pi-file-pdf" />
+                    </h:panelGrid>
+                </p:tab>
+            </p:accordionPanel>
+        </h:form>
+    </ui:define>
+</ui:composition>

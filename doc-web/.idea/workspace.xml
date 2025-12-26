@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="a7f725be-088d-494a-a008-345dcad0ad41" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-eureka/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-eureka/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-eureka/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-eureka/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/model/FirmaDocumento.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/base/RubricaCertificate.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/digercic/CertificadoDigercic.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/digercic/CertificadoDigercicFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/digercic/CertificadoPersonaNaturalDigercic.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/digercic/DigercicCaCert.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/digercic/DigercicSubCaCert20212031.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/eclipsoft/CertificadoEclipsoft.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/eclipsoft/CertificadoEclipsoftDataFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/eclipsoft/CertificadoMiembroEmpresaEclipsoft.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/eclipsoft/CertificadoPersonaJuridicaPrivadaEclipsoft.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/eclipsoft/CertificadoPersonalNaturalEclipsoft.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/eclipsoft/CertificadoRepresentanteLegalEclipsoft.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/uanataca/CertificadoEmpresaUanataca.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/uanataca/CertificadoMiembroEmpresaUanataca.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/uanataca/CertificadoPersonaJuridicaPrivadaUanataca.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/uanataca/CertificadoPersonaNaturalUanataca.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/uanataca/CertificadoRepresentanteLegalUanataca.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/uanataca/CertificadoUanataca.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/uanataca/CertificadoUanatacaDataFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/uanataca/UanatacaCaCert.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/uanataca/UanatacaSubCaCert0120162029.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/uanataca/UanatacaSubCaCert0220162029.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/Bit4IdGenericAppleKeyStoreProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/Bit4idGenericLinuxKeyStoreProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/LinuxPcscKeyStoreProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/PcscAppleKeyStoreProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/UKCAppleKeyStoreProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/UKCGenericAppleKeyStoreProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/UKCGenericWindowsDllKeyStoreProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/UKCLinuxKeyStoreProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/WindowsPcscKeyStoreProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/Main.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/Json.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-kafka/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-kafka/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-kafka/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-kafka/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-mail/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-mail/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-mail/.idea/encodings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-mail/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-mail/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../ec-gob-bcbg-mail/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../pdf-text/.idea/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../pdf-text/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../pdf-text/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../pdf-text/.idea/rGraphicsSettings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../pdf-text/.idea/rSettings.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../pdf-text/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../pdf-text/main.R" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../pdf-text/pdf-text.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/resources/FirmaElectronicaResource.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/resources/FirmaElectronicaResource.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/CertEcUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/CertEcUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/CertUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/CertUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/CrlUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/CrlUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/CertificadoFuncionarioPublico.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/CertificadoFuncionarioPublico.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/CertificadoMiembroEmpresa.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/CertificadoMiembroEmpresa.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/CertificadoPersonaJuridica.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/CertificadoPersonaJuridica.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/CertificadoPersonaNatural.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/CertificadoPersonaNatural.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/CertificadoRepresentanteLegal.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/CertificadoRepresentanteLegal.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/CertificadoSelladoTiempo.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/CertificadoSelladoTiempo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/anfac/CertificadoAnfAc18332.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/anfac/CertificadoAnfAc18332.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/anfac/CertificadoAnfAc37442.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/anfac/CertificadoAnfAc37442.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/anfac/CertificadoAnfAc37442Factory.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/anfac/CertificadoAnfAc37442Factory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/bce/BceCaCert.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/bce/BceCaCert.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/bce/BceSubCaCert20112021.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/bce/BceSubCaCert20112021.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/bce/CertificadoBancoCentral.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/bce/CertificadoBancoCentral.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/bce/CertificadoBancoCentralFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/bce/CertificadoBancoCentralFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/bce/CertificadoFuncionarioPublicoBancoCentral.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/bce/CertificadoFuncionarioPublicoBancoCentral.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/bce/CertificadoPersonaJuridicaBancoCentral.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/bce/CertificadoPersonaJuridicaBancoCentral.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/bce/CertificadoPersonaNaturalBancoCentral.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/bce/CertificadoPersonaNaturalBancoCentral.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/cj/CertificadoConsejoJudicatura.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/cj/CertificadoConsejoJudicatura.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/cj/CertificadoConsejoJudicaturaDataFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/cj/CertificadoConsejoJudicaturaDataFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/securitydata/CertificadoFuncionarioPublicoSecurityData.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/securitydata/CertificadoFuncionarioPublicoSecurityData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/securitydata/CertificadoMiembroEmpresaSecurityData.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/securitydata/CertificadoMiembroEmpresaSecurityData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/securitydata/CertificadoPersonaJuridicaSecurityData.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/securitydata/CertificadoPersonaJuridicaSecurityData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/securitydata/CertificadoPersonaNaturalSecurityData.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/securitydata/CertificadoPersonaNaturalSecurityData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/securitydata/CertificadoPruebaSecurityData.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/securitydata/CertificadoPruebaSecurityData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/securitydata/CertificadoRepresentanteLegalSecurityData.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/securitydata/CertificadoRepresentanteLegalSecurityData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/securitydata/CertificadoSecurityData.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/securitydata/CertificadoSecurityData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/securitydata/CertificadoSecurityDataFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/securitydata/CertificadoSecurityDataFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/securitydata/SecurityDataCaCert.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/securitydata/SecurityDataCaCert.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/securitydata/SecurityDataSubCaCert20112026.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/ec/securitydata/SecurityDataSubCaCert20112026.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/to/Certificado.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/to/Certificado.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/to/DatosUsuario.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/to/DatosUsuario.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/to/Documento.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/certificate/to/Documento.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/core/PrivateKeyAndCertificateChain.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/core/PrivateKeyAndCertificateChain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/core/Util.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/core/Util.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/crl/ServicioCRL.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/crl/ServicioCRL.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/exceptions/AliasesNotFoundException.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/exceptions/AliasesNotFoundException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/exceptions/DatoCertificadoNoIncluidoException.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/exceptions/DatoCertificadoNoIncluidoException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/exceptions/InvalidFormatException.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/exceptions/InvalidFormatException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/exceptions/OcspTimeoutException.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/exceptions/OcspTimeoutException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/exceptions/OcspValidationException.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/exceptions/OcspValidationException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/exceptions/RubricaException.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/exceptions/RubricaException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/exceptions/SignatureVerificationException.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/exceptions/SignatureVerificationException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/Alias.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/Alias.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/AppleKeyStoreProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/AppleKeyStoreProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/EPass3003AppleKeyStoreProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/EPass3003AppleKeyStoreProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/EPass3003LinuxKeyStoreProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/EPass3003LinuxKeyStoreProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/FileKeyStoreProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/FileKeyStoreProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/KeyStoreProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/KeyStoreProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/KeyStoreProviderFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/KeyStoreProviderFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/KeyStoreUtilities.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/KeyStoreUtilities.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/PKCS11KeyStoreProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/PKCS11KeyStoreProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/SafenetAppleKeyStoreProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/SafenetAppleKeyStoreProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/SafenetIKey2032LinuxKeyStoreProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/SafenetIKey2032LinuxKeyStoreProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/SafenetLinuxKeyStoreProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/SafenetLinuxKeyStoreProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/WindowsKeyStoreProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/keystore/WindowsKeyStoreProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/ocsp/ValidadorOCSP.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/ocsp/ValidadorOCSP.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/ocsp/ValidateCertUseOCSP.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/ocsp/ValidateCertUseOCSP.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/FirmaElectronicaService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/FirmaElectronicaService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/SignInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/SignInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/Signer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/Signer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/cms/VerificadorCMS.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/cms/VerificadorCMS.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/odf/ODFSigner.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/odf/ODFSigner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/ooxml/OOXMLPackageObjectHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/ooxml/OOXMLPackageObjectHelper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/ooxml/OOXMLSigner.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/ooxml/OOXMLSigner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/ooxml/OOXMLZipHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/ooxml/OOXMLZipHelper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/ooxml/relprovider/RelationshipTransformService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/ooxml/relprovider/RelationshipTransformService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/pdf/FirmaPDF.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/pdf/FirmaPDF.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/pdf/PDFSigner.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/pdf/PDFSigner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/pdf/PDFUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/pdf/PDFUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/pdf/PdfUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/pdf/PdfUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/pdf/tsa/TSAClientBancoCentral.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/pdf/tsa/TSAClientBancoCentral.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/pdf/tsa/TSAClientBouncyCastleWithOid.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/pdf/tsa/TSAClientBouncyCastleWithOid.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/xades/FirmadorXAdES.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/xades/FirmadorXAdES.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/xades/XAdESCommonMetadataUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/xades/XAdESCommonMetadataUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/xades/XAdESSigner.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/xades/XAdESSigner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/xades/XAdESUtil.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/xades/XAdESUtil.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/xades/XmlStyle.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/sign/xades/XmlStyle.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/BouncyCastleUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/BouncyCastleUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/CertificateUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/CertificateUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/FileUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/FileUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/OcspUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/OcspUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/OfficeAnalizer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/OfficeAnalizer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/OsUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/OsUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/PropertiesUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/PropertiesUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/TiempoUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/TiempoUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/Utils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/Utils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/UtilsCrlOcsp.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/UtilsCrlOcsp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/X509CertificateUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/utils/X509CertificateUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/validaciones/Fichero.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/validaciones/Fichero.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/xml/Utils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/java/org/bcbg/rubrica/xml/Utils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/resources/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/resources/application-dev.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/resources/application-prod.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-firma-ec/src/main/resources/application-prod.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/bcbg/config/UrlConfigurationProvider.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcbg/config/UrlConfigurationProvider.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/bcbg/documental/managedbeans/EditarDocumentoMB.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcbg/documental/managedbeans/EditarDocumentoMB.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/bcbg/lazymodels/LazyModelWS.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/bcbg/lazymodels/LazyModelWS.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/procesos/documentos/documento.xhtml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/procesos/documentos/documento.xhtml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-ws/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-ws/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-ws/src/main/java/org/bcbg/ws/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-ws/src/main/java/org/bcbg/ws/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-ws/src/main/resources/application-dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-ws/src/main/resources/application-dev.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-ws/src/main/resources/application-home.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-ws/src/main/resources/application-home.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-ws/src/main/resources/application-prod.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-ws/src/main/resources/application-prod.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ec-gob-bcbg-ws/src/main/resources/application-ssh.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../ec-gob-bcbg-ws/src/main/resources/application-ssh.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../origami-docs/src/main/java/org/origami/docs/service/ArchivoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../origami-docs/src/main/java/org/origami/docs/service/ArchivoService.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="useMavenConfig" value="true" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="256Zen9VJwBun90bMaNNVO1NGCU" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="dart.analysis.tool.window.visible" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="show.migrate.to.gradle.popup" value="false" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a7f725be-088d-494a-a008-345dcad0ad41" name="Changes" comment="" />
+      <created>1644849595749</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1644849595749</updated>
+      <workItem from="1644849603938" duration="659000" />
+      <workItem from="1644870494627" duration="139000" />
+      <workItem from="1649098408300" duration="512000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

@@ -1,0 +1,69 @@
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:co="http://xmlns.jcp.org/jsf/composite/co">
+    <ui:define name="title">Consultas Registrales</ui:define>
+    <ui:define name="content">
+        <script>
+            jQuery.extend(jQuery.expr[':'], {
+                focusable: function (el, index, selector) {
+                    return $(el).is('a, button, :input, [tabindex]');
+                }
+            });
+            $(document).on('keypress', 'input,select', function (e) {
+                if (e.which == 13) {
+                    e.preventDefault();
+                    // Get all focusable elements on the page
+                    var $canfocus = $(':focusable');
+                    var index = $canfocus.index(this) + 1;
+                    if (index >= $canfocus.length)
+                        index = 0;
+                    $canfocus.eq(index).focus();
+                }
+            });
+        </script>
+        <style type="text/css">
+            .ui-selectcheckboxmenu-panel .ui-selectcheckboxmenu-header .ui-chkbox {
+                visibility: hidden;
+            }
+
+            .ui-filter-column .ui-column-customfilter .custom-filter {
+                width: 100%;
+                box-sizing: border-box;
+            }
+        </style>
+        <h:form id="mainForm" onsubmit="return false;">
+            <style>
+                .propiedades {
+                    background-color: #52BE80 !important;
+                    color: #192a37 !important;
+                }
+                .gravamenes {
+                    background-color: #F7DC6F !important;
+                    color: #192a37 !important;
+                }
+            </style>
+            <p:panelGrid columns="2" columnClasses="ui-g-12 ui-md-8, ui-g-12 ui-md-4" layout="grid" class="Wid100 Responsive100 Responsive">
+                <p:dataTable id="dtLibrerias" paginator="true" lazy="true" rows="1000" filterEvent="enter" scrollable="true"
+                             paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             value="#{documentalList.librerias}" var="mov1" emptyMessage="No se encontro ningun indice..." resizableColumns="true" scrollHeight="250"
+                             rowIndexVar="indexInd" rowKey="#{mov1.idLibreria}" widgetVar="dtBusIndices" paginatorPosition="top" >
+                    <p:column headerText="No" width="15">
+                        <h:outputText value="#{indexInd+1}" />
+                    </p:column>
+                    <p:column headerText="Descripcion" width="90">
+                        <h:outputText value="#{mov1.desReferencia}" />
+                    </p:column>
+                    <p:column headerText="Nivel" width="90">
+                        <h:outputText value="#{mov1.nivel1}" />
+                    </p:column>
+                </p:dataTable>
+            </p:panelGrid>
+        </h:form>
+
+    </ui:define>
+</ui:composition>

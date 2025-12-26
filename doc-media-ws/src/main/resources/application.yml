@@ -1,0 +1,11 @@
+server:
+  port: 8784
+spring:
+  application:
+    name: ws-media
+  main:
+    allow-bean-definition-overriding: true
+
+  h2:
+    console:
+      enabled: false

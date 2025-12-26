@@ -1,0 +1,171 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../template/bpmTemplate.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="title">Contenidos</ui:define>
+
+    <ui:define name="content">
+        <h:form id="formMain" prependId="false">
+            <div class="p-grid ui-fluid">
+                <div class="p-col-12">
+                    <div class="card card-w-title">
+                        <center><h1>Contenidos</h1></center>
+
+                        <p:commandButton id="newButton" value="Nuevo" actionListener="#{vendedorMB.loadData()}" 
+                                         icon="fa fa-plus"
+                                         update="formData" oncomplete="PF('sidebarData').show();" 
+                                         styleClass="rounded-btn" style="width: auto"/>
+                        <br/><br/>
+                        <p:dataTable id="dtContent" var="content" value="#{contenidoMB.contenidos}" 
+                                     reflow="true"
+                                     rows="10"
+                                     lazy="true"
+                                     paginatorPosition="bottom"
+                                     widgetVar="dtContent"
+                                     emptyMessage="No existen datos"
+                                     paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                                     rowsPerPageTemplate="10,15,20" tableStyle="table-layout:auto">
+
+                            <p:column headerText="*" style="text-align: center">
+                                <p:graphicImage value="#{content.urlImagen}" 
+                                                rendered="#{content.urlImagen!=null and content.tipoFormato ne 'mp4'}" 
+                                                width="150" height="50" />
+                                <p:graphicImage name="images/avatar.jpg" library="prestige-layout"
+                                                rendered="#{content.urlImagen==null and content.tipoFormato eq 'mp4'}"
+                                                width="50" height="50" />
+                                <p:graphicImage name="images/avatar.jpg" library="prestige-layout"
+                                                rendered="#{content.urlImagen==null and content.tipoFormato eq null}"
+                                                width="50" height="50" />
+                            </p:column>
+                            <p:column headerText="Nombre" style="text-align: justify">
+                                <h:outputText value="#{content.nombre}" />
+                            </p:column>
+                            <p:column headerText="Descripción" style="text-align: justify" >
+                                <h:outputText value="#{content.descripcion}" />
+                            </p:column>
+                            <p:column headerText="Link" style="text-align: justify;">
+                                <h:outputText value="#{content.urlLink}" />
+                            </p:column>
+                            <p:column headerText="Orden" style="text-align: center" >
+                                <h:outputText value="#{content.orden}" />
+                            </p:column>
+
+                            <!--                            <p:column headerText="Estado" filterBy="# {content.estado}" style="text-align: center" >
+                                                            <f:facet name="filter">
+                                                                <p:selectOneMenu onchange="PF('dtContent').filter()" styleClass="custom-filter">
+                                                                    <f:selectItem itemLabel="Seleccione" itemValue="# {null}" 
+                                                                                  noSelectionOption="true"/>
+                                                                    <f:selectItem itemLabel="ACTIVO" itemValue="# {true}"/>
+                                                                    <f:selectItem itemLabel="INACTIVO" itemValue="# {false}"/>
+                                                                </p:selectOneMenu>
+                                                            </f:facet>
+                                                            <h:outputText value="# {content.estado? 'ACTIVO':'INACTIVO'}" />
+                                                        </p:column>-->
+
+                            <p:column headerText="Acciones" width="75">
+                                <div align="center">
+                                    <p:commandLink title="Editar Datos" 
+                                                   actionListener = "#{contenidoMB.edit(content)}" 
+                                                   process="@this">
+                                        <i class="fa fa-edit" style="font-size: 1.5em;color: #0D47A1;"></i>
+                                    </p:commandLink> 
+                                    <p:spacer width="5" />
+                                    <p:commandLink title="Eliminar" 
+                                                   actionListener="#{contenidoMB.delete(content)}"
+                                                   update="dtContent"
+                                                   process="@this">
+                                        <i class="fa fa-trash" style="font-size: 1.5em;color: red;"></i>
+                                        <p:confirm header="Confirmación de eliminación"
+                                                   message="¿Está seguro de eliminar el dato?"
+                                                   icon="fa fa-exclamation-triangle" />
+                                    </p:commandLink>  
+                                </div>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+
+        <p:sidebar widgetVar="sidebarData" id="sidebarData" position="right" style="width: 50%">
+            <h:form id="formData" prependId="false">
+                <div class="p-grid ui-fluid">
+                    <div class="p-col-12">
+                        <h1>Información</h1>
+                        <p:panelGrid id="grid-datos" columns="2" layout="grid" style="font-weight: bolder">
+                            <h:panelGroup>
+                                <p:outputLabel for="nombre" value="Nombre:" /><br/><br/>
+                                <p:inputTextarea id="nombre" rows="6" cols="33"
+                                                 value="#{contenidoMB.contenido.nombre}">
+                                    <p:ajax update="nombre" process="nombre"/>
+                                </p:inputTextarea>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel for="descripcion" value="Descripcion:" /><br/><br/>
+                                <p:inputTextarea id="descripcion" rows="6" cols="33"
+                                                 value="#{contenidoMB.contenido.descripcion}">
+                                    <p:ajax update="descripcion" process="descripcion"/>
+                                </p:inputTextarea>
+                            </h:panelGroup>
+
+                            <h:panelGroup>
+                                <p:outputLabel for="estado" value="Estado" /><br/><br/>
+                                <p:selectBooleanButton id="estado" onLabel="Activo" offLabel="Inactivo"
+                                                       value="#{contenidoMB.contenido.estado}"
+                                                       style="width:6rem"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel for="orden" value="Orden:" /><br/><br/>
+                                <p:spinner id="orden" value="#{contenidoMB.contenido.orden}" min="0" max="100"/>
+                            </h:panelGroup>
+
+                        </p:panelGrid>
+                        <p:panelGrid columns="1" layout="grid">
+                            <h:panelGroup>
+                                <p:outputLabel id="imagen" value="Archivo: #{contenidoMB.contenido.archivo}" /><br></br>
+                                <div align="center">
+                                    <p:fileUpload  id="imagenvendedor" label="Archivo"
+                                                   update="imagen"
+                                                   mode="advanced" 
+                                                   listener="#{contenidoMB.handleFileUpload}"
+                                                   dragDropSupport="false"
+                                                   multiple="false" 
+                                                   sizeLimit="999999999" 
+                                                   fileLimit="1" 
+                                                   uploadLabel="Subir"
+                                                   cancelLabel="Cancelar"  
+                                                   skinSimple="true"
+                                                   allowTypes="/(\.|\/)(jpe?g|png|mp4)$/"/>
+                                </div>
+                            </h:panelGroup>
+                        </p:panelGrid>
+                        <br/>
+                        <div align="center">
+                            <p:commandButton value="#{contenidoMB.contenido.id != null? 'Actualizar':'Guardar'}"
+                                             styleClass="rounded-btn"
+                                             icon="fa fa-save"
+                                             style="width: 40%"
+                                             actionListener="#{contenidoMB.save()}" />
+                            <p:spacer width="30" height="20" />
+                            <p:commandButton value="Cancelar" rendered="#{contenidoMB.contenido.id!=null}"
+                                             styleClass="rounded-btn"
+                                             icon="fa fa-close"
+                                             oncomplete="PF('sidebarData').hide();"
+                                             process="@this"
+                                             style="width: 40%;"
+                                             update="formData"
+                                             actionListener="#{contenidoMB.loadModel()}" />
+                        </div>
+                    </div> 
+                </div>
+            </h:form>
+        </p:sidebar>
+    </ui:define>
+
+</ui:composition>

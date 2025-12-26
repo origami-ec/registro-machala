@@ -1,0 +1,142 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <p:panelGrid id="pnlDocs" columns="1" layout="grid">
+        <h:panelGroup id="panelSubirDoc">
+            <p:fieldset legend="Nuevos documentos">
+                <div align="rigth">
+                    <p:commandButton value="Agregar" style="float: right" icon="fa fa-plus"  
+                                     styleClass="info-button text-button rounded-button p-mr-2 p-mb-2" 
+                                     actionListener="#{ventanillaUnicaMB.abrirDlgArchivos(null, null)}"/>
+                </div>
+                <br/>
+                <br/>
+                <br/>
+                <p:dataTable id="docNuevos" value="#{ventanillaUnicaMB.documentosNuevos}" 
+                             var="doc" emptyMessage="No existen documentos nuevos" rowIndexVar="i">
+                    <p:column headerText="**" width="20">
+                        <center>#{i+1}</center>
+                    </p:column>
+                    <p:column headerText="Fecha">
+                        <p:outputLabel value="#{doc.fechaCreacion}" >
+                            <f:convertDateTime pattern="dd-MM-yyyy HH:mm:ss" />
+                        </p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Documento">
+                        <p:outputLabel value="#{doc.descripcion}"/><br/>
+                        <p:outputLabel value="#{doc.requisito.descripcion}" rendered="#{doc.requisito ne null}"/><br/>
+                        <p:outputLabel value="#{doc.nombreArchivo}"/> 
+
+                    </p:column>
+                    <p:column headerText="Adjuntar">
+                        <p:selectBooleanCheckbox value="#{doc.check}"/>
+                    </p:column>
+                    <p:column headerText="Acción" width="100">
+                        <center>
+                            <p:commandButton  icon="pi pi-pencil" styleClass="info-button text-button rounded-button p-mr-2 p-mb-2" 
+                                              actionListener="#{ventanillaUnicaMB.editarArchivos(doc.codigoVerificacion)}"/>    
+                            <p:commandButton  icon="pi pi-bookmark" styleClass="info-button text-button rounded-button p-mr-2 p-mb-2" 
+                                              actionListener="#{ventanillaUnicaMB.getPDF(doc)}"/>    
+                            <p:commandButton update="docNuevos"  icon="fa fa-trash" styleClass="danger-button text-button rounded-button p-mr-2 p-mb-2" 
+                                             actionListener="#{ventanillaUnicaMB.eliminarDocumento(i)}"/>    
+                        </center>
+                    </p:column>
+                </p:dataTable>
+            </p:fieldset>
+        </h:panelGroup>
+        <h:panelGroup id="panelDocs">
+            <p:fieldset legend="Documentos">
+                <p:dataTable id="docs" value="#{ventanillaUnicaMB.documentos}" var="doc"
+                             emptyMessage="No existen documentos" rowIndexVar="i">
+                    <p:column headerText="Usuario" width="100">
+                        <p:outputLabel value="#{doc.usuario}" /><br/>
+                        <p:outputLabel value="#{doc.fechaCreacion}" >
+                            <f:convertDateTime pattern="dd-MM-yyyy HH:mm:ss" />
+                        </p:outputLabel>
+                    </p:column>
+                    <p:column headerText="Requisito" width="150">
+                        <p:outputLabel value="#{doc.requisito.nombre}" style="float: left"/><br/>
+                        <p:outputLabel value="#{doc.nombreArchivo}" style="float: left"/>
+                    </p:column>
+                    <p:column headerText="Adjuntar" width="40">
+                        <center>
+                            <p:selectBooleanCheckbox value="#{doc.check}" disabled="#{empty doc.nombreArchivo or doc.nombreArchivo eq 'Archivo no cargado'}"/>
+                        </center>
+                    </p:column>
+                    <p:column headerText="Acción" width="100" style="text-align: center">
+                        <center>
+                            <p:commandButton  icon="pi pi-pencil" styleClass="info-button text-button rounded-button p-mr-2 p-mb-2" title="Agregar notas al documento" rendered="#{doc.tipoArchivo eq 'application/pdf'}"
+                                              actionListener="#{ventanillaUnicaMB.editarArchivos(doc.codigoVerificacion)}"/> 
+                            <p:commandButton  icon="pi pi-bookmark" styleClass="info-button text-button rounded-button p-mr-2 p-mb-2"
+                                              actionListener="#{ventanillaUnicaMB.getPDF(doc)}"
+                                              disabled="#{empty doc.nombreArchivo or doc.nombreArchivo eq 'Archivo no cargado'}"/>    
+                            <p:commandButton  icon="pi pi-download" styleClass="info-button text-button rounded-button p-mr-2 p-mb-2" 
+                                              actionListener="#{ventanillaUnicaMB.getDownloadFile(doc)}" 
+                                              disabled="#{empty doc.nombreArchivo or doc.nombreArchivo eq 'Archivo no cargado'}"/>    
+                            <p:commandButton update="docs"  icon="fa fa-trash" styleClass="danger-button text-button rounded-button p-mr-2 p-mb-2" 
+                                             actionListener="#{ventanillaUnicaMB.eliminarDocumentoBD(i)}" rendered="#{userSession.name_user eq doc.usuario}">
+                                <p:confirm header="Esta seguro" message="Eliminar documento #{doc.nombreArchivo}"/>
+                            </p:commandButton>
+                        </center>
+                    </p:column>
+                </p:dataTable>
+                <br/>
+                <center>
+                    <p:commandButton  icon="pi pi-envelope" value="Enviar Correo a Solicitante" styleClass="info-button " 
+                                      oncomplete="PF('correoDlg').show()"/>    
+                </center>
+            </p:fieldset>
+            <div class="ui-g-12" >
+                <br/>
+                <br/>
+                <br/>
+                <center>
+                    <h:panelGroup id="panelButtonsTramite"  rendered="#{!ventanillaUnicaMB.devolucionTramite}" >
+                        <p:commandButton value="Finalizar Trámite"
+                                         icon="fa fa-check"
+                                         styleClass="warning-button rounded-button p-mr-2 p-mb-2"
+                                         update="pnlInfo"
+                                         actionListener="#{ventanillaUnicaMB.completarTareaAsignarAtenderSolicitud(1)}"
+                                         process="@form">
+                            <p:confirm header="Confirmación de Finalización de Trámite"
+                                       message="¿Está seguro de finalizar el trámite #{ventanillaUnicaMB.historicoTramites.codigo}?, una vez finalizado ya no se podrá continuar con el mismo."
+                                       icon="fa fa-exclamation-triangle" />
+                        </p:commandButton>
+                        <p:spacer width="10" />
+                        <p:commandButton value="Reasignar trámite"
+                                         icon="fa fa-user"
+                                         styleClass="success-button rounded-button"
+                                         update="frmReasignar"
+                                         oncomplete="PF('reasignarDlg').show()"
+                                         />
+
+                        <p:spacer width="10" /> 
+                        <p:commandButton icon="fa fa-times" value="Devolver el trámite"
+                                         styleClass="danger-button rounded-button p-mr-2 p-mb-2"
+                                         process="@this"
+                                         update="frmContinuar"
+                                         oncomplete="PF('rechazoDlg').show()">
+                            <p:confirm header="Confirmación de devolución del trámite"
+                                       message="¿Está seguro devolver el trámite?"
+                                       icon="fa fa-exclamation-triangle" />
+                        </p:commandButton>
+                    </h:panelGroup>
+                    
+                    <!--cuando se esta resolviendo la devolución de trámites entre diferentes áreas se muestra este boton-->
+                    <h:panelGroup id="panelButtonDevolucion"  rendered="#{ventanillaUnicaMB.devolucionTramite}" >
+                          <p:commandButton icon="fa fa-times" value="Continuar trámite"
+                                         styleClass="info-button rounded-button p-mr-2 p-mb-2"
+                                         process="@this"
+                                         oncomplete="PF('resolverDevolucionDlg').show()"/>  
+                    </h:panelGroup>
+
+                </center>
+            </div>
+        </h:panelGroup>
+    </p:panelGrid>
+</html>
+

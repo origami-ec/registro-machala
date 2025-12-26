@@ -1,0 +1,39 @@
+version: '2'
+services:
+  asgard:
+    container_name: web
+    image: web:latest 
+    environment:
+      - TZ=America/Guayaquil
+      - ejbRuta=java:global/ventanillaInteligente/
+      - rutaFirmasElectronicas=/servers_files/firmasElectronicas/
+      - rutaRepositorioArchivo=/servers_files/archivos/
+      - rutaArchivoFirmadoPDF=/servers_files/fd/
+      - appWEB=http://ventanillaInteligente:8713
+      - ws=http://ventanillaInteligente:8713
+      - wsUser=9G4u8q0GnXBkNY7LCBuF
+      - wsPass=ULdI1c8qukgxcjANqIwh
+      - wsDinardap=http://186.101.220.187:8790/api/
+      - wsDinardapUser=adminVentanilla
+      - wsDinardapPass=NKPCSQ10@PROPIEDAD
+      - entityManager=java:module/manager
+      - bpmBaseEngine=java:module/bpmBaseEngine
+      - bpmProcessEngine=java:module/bpmProcessEngine
+      - datasource=java:module/dataSource
+      - region=EC
+      - driverClass=org.postgresql.Driver
+      - docdbIp=jdbc:postgresql://ventanillaInteligente:5432/asgard_archivo
+      - docdbUser=origami
+      - docdbPass=YxTKi5ySXAOR4V2P4huj
+      - activitidbIp=jdbc:postgresql://ventanillaInteligente:5432/asgard_activiti
+      - activitidbUser=origami
+      - activitidbPass=YxTKi5ySXAOR4V2P4huj
+      
+    ports:
+      - 8089:8089
+    extra_hosts:
+      - asgard-host:127.0.0.1
+      - ventanillaInteligente:127.0.0.1
+    volumes:
+      - /servers_files/:/servers_files/
+    network_mode: "host"

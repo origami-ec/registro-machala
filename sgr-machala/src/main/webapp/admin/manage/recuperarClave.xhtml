@@ -1,0 +1,53 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      >
+
+    <f:view contentType="text/html" locale="es" encoding="UTF-8" />
+    <h:head>
+        <f:facet name="first">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+            <meta name="mobile-web-app-capable" content="yes" />
+            <link rel="shortcut icon" type="image/jpg" href="#{appConfig.urlbase}resources/paradise-layout/images/origami.ico" />
+        </f:facet>
+        <title>Recuperación de contraseña</title>
+    </h:head>
+
+    <h:body styleClass="main-body">
+        <h:form id="frmMaim" >
+            <p:panel style="position: absolute; padding-left: 200px; padding-top: 100px;" header="Ingrese Nueva Clave">
+                <p:messages showDetail="true" closable="true" id="msgDet" ><p:autoUpdate/></p:messages>
+                <p:outputLabel value="Cambio de Contraseña" style="font-size: 30px; color: darkblue;font-weight: bolder" />
+                <br/><br/><br/>
+                <h:panelGrid columns="3" >
+                    <p:outputLabel value="Contraseña:" />
+                    <p:spacer width="20" />
+                    <p:password value="#{recuperarClave.pass}" id="pass1" toggleMask="true" redisplay="true">
+                    </p:password>
+                    <p:outputLabel value="Confirme Contraseña:" />
+                    <p:spacer width="20" />
+                    <p:password value="#{recuperarClave.passConfirm}" id="pass2" toggleMask="true" redisplay="true">
+                    </p:password>
+                </h:panelGrid>
+                <br/>
+                <br/>
+                <center>
+                    <p:commandButton value="Actualizar" icon="pi pi-refresh" 
+                                     actionListener="#{recuperarClave.actualizarPass()}" 
+                                     update="frmMaim" process="pass2, pass1" class="btnStyle" />
+                </center>
+            </p:panel>
+        </h:form>
+
+        <p:growl  globalOnly="true" showDetail="true" showSummary="true"  id="grwRc" >
+            <p:autoUpdate />
+        </p:growl>
+        <h:outputStylesheet name="css/nanoscroller.css" library="morpheus-layout" />
+        <h:outputStylesheet name="css/animate.css" library="morpheus-layout" />
+        <h:outputStylesheet name="css/layout-blue.css" library="morpheus-layout" />
+    </h:body>
+
+</html>

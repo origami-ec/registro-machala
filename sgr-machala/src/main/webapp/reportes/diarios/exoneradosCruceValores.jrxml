@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="exoneradosCruceValores" language="groovy" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="8f380938-c8e9-43b4-8eb0-b9094b93c9af">
+	<property name="ireport.zoom" value="1.9965000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="negrita" pdfFontName="Helvetica-Bold"/>
+	<style name="ANULADA" mode="Opaque" forecolor="#000000" backcolor="#FF9999"/>
+	<parameter name="USUARIO" class="java.lang.Long"/>
+	<parameter name="DESDE" class="java.lang.String"/>
+	<parameter name="HASTA" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[(
+SELECT
+liq.num_tramite_rp,
+us.usuario,
+liq.fecha_ingreso,
+liq.sub_total::NUMERIC(19,2) AS sub_total,
+liq.total_pagar::NUMERIC(19,2) AS total_pagar,
+exo.concepto,
+exo.valor::NUMERIC(19,2) AS valor,
+act.nombre AS acto,
+((dl.valor_unitario::NUMERIC) + COALESCE(dl.recargo, 0)::NUMERIC)::NUMERIC(19,2) AS valor_unitario,
+
+dl.descuento::NUMERIC(19,2) AS descuento,
+dl.valor_total::NUMERIC(19,2) AS valor_total,
+dl.cantidad,
+liq.inf_adicional_prof
+FROM flow.regp_liquidacion liq
+    LEFT JOIN flow.regp_liquidacion_detalles dl ON dl.liquidacion = liq.id
+    INNER JOIN flow.regp_intervinientes inter ON inter.liquidacion = dl.id
+    INNER JOIN flow.regp_exoneracion exo ON exo.id = inter.exoneracion
+    LEFT JOIN app.reg_acto act ON act.id = dl.acto
+    LEFT JOIN app.cat_ente ent ON ent.id = inter.ente
+    LEFT JOIN app.acl_user us ON us.id = liq.user_ingreso
+    LEFT JOIN financiero.ren_nota_credito nc ON nc.factura = liq.id
+
+WHERE liq.estado_liquidacion = 2
+    AND liq.reingreso = FALSE
+    AND exo.id = 6
+    AND exo.concepto <> 'REINGRESO DE TRAMITE'
+    AND liq.fecha_ingreso BETWEEN to_timestamp($P{DESDE}, 'DD/MM/YYYY HH24:MI')
+                          AND to_timestamp($P{HASTA}, 'DD/MM/YYYY HH24:MI')
+    AND (CASE WHEN $P{USUARIO} > 0 THEN us.id = $P{USUARIO} ELSE TRUE END)
+
+GROUP BY
+liq.num_tramite_rp,
+us.usuario,
+liq.fecha_ingreso,
+liq.sub_total,
+liq.total_pagar,
+exo.concepto,
+exo.valor,
+act.nombre,
+dl.valor_unitario,
+dl.recargo,
+dl.descuento,
+dl.valor_total,
+dl.cantidad,
+liq.inf_adicional_prof
+)
+
+UNION ALL
+
+(
+SELECT
+fa.num_tramite AS num_tramite_rp,
+us.usuario,
+fa.fecha AS fecha_ingreso,
+(rp.valor + COALESCE(rp.descuento, 0))::NUMERIC(19,2) AS sub_total,
+rp.valor::NUMERIC(19,2) AS total_pagar,
+'ALCANCE / CRUCE DE VALORES' AS concepto,
+0::NUMERIC(19,2) AS valor,
+
+COALESCE(ac.nombre, 'TRÁMITE GENERAL') AS acto,
+(rp.valor + COALESCE(rp.descuento, 0))::NUMERIC(19,2) AS valor_unitario,
+rp.descuento::NUMERIC(19,2) AS descuento,
+rp.valor::NUMERIC(19,2) AS valor_total,
+1 AS cantidad,
+CASE
+WHEN TRIM(fa.observacion) <> '' THEN 'ALCANCE: ' || fa.observacion
+ELSE 'ALCANCE DE PAGO'
+        END AS inf_adicional_prof
+FROM financiero.ren_factura fa
+    LEFT JOIN financiero.ren_cajero ca ON ca.id = fa.caja
+    LEFT JOIN app.acl_user us ON us.id = ca.usuario
+    LEFT JOIN financiero.ren_pago rp ON rp.id = fa.pago
+    LEFT JOIN financiero.ren_pago_rubro pr ON pr.pago = rp.id
+    LEFT JOIN app.reg_acto ac ON ac.id = pr.rubro
+    LEFT JOIN flow.regp_liquidacion linked_liq ON linked_liq.id = rp.liquidacion
+WHERE
+fa.fecha BETWEEN to_timestamp($P{DESDE}, 'DD/MM/YYYY HH24:MI')
+AND to_timestamp($P{HASTA}, 'DD/MM/YYYY HH24:MI')
+AND (CASE WHEN $P{USUARIO} > 0 THEN us.id = $P{USUARIO} ELSE TRUE END)
+AND fa.estado = TRUE
+AND (
+rp.liquidacion IS NULL
+OR
+(linked_liq.id IS NOT NULL)
+)
+AND rp.descuento > 0
+AND UPPER(COALESCE(fa.observacion, '')) LIKE '%CRUCE%'
+)
+
+ORDER BY 1 DESC;]]>
+	</queryString>
+	<field name="num_tramite_rp" class="java.lang.Long"/>
+	<field name="usuario" class="java.lang.String"/>
+	<field name="fecha_ingreso" class="java.sql.Timestamp"/>
+	<field name="sub_total" class="java.math.BigDecimal"/>
+	<field name="total_pagar" class="java.math.BigDecimal"/>
+	<field name="concepto" class="java.lang.String"/>
+	<field name="valor" class="java.math.BigDecimal"/>
+	<field name="acto" class="java.lang.String"/>
+	<field name="valor_unitario" class="java.math.BigDecimal"/>
+	<field name="descuento" class="java.math.BigDecimal"/>
+	<field name="valor_total" class="java.math.BigDecimal"/>
+	<field name="cantidad" class="java.lang.Integer"/>
+	<field name="inf_adicional_prof" class="java.lang.String"/>
+	<variable name="SUM_TOTAL" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{descuento}]]></variableExpression>
+	</variable>
+	<group name="exoneradosCruceValores">
+		<groupHeader>
+			<band height="29">
+				<staticText>
+					<reportElement x="100" y="13" width="68" height="16" uuid="aa297f5a-2e8f-46a4-bc8f-f8dafe813023"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Concepto Desc.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="500" y="13" width="55" height="16" uuid="087cf2d0-4538-4268-b5c0-db494045d8d8"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Total Exonerado]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="41" y="13" width="59" height="16" uuid="b7e13420-fc11-4289-8f01-d3bd26480d63"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Fecha Ingreso]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="376" y="13" width="25" height="16" uuid="db523176-f157-455f-b157-ca12f150503b"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.25"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Cant.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="13" width="40" height="16" uuid="cb3829fe-3f3d-437b-8aa1-1df0e43348c6"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[N° Trámite]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="448" y="13" width="52" height="16" uuid="d442d803-d845-4ea4-b2cb-8db622f7ddb7"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Valor Desc.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="401" y="13" width="47" height="16" uuid="5fbc5475-4322-4d5d-babb-774ad9b59242"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Valor
+Unitario]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="168" y="13" width="70" height="16" uuid="78231778-b1f4-43e7-8f6d-91afdefc32a2"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.0"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Contrato]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="1" y="0" width="266" height="13" uuid="a4342c54-3011-4323-b35d-b4ccad1d210c"/>
+					<text><![CDATA[CRUCE DE VALORES]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="238" y="13" width="138" height="16" uuid="1ce4c47a-f7a9-414b-ba14-29d2e0ce1dcb"/>
+					<box>
+						<pen lineWidth="0.5"/>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="7"/>
+					</textElement>
+					<text><![CDATA[Observacion]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="20">
+				<textField pattern="¤ #,##0.00">
+					<reportElement x="500" y="0" width="55" height="20" uuid="5a271830-d2fc-47a7-aa3b-7fc33445f666"/>
+					<box>
+						<topPen lineWidth="0.5"/>
+						<leftPen lineWidth="0.5"/>
+						<bottomPen lineWidth="0.5"/>
+						<rightPen lineWidth="0.5"/>
+					</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font size="8" isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{SUM_TOTAL}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupFooter>
+	</group>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField isStretchWithOverflow="true" pattern="dd/MM/yyyy HH:mm" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="41" y="0" width="59" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="78bd4c28-af78-4a3e-8947-0d8207043126"/>
+				<box leftPadding="0">
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.0"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{fecha_ingreso}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="401" y="0" width="47" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="a156ebd5-d472-4736-99e9-a98822391c8a"/>
+				<box rightPadding="2">
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{valor_unitario}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="500" y="0" width="55" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="93a7892d-e4e2-4ee3-a9d0-84ad9ef313c9"/>
+				<box rightPadding="2">
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descuento}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="100" y="0" width="68" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="c14ed1b6-b00d-47a7-97ba-c026b47db9eb"/>
+				<box leftPadding="1">
+					<topPen lineWidth="0.4"/>
+					<leftPen lineWidth="0.4"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{concepto}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="1" y="0" width="40" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="6a1d3525-e3db-438a-a026-482ae3c3bbd8"/>
+				<box>
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{num_tramite_rp}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="376" y="0" width="25" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="85aa9bfd-fc6d-47c9-a39e-5e2d904818f7"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="0">
+					<topPen lineWidth="0.4"/>
+					<leftPen lineWidth="0.4"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cantidad}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="¤ #,##0.00" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="448" y="0" width="52" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="deed4bbe-86ee-4a07-8eda-ba676347821c"/>
+				<box rightPadding="2">
+					<topPen lineWidth="0.25"/>
+					<leftPen lineWidth="0.25"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{descuento}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true">
+				<reportElement stretchType="RelativeToBandHeight" x="168" y="0" width="70" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="8aecb7ec-6287-48b0-88ff-109ccc6ba88b"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="0">
+					<topPen lineWidth="0.4"/>
+					<leftPen lineWidth="0.4"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="6"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{acto}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement stretchType="RelativeToBandHeight" x="238" y="0" width="138" height="20" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true" uuid="5b08bfcc-c327-4392-b923-86f993da38b9"/>
+				<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="0">
+					<topPen lineWidth="0.4"/>
+					<leftPen lineWidth="0.4"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{inf_adicional_prof}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

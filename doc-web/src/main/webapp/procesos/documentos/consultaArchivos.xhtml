@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/templateDocs.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html" 
+                xmlns:poue="http://primefaces.org/ui/extensions"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+
+    <ui:define name="top"><h3>OrigamiDocs</h3></ui:define>
+    <ui:define name="title">OrigamiDocs</ui:define>
+    <ui:define name="content">
+
+        <h:form id="formMain"  prependId="false" >
+
+            <center>
+                <p:graphicImage name="images/logo-origami-doc.png" library="paradise-layout"   /> <br/><br/><br/>
+
+                <span class="ui-input-icon-right">
+
+                    <p:inputText style="width: 400px; height: 50px" value="#{consultarDocsMB.detalleDocumento}"/>
+
+
+                    <p:commandButton icon="pi pi-search" title="Buscar archivos" style="height: 50px; width: 50px !important" 
+                                     update="formMain, dtTramites"
+                                     actionListener="#{consultarDocsMB.consultarDocumentos()}">
+
+                    </p:commandButton>        
+
+                </span>
+
+            </center>
+            <br/><br/>
+            <p:dataTable id="dtTramites" reflow="true" paginator="true" lazy="true" rows="10" 
+                         rowsPerPageTemplate="10,20,30" 
+                         rowIndexVar="i"
+                         filterEvent="enter"  
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         value="#{consultarDocsMB.lazyArchivos}" var="archivo" 
+                         emptyMessage="No se encontró ningún archivo"  
+                         paginatorPosition="bottom" tableStyle="table-layout:auto">
+                <p:column headerText="***">
+                    <p:outputLabel value="#{i + 1}" />
+                </p:column>
+                <p:column headerText="Fecha">
+                    <p:outputLabel value="#{archivo.fecha}">
+                        <f:convertDateTime pattern="dd-MM-yyyy HH:mm" />
+                    </p:outputLabel>
+                </p:column>
+                <p:column headerText="Tipo">
+                    <p:outputLabel value="#{archivo.tipoIndexacion}" />
+                </p:column>
+                <p:column headerText="Descripción">
+                    <p:outputLabel value="#{archivo.detalleDocumento}" />
+                </p:column>
+                <p:column headerText="Archivo">
+                    <p:outputLabel value="#{archivo.nombre}" />
+                </p:column>
+                <p:column headerText="Tamaño">
+                    <p:outputLabel value="#{archivo.peso}" />
+                </p:column>
+                <p:column headerText="Acciones" >
+                    <center>
+                        <p:commandLink  actionListener="#{consultarDocsMB.visualizarDocumento(archivo)}"
+                                        styleClass="edit" style="margin-right: 10px" title="Visualizar documento">
+                            <i class="fa fa-print" style="font-size: 1.2em; margin-right: 5px;"></i>
+                        </p:commandLink>  
+                    </center>
+                </p:column>
+            </p:dataTable>
+
+
+
+
+        </h:form>
+
+
+
+    </ui:define>
+</ui:composition>

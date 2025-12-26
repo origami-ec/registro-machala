@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="IndiceInscripcion" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="782" leftMargin="30" rightMargin="30" topMargin="20" bottomMargin="20" uuid="c98c4c35-0c53-4a90-b2a3-c38d82d6d9d9">
+	<property name="ireport.zoom" value="1.4641000000000013"/>
+	<property name="ireport.x" value="88"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="MES_INDICE" class="java.lang.String"/>
+	<parameter name="DESDE" class="java.lang.String"/>
+	<parameter name="HASTA" class="java.lang.String"/>
+	<parameter name="USUARIO" class="java.lang.String"/>
+	<parameter name="IMG_URL" class="java.lang.String"/>
+	<field name="nombreFuncionario" class="java.lang.String"/>
+	<field name="usuario" class="java.lang.String"/>
+	<field name="asignados" class="java.lang.Long"/>
+	<field name="entregadosATiempo" class="java.lang.Long"/>
+	<field name="entregadosConRetraso" class="java.lang.Long"/>
+	<field name="reasignados" class="java.lang.Long"/>
+	<field name="transferidos" class="java.lang.Long"/>
+	<field name="pendientes" class="java.lang.Long"/>
+	<variable name="SUM_ASIG_INS" class="java.lang.Long" calculation="Sum">
+		<variableExpression><![CDATA[$F{asignados}]]></variableExpression>
+	</variable>
+	<variable name="SUM_AT_INS" class="java.lang.Long" calculation="Sum">
+		<variableExpression><![CDATA[$F{entregadosATiempo}]]></variableExpression>
+	</variable>
+	<variable name="SUM_RT_INS" class="java.lang.Long" calculation="Sum">
+		<variableExpression><![CDATA[$F{entregadosConRetraso}]]></variableExpression>
+	</variable>
+	<variable name="SUM_REAS_INS" class="java.lang.Long" calculation="Sum">
+		<variableExpression><![CDATA[$F{reasignados}]]></variableExpression>
+	</variable>
+	<variable name="SUM_TRANS_INS" class="java.lang.Long" calculation="Sum">
+		<variableExpression><![CDATA[$F{transferidos}]]></variableExpression>
+	</variable>
+	<variable name="SUM_PEND_INS" class="java.lang.Long" calculation="Sum">
+		<variableExpression><![CDATA[$F{pendientes}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch">
+			<textField>
+				<reportElement x="127" y="0" width="525" height="20" uuid="94f69017-b4c9-4b51-b3d3-65c1455ab3e3"/>
+				<textElement textAlignment="Center">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["REPORTE DE INFORMACIÓN CORRESPONDIENTE AL MES DE " + $P{MES_INDICE}.toUpperCase()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="26" width="191" height="35" backcolor="#CCCCCC" uuid="4ff18686-c814-401d-be7e-09a317573d9b"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[FUNCIONARIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="191" y="26" width="89" height="35" backcolor="#CCCCCC" uuid="254c6abb-f958-4f07-9b74-dfb6296648b6"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ASIGNACIONES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="280" y="26" width="193" height="17" backcolor="#CCCCCC" uuid="f4727aba-1e73-4482-b7e3-086b6912c6d5"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ENTREGADOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="280" y="43" width="97" height="18" backcolor="#CCCCCC" uuid="b1e8f07e-aa95-4c6e-9b4d-d267101d69a9"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[A Tiempo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="377" y="43" width="96" height="18" backcolor="#CCCCCC" uuid="2d320bae-0275-4862-b3ab-8f438eb2afca"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Con Retraso]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="473" y="26" width="108" height="35" backcolor="#CCCCCC" uuid="ee5e302f-d4d8-43b8-8d42-bc3f8c6ab4df"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Reasignados]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="689" y="26" width="93" height="35" backcolor="#CCCCCC" uuid="fbe89a85-9c00-4a28-9b9a-c18899b05953"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Pendientes]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="581" y="26" width="108" height="35" backcolor="#CCCCCC" uuid="637eceba-4355-41de-a40b-bdcc17c39c04"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Transferidas]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="14" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="0" y="0" width="191" height="14" backcolor="#FFFFFF" uuid="3a8cde8f-012f-486d-8ba9-b78173914a58"/>
+				<box leftPadding="5">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombreFuncionario}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="191" y="0" width="89" height="14" backcolor="#FFFFFF" uuid="290c2111-f0ab-41c1-bc65-ed5864bb63d9"/>
+				<box leftPadding="5">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{asignados}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="280" y="0" width="97" height="14" backcolor="#FFFFFF" uuid="02500412-4f6a-4b82-9d97-5fb5e8e44495"/>
+				<box leftPadding="5">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{entregadosATiempo}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="377" y="0" width="96" height="14" backcolor="#FFFFFF" uuid="011333e0-ef4f-4883-b81f-4bd998a1d2a1"/>
+				<box leftPadding="5">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{entregadosConRetraso}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="473" y="0" width="108" height="14" backcolor="#FFFFFF" uuid="50116679-2071-421e-b8f8-e9216cf2bd54"/>
+				<box leftPadding="5">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{reasignados}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="581" y="0" width="108" height="14" backcolor="#FFFFFF" uuid="3ddc9928-320d-448f-84ee-f020b9c5c191"/>
+				<box leftPadding="5">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{transferidos}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="689" y="0" width="93" height="14" backcolor="#FFFFFF" uuid="1e87ca34-e8ed-43f2-aeab-f97065f68057"/>
+				<box leftPadding="5">
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{pendientes}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="54" splitType="Stretch">
+			<staticText>
+				<reportElement x="515" y="26" width="85" height="14" uuid="b981eb34-8ae6-46b8-a04e-11d2b6d0beb8"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fecha Impresión:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="70" y="26" width="241" height="14" uuid="041a779e-22b7-42e7-90ae-8f83abc88429"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{USUARIO}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy HH.mm.ss" isBlankWhenNull="true">
+				<reportElement x="600" y="26" width="129" height="14" uuid="1dfaa589-0c1c-4b87-a5d8-7ce767571fa4"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="26" width="70" height="14" uuid="1ee8d5f2-a385-439e-92e1-ddbdd26c4114"/>
+				<textElement verticalAlignment="Middle">
+					<font size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Impreso por:]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch">
+			<textField>
+				<reportElement mode="Opaque" x="191" y="1" width="89" height="14" backcolor="#CCCCCC" uuid="6fc23fe9-4991-4467-a9de-441bed6ccd21"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{SUM_ASIG_INS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="280" y="1" width="97" height="14" backcolor="#CCCCCC" uuid="7c77d60d-bfb7-4346-9ba6-98d34bf25c23"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{SUM_AT_INS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="377" y="1" width="96" height="14" backcolor="#CCCCCC" uuid="2eb270ed-6e11-4f14-9e7e-ae4a804a2515"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{SUM_RT_INS}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="191" height="15" backcolor="#CCCCCC" uuid="6a665b29-610b-422b-b296-42b9594f4d89"/>
+				<box>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTALES]]></text>
+			</staticText>
+			<textField>
+				<reportElement mode="Opaque" x="473" y="1" width="108" height="14" backcolor="#CCCCCC" uuid="79838662-daf1-4f27-a7f6-3e4eb65c669e"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{SUM_REAS_INS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="581" y="1" width="108" height="14" backcolor="#CCCCCC" uuid="d1dc7a44-5fc8-4cd6-9cb2-ea0a0b96d64e"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{SUM_TRANS_INS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Opaque" x="689" y="1" width="93" height="14" backcolor="#CCCCCC" uuid="a8e98e8e-72c2-401a-b925-88f61ce9c57c"/>
+				<box>
+					<leftPen lineWidth="1.0"/>
+					<bottomPen lineWidth="1.0"/>
+					<rightPen lineWidth="1.0"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{SUM_PEND_INS}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

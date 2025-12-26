@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <f:facet name="first">
+            <meta charset="utf-8"/>
+            <!--<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />-->
+            <title>Registro Municipal de la Propiedad de Machala</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+            <!-- MATERIAL DESIGN ICONIC FONT -->
+            <h:outputStylesheet name="material-design-iconic-font/css/material-design-iconic-font.min.css" library="fonts" />
+            <!--<link rel="stylesheet" href="#{appConfig.urlbase}resources/fonts/material-design-iconic-font/css/material-design-iconic-font.min.css" type="text/css"/>-->
+
+            <!-- STYLE CSS -->
+            <h:outputStylesheet name="style.css" library="css" />
+            <!--<link rel="stylesheet" href="#{appConfig.urlbase}resources/css/style.css" type="text/css"/>-->
+            <link rel="shortcut icon" type="image/jpg" href="#{appConfig.urlbase}resources/paradise-layout/images/origami.ico" />
+        </f:facet>
+        <!--<ui:include src="resources/dialog/styleTemplete.xhtml" />-->
+    </h:head>
+
+    <h:body >
+        <div class="wrapper" style="background-image: url('resources/image/fondo_inicio.png');">
+            <div class="inner">
+                <div class="image-holder">
+                    <img src="resources/image/logo.png" />
+                    <!--<img src="resources/image/logo_inicio.png" style="margin-top: 80px; margin-left: 15px; margin-right: 15px"/>-->
+                </div>
+                <h:form id="frmLogin" prependId="false">
+                    <p:messages showDetail="true" closable="true" ><p:autoUpdate/></p:messages>
+                    <center>
+                        <h2>Registro Municipal de la Propiedad de Machala</h2><br/>
+                        <h3>Inicio de Sesión</h3>
+                        <div class="form-wrapper">
+                            <p:inputText value="#{login.user}" placeholder="Usuario" styleClass="form-control" 
+                                         validatorMessage="Usuario no tiene formato válido"/>
+                        </div>
+                        <div class="form-wrapper">
+                            <p:password value="#{login.pass}" placeholder="Contraseña" styleClass="form-control" />
+                        </div>
+                        <div class="ui-g-12 button-container">
+                            <p:commandButton id="btnLogIn" value="Ingresar" icon="pi pi-user" action="#{login.doLogin()}" 
+                                             styleClass="green-btn raised-btn" />
+                        </div>
+                    </center>
+                </h:form>
+            </div>
+        </div>
+    </h:body><!-- This templates was made by Colorlib (https://colorlib.com) -->
+</html>

@@ -1,0 +1,222 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                >
+    <ui:define name="top"><h3>Datos de Usuario</h3></ui:define>
+    <ui:define name="title">Datos de Usuario</ui:define>
+    <ui:define name="content">
+        <h:outputScript name="firma_2.js" library="js" />
+        <h:form id="mainForm" prependId="false">
+            <center>
+                <h2>
+                    Datos de Usuario 
+                </h2>
+            </center>
+            <h:panelGrid columns="1" columnClasses="thirty-percent,  seventy-percent"  style="width: 100%">
+                 
+                <h:panelGroup>
+                    <p:fieldset legend="Firma electrónica" >
+
+                        <h:panelGrid columns="2" id="datosFirma" columnClasses="fifty-percente, fifty-percente"   style="width: 100%">
+                            <h:panelGroup> 
+
+                                <p:outputLabel  id="fElecotronica" value="#{datosUsuario.file.fileName}"
+                                                style="font-weight: bolder; width: 80% !important; font-size: 8px" /><br></br>
+                                <p:fileUpload id="firma" 
+                                              label="Firma Electrónica" update="fElecotronica"
+                                              listener="#{datosUsuario.upload}" style="width: 50%"
+                                              styleClass="info-button rounded-button p-mr-2 p-mb-2"
+                                              uploadLabel="Subir" cancelLabel="Cancelar"  
+                                              auto="true" skinSimple="true" fileLimit="1" 
+                                              sizeLimit="10000000000" allowTypes="/(\.|\/)(p12)$/" /><br/> 
+                                <p:outputLabel value="Contraseña*" for="clave" style="font-weight: bolder;" /><br></br>
+                                <p:password id="clave" value="#{datosUsuario.claveFirma}"  class="panelInput" /><br></br>
+                                <p:outputLabel value=""  style="font-weight: bolder;"/><br></br>
+                                <p:commandButton value="Validar firma electrónica" icon="fa fa-check" update="datosFirma, pnlBtn" styleClass="success-button rounded-button p-mr-2 p-mb-2"
+                                                 actionListener="#{datosUsuario.validarFirmaElectronica()}"  /><br></br>
+                            </h:panelGroup>  
+                            <h:panelGroup></h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Ubicación"  style="font-weight: bolder;"/><br></br>
+                                <p:inputText   readonly="#{!datosUsuario.firmaValidada}" value="#{datosUsuario.firmaElectronica.ubicacion}" style="width: 90%"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Estado Firma"  style="font-weight: bolder;"/><br></br>
+                                <p:inputText readonly="true"  value="#{datosUsuario.firmaElectronica.estadoFirma}" style="width: 90%" />
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="UID"  style="font-weight: bolder;"/><br></br>
+                                <p:inputText readonly="true"  value="#{datosUsuario.firmaElectronica.uid}" style="width: 90%"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="CN"  style="font-weight: bolder;"/><br></br>
+                                <p:inputText readonly="true"  value="#{datosUsuario.firmaElectronica.cn}" style="width: 90%"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Emisión"  style="font-weight: bolder;"/><br></br>
+                                <p:inputText readonly="true"  value="#{datosUsuario.firmaElectronica.emision}"  style="width: 90%"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="ISUSER"  style="font-weight: bolder;"/><br></br>
+                                <p:inputText readonly="true"  value="#{datosUsuario.firmaElectronica.isuser}"  style="width: 90%"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Fecha Emisión*"  style="font-weight: bolder;"/><br></br>
+                                <p:inputText readonly="true"  value="#{datosUsuario.firmaElectronica.fechaEmision}" style="width: 90%" >
+                                    <f:convertDateTime pattern="yyyy-MM-dd"/>  
+                                </p:inputText>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Fecha Expiración*"  style="font-weight: bolder;"/><br></br>
+                                <p:inputText readonly="true"  value="#{datosUsuario.firmaElectronica.fechaExpiracion}"  style="width: 90%">
+                                    <f:convertDateTime pattern="yyyy-MM-dd"/>  
+                                </p:inputText>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Tipo firma"  style="font-weight: bolder" /><br></br>
+                                <p:selectOneMenu value="#{datosUsuario.firmaElectronica.tipoFirma}" 
+                                                 style="width: 90% !important;" disabled="#{!datosUsuario.firmaValidada}" >
+                                    <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+                                    <f:selectItem itemLabel="QR" itemValue="QR" /> 
+
+                                </p:selectOneMenu>    
+                            </h:panelGroup> 
+                        </h:panelGrid>
+                        <center>
+                            <h:panelGroup id="pnlBtn">
+                                <p:commandButton value="Grabar" styleClass="info-button rounded-button p-mr-2 p-mb-2" 
+                                                 icon="fa fa-save" update="mainForm" disabled="#{!datosUsuario.firmaValidada}"
+                                                 actionListener="#{datosUsuario.guardarActualizarFirmaElectronica()}"  />
+
+                            </h:panelGroup>
+                        </center>
+                        <br></br>
+                    </p:fieldset>
+                </h:panelGroup>
+            </h:panelGrid>
+
+        </h:form>
+
+        <p:dialog id="changeData" widgetVar="dlgChangeData"
+                  resizable="false" modal="true" showHeader="false">
+            <h:form id="formChangeData">
+                <br></br>
+                <center>
+                    <p:outputLabel value="Datos de Usuario" style="font-weight: bolder; font-size: 16px;" /><br></br>
+                </center>
+                <br></br>
+                <h:panelGrid columns="2" columnClasses="fifty-percent,  fifty-percent"  style="width: 100%">
+                    <h:panelGroup>
+                        <p:outputLabel value="Nombres: " style="font-weight: bolder;" /><br></br>
+                        <p:inputText value="#{datosUsuario.persona.nombres}" /> 
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Apellidos: "  style="font-weight: bolder;"/><br></br>
+                        <p:inputText value="#{datosUsuario.persona.apellidos}"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Dirección: "  style="font-weight: bolder;" /><br></br>
+                        <p:inputText value="#{datosUsuario.persona.direccion}"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Correo: (Separar por punto y coma ;)" 
+                                       style="font-weight: bolder;"/><br></br>
+                        <p:inputText value="#{datosUsuario.persona.correo}"/>
+                    </h:panelGroup>
+                   
+                </h:panelGrid>
+                <br/>
+                <h:panelGroup>
+                    <p:outputLabel id="imagen" value="Imagen #{datosUsuario.imagen} "  
+                                   style="font-weight:bold; font-size: 12px" /> 
+                    <p:outputLabel  value=" La imagen debe se menor a 5 MB" style="font-size: 8px !important" />
+                    <div align="center">
+                        <p:fileUpload  id="imagenUsuario" label="Imagen"
+                                       update="imagen"
+                                       mode="advanced" 
+                                       listener="#{datosUsuario.handleFileUpload}"
+                                       dragDropSupport="false"
+                                       multiple="false" 
+                                       sizeLimit="5000000" 
+                                       fileLimit="10" 
+                                       style="max-width: 100%"
+                                       allowTypes="/(\.|\/)(jpe?g|png)$/" />
+                    </div>
+                </h:panelGroup>
+                <br></br>
+                <center>
+                    <p:commandButton value="Guardar" 
+                                     icon="ui ui-icon-check" actionListener="#{datosUsuario.updateUser()}" />
+                    <p:spacer width="10" />
+                    <p:commandButton value="Cancelar" icon="ui ui-icon-close" 
+                                     update="formChangeData" actionListener="#{datosUsuario.cancelar()}" 
+                                     oncomplete="PF('dlgChangeData').hide();" />
+                </center>
+                <br></br>
+            </h:form>
+        </p:dialog>
+        <p:dialog id="changePass" widgetVar="dlgChangePass" width="300"  resizable="false" modal="true" showHeader="false">
+            <h:form id="formChangePass">
+                <br></br>
+                <center>
+                    <p:outputLabel value="Cambio de Clave" style="font-weight: bolder; font-size: 16px;" /><br></br>
+                    <p:outputLabel value="Mínimo 8 caracteres" style="font-weight: bolder; font-size: 12px;" />
+                </center>
+                <br></br>
+                <h:panelGrid columns="1" style="font-size: 14px;font-weight: bolder; width: 100%" >
+                    <h:panelGroup>
+                        <p:outputLabel value="Ingrese la clave actual:"/><br></br>
+                        <p:password value="#{datosUsuario.pass}"  style="width: 90%" />    
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Ingrese la nueva clave:"/><br></br>
+                        <p:password value="#{datosUsuario.passOne}" style="width: 90%" />    
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Repita la nueva clave:"/><br></br>
+                        <p:password value="#{datosUsuario.passTwo}"  style="width: 90%" />    
+                    </h:panelGroup>
+                </h:panelGrid>
+                <br></br>
+                <center>
+                    <p:commandButton value="Guardar" icon="pi pi-check" 
+                                     actionListener="#{datosUsuario.cambioClave()}" />
+                    <p:spacer width="10" />
+                    <p:commandButton value="Cancelar" icon="pi pi-times" 
+                                     actionListener="#{datosUsuario.cerrarDialogo()}"  oncomplete="PF('dlgChangePass').hide();" />
+                </center>
+                <br></br>
+            </h:form>
+        </p:dialog>
+        <p:dialog id="dlgFirmaDigital" widgetVar="dlgFirmaDigital" modal="true" showHeader="false">
+            <h:form>
+                <center>
+                    <p:outputLabel value="Firma Digital" style="font-weight: bolder; font-size: 14px"/>
+                    <br></br>
+                    <br></br>
+
+                    <canvas id="cnv" name="cnv" width="500" height="100" style="background-color: #000;"></canvas>
+                    <br></br>
+                    <br></br>
+
+                    <p:commandButton id="btnFirma" value="Firmar" icon="fa fa-foursquare"  onclick="StartSign()" />
+                    <p:spacer width="10"/>
+                    <p:commandButton id="btnAceptarFirmaDlg"  value="Aceptar" icon="fa fa-pied-piper" 
+                                     oncomplete="PF('dlgFirmaDigital').hide()" />
+                    <p:spacer width="10"/>
+                    <p:commandButton id="btnCerrarFirmaDlg"  value="Cancelar" icon="fa fa-close" oncomplete="PF('dlgFirmaDigital').hide()" />
+                </center>
+                <textarea style="display: none" name="dataFirma" id="dataFirma" ></textarea>
+                <p:remoteCommand name="firmaSolicitante" 
+                                 actionListener="#{datosUsuario.firmaDigital()}" />
+                <br></br>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

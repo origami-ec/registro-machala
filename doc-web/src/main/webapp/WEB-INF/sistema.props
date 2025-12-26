@@ -1,0 +1,26 @@
+[sistema]
+ejbRuta = java:global/origamiGT/
+
+rutaFirmasElectronicas = D:/servers-files/firmas/
+rutaRepositorioArchivo = D:/server-files/origami/tramites/
+rutaRepositorioDocumental = D:/server-files/origami/documentos/
+rutaRepositorioFirmado = D:/server-files/origami/firmados/
+rutaRepositorioNotas = D:/server-files/origami/notas/
+keyFiles = 12345
+
+ws = http://127.0.0.1:8713
+wsUser = origami
+wsPass = 12345678
+
+wsDinardap = http://192.188.57.85:8790/api/
+wsDinardapUser = ventanilla
+wsDinardapPass = 12345678
+
+[ejbs]
+entityManager = java:module/manager
+bpmBaseEngine = java:module/bpmBaseEngine
+bpmProcessEngine = java:module/bpmProcessEngine
+datasource = java:module/dataSource
+
+[zoning]
+region = EC

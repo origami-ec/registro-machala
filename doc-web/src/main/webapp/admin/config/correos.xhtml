@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="./../../template/bpmTemplate.xhtml"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <ui:define name="title">Correos</ui:define>
+
+    <ui:define name="content">
+        <h:form id="formCorreo" prependId="false">
+            <center><h2>Correos</h2></center>
+            <p:dataTable id="dtCorreo" var="correo" 
+                         lazy="true" 
+                         filterEvent="enter" 
+                         paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         reflow="true" 
+                         paginator="true" paginatorPosition="bottom"
+                         rows="10" rowsPerPageTemplate="10, 20, 30,500" 
+                         value="#{correoMB.lazyCorreo}">
+                <p:column width="10">
+                    <p:rowToggler/>
+                </p:column>
+                <p:column headerText="Destinatario" filterBy="${correo.destinatario}">
+                    <h:outputText value="#{correo.destinatario}" />
+                </p:column>
+                <p:column headerText="Asunto" >
+                    <h:outputText value="#{correo.asunto}" />
+                </p:column>
+                <p:column headerText="Fecha de Envío" width="120" >
+                    <center>
+                        <h:outputText value="#{correo.fechaEnvio}">
+                            <f:convertDateTime pattern="dd-MM-yyyy HH:mm:ss" />
+                        </h:outputText>
+                    </center>
+                </p:column>
+                <p:column headerText="Enviado" width="120">
+                    <center>
+                        <p:selectBooleanButton onLabel="Enviado" value="#{correo.enviado}" offLabel="No Enviado"
+                                               onIcon="pi pi-check" offIcon="pi pi-times" disabled="#{correo.enviado}" >
+                            <p:ajax listener="#{correoMB.showDialog(correo)}" />
+                        </p:selectBooleanButton>
+                    </center>
+                </p:column>
+                <p:rowExpansion>
+                    <h:outputText value="#{correo.mensaje}" escape="false"/>
+                </p:rowExpansion>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog id="dlgConfirmation" widgetVar="dlgConfirmation" header="Esta seguro de reenviar el correo?"  closable="false" dynamic="true" modal="true" draggable="false">
+            <h:panelGroup>
+                <center>
+                    <p:commandButton value="Si" actionListener="#{correoMB.reenviarCorreo()}" style="width: 50px " update="formCorreo"/>
+                    <p:commandButton value="No " style="margin-left: 15px; width: 50px; background: red; border-color: red" actionListener="#{correoMB.closeDialog()}" update="formCorreo"/>
+                </center>
+            </h:panelGroup>
+        </p:dialog>
+    </ui:define>
+
+</ui:composition>

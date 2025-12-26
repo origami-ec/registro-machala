@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets" template="/template/templateDocs.xhtml"
+                xmlns:p="http://primefaces.org/ui" xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:poue="http://primefaces.org/ui/extensions" xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+
+    <ui:define name="top">
+        <h3>Reuniones BCBG</h3>
+    </ui:define>
+    <ui:define name="title">Reuniones BCBG</ui:define>
+    <ui:define name="content">
+        <center>
+            <h2> Reuniones BCBG </h2>
+        </center>
+
+        <h:form id="formMain" prependId="false"> 
+            <p:panelGrid columns="2" columnClasses="twenty-percent, fifty-percent" 
+                         styleClass="ui-panelgrid-blank" >
+                <h:panelGroup>
+                    <p:panelGrid columns="2">
+                        <h:panelGroup>
+                            <p:outputLabel value="Asunto de la reunión" style="font-weight: bolder"/><br/>
+                            <p:inputText value="#{reunionesMB.reunion.asunto}" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Descripción de la reunión" style="font-weight: bolder"/><br/>
+                            <p:inputText value="#{reunionesMB.reunion.observacion}" /><br/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:commandButton value="Grabar reunión" actionListener="#{reunionesMB.guardarReuniones()}" update="dtReuniones" icon="fa fa-save"/>
+                        </h:panelGroup>
+                    </p:panelGrid>
+
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:dataTable id="dtReuniones" var="reunion" 
+                                 lazy="false" 
+                                 filterEvent="enter" 
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 reflow="true" 
+                                 rowKey="#{reunion.id}"
+                                 paginator="true" paginatorPosition="bottom"
+                                 rows="10" rowsPerPageTemplate="10, 20, 30,500" 
+                                 value="#{reunionesMB.reuniones}">
+
+                        <p:column headerText="Asunto" width="200">
+                            <h:outputText value="#{reunion.asunto}" />
+                        </p:column>
+                        <p:column headerText="Descripción" >
+                            <center>
+                                <h:outputText value="#{reunion.observacion}" />
+                            </center>
+                        </p:column> 
+                        <p:column headerText="Fecha de creación"  >
+                            <center>
+                                <h:outputText value="#{reunion.fecha}" >
+                                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                                </h:outputText>
+                            </center>
+                        </p:column>
+                        <p:column headerText="Acciones" width="120">
+                            <center>
+                                <p:commandLink actionListener="#{reunionesMB.eliminarReunion(reunion)}"  
+                                               styleClass="edit" style="margin-right: 10px" title="Eliminar reunión">
+                                    <i class="fa fa-close" style="color: red; font-size: 1.2em; margin-right: 5px;"></i>
+                                    <p:confirm header="Confirmación" message="Esta seguro de eliminar la reunión" icon="ui-icon-alert" />
+                                </p:commandLink>
+                                <p:commandLink actionListener="#{reunionesMB.abrirReunion(reunion)}"  
+                                               styleClass="edit" style="margin-right: 10px" title="Ir a reunión">
+                                <p:graphicImage value="/resources/icons/meet.png" style="width: 30px; height: 30px;" />
+                                </p:commandLink>
+                            </center>
+                        </p:column>
+
+                    </p:dataTable>
+                </h:panelGroup> 
+            </p:panelGrid>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+        </h:form>
+
+
+    </ui:define>
+</ui:composition>

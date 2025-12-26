@@ -1,0 +1,435 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co"> 
+    <ui:define name="title">Reportes Indices</ui:define>
+    <ui:define name="content">
+        <center><h2>ÍNDICES</h2></center> 
+        <h:form id="mainForm">
+            <h:panelGrid id="menu" columns="4" style="margin: 0 auto; font-size: 16px; font-weight: bolder;">
+                <p:outputLabel value="Tipo de Índice:" style="width: 200px;"/>
+                <p:selectOneMenu value="#{reporteIndice.tipoindice}" style="width: 200px; margin-right: 15px">
+                    <f:selectItem itemLabel="Seleccionar..." itemValue="#{0}" />
+                    <f:selectItem itemLabel="Ventanilla" itemValue="#{1}" />
+                    <f:selectItem itemLabel="Certificación" itemValue="#{2}" />
+                    <f:selectItem itemLabel="Revisión" itemValue="#{3}" />
+                    <f:selectItem itemLabel="Inscripción" itemValue="#{4}" />
+                    <p:ajax listener="#{reporteIndice.onChangeOpcion}" update="mainForm" />
+                </p:selectOneMenu>
+
+                <h:outputLabel for="mesAnio" value="Mes / Año:" style="font-weight: bolder;font-size: 14px"/>
+                <p:datePicker id="mesAnio"
+                              value="#{reporteIndice.mesAnio}"
+                              view="month"
+                              pattern="MM/yyyy"
+                              placeholder="MM/yyyy"
+                              showIcon="true"
+                              locale="es">
+                    <p:ajax event="dateSelect" 
+                            listener="#{reporteIndice.onChangeOpcion}" 
+                            update="mainForm"/>
+                </p:datePicker>
+
+
+                <p:outputLabel value="Opciones:" rendered="${reporteIndice.tipoindice == 1}" style="width: 200px;"/>
+                <p:selectOneMenu value="#{reporteIndice.subTipoIndV}" style="width: 200px;" rendered="${reporteIndice.tipoindice == 1}">
+                    <f:selectItem itemLabel="Seleccionar..." itemValue="#{0}" />
+                    <f:selectItem itemLabel="Tramites generados" itemValue="#{1}" />
+                    <f:selectItem itemLabel="Tramites ingresados" itemValue="#{2}" /> 
+                    <p:ajax listener="#{reporteIndice.onChangeOpcion}" update="mainForm"/>
+                </p:selectOneMenu>
+
+                <p:outputLabel value="Tipo Certificado:" rendered="${reporteIndice.tipoindice == 2}" style="width: 200px;"/>
+                <p:selectOneMenu value="#{reporteIndice.subTipoindice}" style="width: 200px;" rendered="${reporteIndice.tipoindice == 2}">
+                    <f:selectItem itemLabel="Seleccionar..." itemValue="#{0}" />
+                    <f:selectItem itemLabel="Emitidos" itemValue="#{1}" />
+                    <!-- <f:selectItem itemLabel="Rectificaciones" itemValue="#{2}" /> --> <!-- Por el moemnto deshabilitado  -->
+                    <f:selectItem itemLabel="Control de Calidad" itemValue="#{3}" />
+                    <p:ajax listener="#{reporteIndice.onChangeOpcion}" update="mainForm"/>
+                </p:selectOneMenu>
+            </h:panelGrid>
+            <!-- Botón Generar -->
+            <div style="text-align:center; margin-top: 15px;">
+                <p:commandButton value="Generar"
+                                 icon="pi pi-play"
+                                 actionListener="#{reporteIndice.generar}"
+                                 process="@form"
+                                 update="panelResultados"  />
+            </div>
+
+            <!-- Zona de resultados -->
+            <p:outputPanel id="panelResultados" style="margin-top:20px;">
+
+                <!-- Sección Ventanilla -->
+                <h:panelGroup rendered="#{reporteIndice.mostrarResultado and reporteIndice.tipoindice == 1}">
+                    <p:outputPanel id="panelResultadosVentanilla" style="margin-top:20px;"
+                                   rendered="#{reporteIndice.mostrarResultado}">
+
+                        <p:dataTable value="#{reporteIndice.ventanilla}" var="r"
+                                     style="width:900px; margin:0 auto;"
+                                     paginator="false"
+                                     emptyMessage="No se encontraron datos para este mes.">
+                            <p:columnGroup type="header">
+
+                                <p:row>
+                                    <p:column headerText="Nombre" rowspan="2" style="text-align:center; width: 250px;" />
+
+                                    <p:column headerText="Inscripciones" colspan="2"
+                                              style="text-align:center; font-weight:bold;" />
+
+                                    <p:column headerText="Certificados" colspan="2"
+                                              style="text-align:center; font-weight:bold;" />
+                                </p:row>
+                                <p:row>
+                                    <p:column headerText="Sin Valor" style="text-align:center;" />
+                                    <p:column headerText="Con Valor" style="text-align:center;" />
+                                    <p:column headerText="Sin Valor" style="text-align:center;" />
+                                    <p:column headerText="Con Valor" style="text-align:center;" />
+                                </p:row>
+
+                            </p:columnGroup>
+
+                            <p:column style="width: 250px;">
+                                <h:outputText value="#{r.nombreFuncionario != null and r.nombreFuncionario ne '' 
+                                                       ? r.nombreFuncionario 
+                                                       : r.usuario}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="TOTAL" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{r.inscripcionSinValor}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="#{reporteIndice.totalCeroIns}" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{r.inscripcionConValor}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="#{reporteIndice.totalValorIns}" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{r.certificadoSinValor}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="#{reporteIndice.totalCeroCertif}" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{r.certificadoConValor}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="#{reporteIndice.totalValorCertif}" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+
+                        </p:dataTable>
+                    </p:outputPanel>
+                </h:panelGroup>
+
+                <!-- Sección Certificación -->
+                <h:panelGroup rendered="#{reporteIndice.mostrarResultado and reporteIndice.tipoindice == 2 and reporteIndice.subTipoindice == 1}">
+                    <p:outputPanel id="panelResultadosCertif" style="margin-top:20px;"
+                                   rendered="#{reporteIndice.mostrarResultado}">
+                        <p:dataTable value="#{reporteIndice.certificacion}" var="c"
+                                     style="width:1000px; margin:0 auto;"
+                                     paginator="false"
+                                     emptyMessage="No se encontraron datos para este mes.">
+                            <p:columnGroup type="header">
+                                <p:row>
+                                    <p:column headerText="Funcionario" rowspan="2" style="text-align:center; width: 250px;" />
+                                    <p:column headerText="Asignados" rowspan="2" style="text-align:center; font-weight:bold;" />
+                                    <p:column headerText="Reasignados" colspan="2" style="text-align:center; font-weight:bold;" />
+                                    <p:column headerText="Procesados" colspan="2" style="text-align:center; font-weight:bold;" />
+                                    <p:column headerText="Pendientes" rowspan="2" style="text-align:center; font-weight:bold;" />
+                                    <p:column headerText="% Rendimiento" rowspan="2" style="text-align:center; font-weight:bold;" />
+                                </p:row>
+                                <p:row>
+                                    <p:column headerText="Transferidos" style="text-align:center;" />
+                                    <p:column headerText="Recibidos" style="text-align:center;" />
+                                    <p:column headerText="A tiempo" style="text-align:center;" />
+                                    <p:column headerText="Fuera de fecha" style="text-align:center;" />
+                                </p:row>
+
+                            </p:columnGroup>
+                            <p:column style="width: 250px;">
+                                <h:outputText value="#{c.nombreFuncionario != null and c.nombreFuncionario ne '' 
+                                                       ? c.nombreFuncionario 
+                                                       : c.usuario}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="TOTAL" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{c.asignados}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="#{reporteIndice.totalAsignados}" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{c.reasignadosQuitar}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="#{reporteIndice.totalReasigMenos}" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{c.reasignadosMas}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="#{reporteIndice.totalReasigMas}" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{c.entregadosTiempo}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="#{reporteIndice.totalTiempo}" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{c.entregadosAtras}" style="#{c.entregadosAtras > 0 ? 'color: red;' : ''}"/>
+                                <f:facet name="footer">
+                                    <h:outputText value="#{reporteIndice.totalRetraso}" style="#{reporteIndice.totalRetraso > 0 ? 'color: red; font-weight: bold;' : ''}" />
+                                </f:facet>
+                            </p:column>
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{c.pendientes}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="#{reporteIndice.totalPendientes}" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{c.porcentRendimiento}%" />
+                                <f:facet name="footer">
+                                    <h:outputText value="#{reporteIndice.totalPorcent}%" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+                        </p:dataTable>
+                    </p:outputPanel>
+                </h:panelGroup>
+
+
+                <h:panelGroup rendered="#{reporteIndice.mostrarResultado and reporteIndice.tipoindice == 3}">
+                    <p:outputPanel id="panelResultadosRevision" style="margin-top:20px;">
+                        <p:dataTable value="#{reporteIndice.revision}" var="rev"
+                                     style="width:100%; margin:0 auto;"
+                                     paginator="false"
+                                     emptyMessage="No se encontraron datos para este mes.">
+                            <p:columnGroup type="header">
+                                <p:row>
+                                    <p:column headerText="Funcionario" rowspan="2" style="text-align:center; width: 200px;" />
+                                    <p:column headerText="Asignados" rowspan="2" style="text-align:center; font-weight:bold;" />
+                                    <p:column headerText="Revisados" colspan="2" style="text-align:center; font-weight:bold;" />
+                                    <p:column headerText="Gestión" colspan="2" style="text-align:center; font-weight:bold;" />
+                                    <p:column headerText="Resultados" colspan="4" style="text-align:center; font-weight:bold;" />
+                                </p:row>
+                                <p:row >
+                                    <p:column headerText="A Tiempo" style="text-align:center;"/>
+                                    <p:column headerText="Fuera Tiempo" style="text-align:center;"/>
+                                    <p:column headerText="Reasignados" style="text-align:center;"/>
+                                    <p:column headerText="Transferidos" style="text-align:center;" />
+                                    <p:column headerText="Devolutivas" style="text-align:center;" />
+                                    <p:column headerText="Negativas" style="text-align:center;" />
+                                    <p:column headerText="Habilitados" style="text-align:center;" />
+                                    <p:column headerText="Pendientes" style="text-align:center"/>
+                                </p:row>
+                            </p:columnGroup>
+
+                            <p:column>
+                                <h:outputText value="#{rev.nombreRevisor != null ? rev.nombreRevisor : rev.usuario}" />
+                                <f:facet name="footer"><h:outputText value="TOTALES" style="font-weight:bold;" /></f:facet>
+                            </p:column>
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{rev.asignados}" />
+                                <f:facet name="footer"><h:outputText value="#{reporteIndice.totalAsignados}" style="font-weight:bold;" /></f:facet>
+                            </p:column>
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{rev.revisadosATiempo}" />
+                                <f:facet name="footer"><h:outputText value="#{reporteIndice.totalTiempo}" style="font-weight:bold;" /></f:facet>
+                            </p:column>
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{rev.revisadosFueraTiempo}" style="#{rev.revisadosFueraTiempo > 0 ? 'color: red;' : ''}"/>
+                                <f:facet name="footer"><h:outputText value="#{reporteIndice.totalRetraso}" style="#{reporteIndice.totalRetraso > 0 ? 'color: red; font-weight: bold;' : 'font-weight: bold;'}" /></f:facet>
+                            </p:column>
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{rev.reasignados}" />
+                                <f:facet name="footer"><h:outputText value="#{reporteIndice.totalReasignadosRev}" style="font-weight:bold;" /></f:facet>
+                            </p:column>
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{rev.transferidos}" />
+                                <f:facet name="footer"><h:outputText value="#{reporteIndice.totalTransferidos}" style="font-weight:bold;" /></f:facet>
+                            </p:column>
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{rev.devolutivas}" />
+                                <f:facet name="footer"><h:outputText value="#{reporteIndice.totalDevolutivas}" style="font-weight:bold;" /></f:facet>
+                            </p:column>
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{rev.negativas}" />
+                                <f:facet name="footer"><h:outputText value="#{reporteIndice.totalNegativas}" style="font-weight:bold;" /></f:facet>
+                            </p:column>
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{rev.habilitados}" />
+                                <f:facet name="footer"><h:outputText value="#{reporteIndice.totalHabilitados}" style="font-weight:bold;" /></f:facet>
+                            </p:column>
+                            <p:column style="text-align:center;">
+                               <h:outputText value="#{rev.pendientes}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="#{reporteIndice.totalPendientesRev}" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+                        </p:dataTable>
+                    </p:outputPanel>
+                </h:panelGroup>
+
+
+
+                <!-- Sección Inscripción -->
+               <!-- comment <h:panelGroup rendered="# {reporteIndice.mostrarResultado and reporteIndice.tipoindice == 4}">
+
+                    <p:outputPanel id="panelResultadosInscripcion" style="margin-top:20px;">
+                        <p:dataTable value="# {reporteIndice.inscripciones}" var="ins"
+                                     style="width:900px; margin:0 auto;"
+                                     emptyMessage="No se encontraron datos para este mes."
+                                     paginator="false">
+
+                            <p:columnGroup type="header">
+                                <p:row>
+                                    <p:column headerText="Funcionario" rowspan="2" style="width: 300px; text-align:center;"/>
+                                    <p:column headerText="Asignados" rowspan="2" style="text-align:center;"/>
+                                    <p:column headerText="Entregados" colspan="2" style="text-align:center; font-weight:bold;"/>
+                                </p:row>
+                                <p:row>
+                                    <p:column headerText="A Tiempo" style="text-align:center;"/>
+                                    <p:column headerText="Con Retraso" style="text-align:center;"/>
+                                </p:row>
+                            </p:columnGroup>
+
+                            <p:column>
+                                <h:outputText value="# {ins.nombreFuncionario != null ? ins.nombreFuncionario : ins.usuario}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="TOTALES" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+
+                            <p:column style="text-align:center;">
+                                <h:outputText value="# {ins.asignados}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="# {reporteIndice.totalAsignados}" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+
+                            <p:column style="text-align:center;">
+                                <h:outputText value="# {ins.entregadosATiempo}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="# {reporteIndice.totalTiempo}" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+
+                            <p:column style="text-align:center;">
+                                <h:outputText value="# {ins.entregadosConRetraso}" style="# {ins.entregadosConRetraso > 0 ? 'color: red; font-weight: bold;' : ''}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="# {reporteIndice.totalRetraso}" style="font-weight:bold; color: red;" />
+                                </f:facet>
+                            </p:column>
+
+                        </p:dataTable>
+
+
+
+                    </p:outputPanel>
+
+                </h:panelGroup>  -->
+
+                <h:panelGroup rendered="#{reporteIndice.mostrarResultado and reporteIndice.tipoindice == 4}">
+
+                    <p:outputPanel id="panelResultadosInscripcion" style="margin-top:20px;">
+                        <p:dataTable value="#{reporteIndice.inscripciones}" var="ins"
+                                     style="width:95%; margin:0 auto;"
+                                     emptyMessage="No se encontraron datos para este mes."
+                                     paginator="false">
+
+                            <p:columnGroup type="header">
+                                <p:row>
+                                    <p:column headerText="Funcionario" rowspan="2" style="width: 250px; text-align:center;"/>
+                                    <p:column headerText="Asignados" rowspan="2" style="text-align:center; font-weight:bold;"/>
+                                    <p:column headerText="Entregados" colspan="2" style="text-align:center; font-weight:bold;"/>
+                                    <p:column headerText="Reasignados" rowspan="2" style="text-align:center; font-weight:bold;"/>
+                                    <p:column headerText="Transferidos" rowspan="2" style="text-align:center; font-weight:bold;"/>
+                                    <p:column headerText="Pendientes" rowspan="2" style="text-align:center; font-weight:bold;"/>
+                                </p:row>
+                                <p:row>
+                                    <p:column headerText="A Tiempo" style="text-align:center;"/>
+                                    <p:column headerText="Con Retraso" style="text-align:center;"/>
+                                </p:row>
+                            </p:columnGroup>
+
+                            <p:column>
+                                <h:outputText value="#{ins.nombreFuncionario != null ? ins.nombreFuncionario : ins.usuario}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="TOTALES" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{ins.asignados}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="#{reporteIndice.totalAsignados}" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+
+                           
+
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{ins.entregadosATiempo}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="#{reporteIndice.totalTiempo}" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{ins.entregadosConRetraso}" style="#{ins.entregadosConRetraso > 0 ? 'color: red; font-weight: bold;' : ''}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="#{reporteIndice.totalRetraso}" style="font-weight:bold; color: red;" />
+                                </f:facet>
+                            </p:column>
+                            
+                             <p:column style="text-align:center;">
+                                <h:outputText value="#{ins.reasignados}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="#{reporteIndice.totalReasignadosIns}" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{ins.transferidos}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="#{reporteIndice.totalTransferidos}" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+
+                            <p:column style="text-align:center;">
+                                <h:outputText value="#{ins.pendientes}" style="#{ins.pendientes lt 0 ? 'color: red;' : ''}" />
+                                <f:facet name="footer">
+                                    <h:outputText value="#{reporteIndice.totalPendientes}" style="font-weight:bold;" />
+                                </f:facet>
+                            </p:column>
+
+                        </p:dataTable>
+                    </p:outputPanel>
+
+                </h:panelGroup>
+                <br/>
+
+                <div style="text-align:center;">
+                    <p:commandButton value="Generar Reporte PDF" icon="pi pi-file-pdf"
+                                     rendered="#{reporteIndice.tipoindice != 0 and reporteIndice.mostrarResultado}"
+                                     style="background-color: orangered;"
+                                     actionListener="#{reporteIndice.imprimirReportes()}" 
+                                     ajax="false"/> 
+                </div>
+            </p:outputPanel>
+        </h:form>
+    </ui:define>
+</ui:composition>

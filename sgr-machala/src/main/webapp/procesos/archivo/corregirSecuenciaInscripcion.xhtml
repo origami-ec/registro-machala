@@ -1,0 +1,148 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:co="http://xmlns.jcp.org/jsf/composite/co">
+    <ui:define name="title">Corregir Secuencia Inscripción</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2>CORREGIR SECUENCIA INSCRIPCIÓN</h2></center>
+            <p:outputLabel value="** Solo utilizar esta opción en casos MUY ESPECIALES." 
+                           style="font-size: 20px;font-weight: bolder;color: red;"/>
+            <p:tabView id="mainTab">
+                <p:tab title="Modificar Inscripción">
+                    <p:dataTable id="dtInscripciones" reflow="true" paginator="true" lazy="true" rows="15" paginatorPosition="bottom"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 value="#{corregirSecuenciaInscripcion.movimientosLazy}" var="mov" emptyMessage="No se encontró ningún Item." 
+                                 filterEvent="enter" resizableColumns="false">
+                        <p:column headerText="Libro" filterBy="#{mov.libro.nombre}" filterStyle="width: 95%">
+                            <h:outputText value="#{mov.libro.nombre}" style="text-transform: uppercase;"/>
+                        </p:column>
+                        <p:column headerText="Acto" filterBy="#{mov.acto.nombre}" filterStyle="width: 95%">
+                            <h:outputText  value="#{mov.acto.nombre}" style="text-transform: uppercase;"/>
+                        </p:column>
+                        <p:column headerText="Nro de Trámite" filterBy="#{mov.tramite.tramite.numTramite}" filterStyle="width: 95%"  width="80">
+                            <h:outputText value="#{mov.tramite.tramite.numTramite}" />
+                        </p:column>
+                        <p:column headerText="Nro Repertorio" filterBy="#{mov.numRepertorio}" filterStyle="width: 95%"  width="80">
+                            <h:outputText value="#{mov.numRepertorio}"/>
+                        </p:column>
+                        <p:column headerText="Año Repertorio" filterBy="#{mov.anioRep}" width="80">
+                            <h:outputText value="#{mov.fechaRepertorio}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/></h:outputText>
+                        </p:column>
+                        <p:column headerText="Nro Inscripción" filterBy="#{mov.numInscripcion}" filterStyle="width: 95%" width="80">
+                            <h:outputText value="#{mov.numInscripcion}"/>
+                        </p:column>
+                        <p:column headerText="Año Inscripción" filterBy="#{mov.anioIns}" width="80">
+                            <h:outputText value="#{mov.fechaInscripcion}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/></h:outputText>
+                        </p:column>
+                        <p:column headerText="***" width="40">
+                            <p:commandButton icon="pi pi-pencil" actionListener="#{corregirSecuenciaInscripcion.showDlgEditarInscripcion(mov)}" 
+                                             style="background-color: darkred;" title="Editar Secuencias"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Eliminar Secuencia">
+                    <p:outputLabel value="** Debe haber CONCORDANCIA entre las dos tablas de configuración de Secuencias." 
+                                   style="font-size: 20px;font-weight: bolder;color: red;"/><br/><br/>
+                    <h:panelGrid columns="7" style="margin: 0 auto;" >
+                        <p:outputLabel value="Libro:" style="font-weight: bolder;"/>
+                        <p:selectOneMenu value="#{corregirSecuenciaInscripcion.libro}" converter="entityConverter" filter="true" >
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />  
+                            <f:selectItems value="#{corregirSecuenciaInscripcion.libros}" var="lb" itemLabel="#{lb.nombre}" itemValue="#{lb}"/>  
+                        </p:selectOneMenu>
+                        <p:spacer height="1" width="40" />
+                        <p:outputLabel value="Periodo:" style="font-weight: bolder;"/>
+                        <p:spinner value="#{corregirSecuenciaInscripcion.periodo}" decimalPlaces="0" decimalSeparator="" thousandSeparator="" disabled="true" />
+                        <p:spacer height="1" width="40" />
+                        <p:commandButton value="Consultar" actionListener="#{corregirSecuenciaInscripcion.buscarSecuencias()}" 
+                                         icon="pi pi-search" update="dtSecuencias,dtMovimientos"/>
+                    </h:panelGrid>
+                    <p:panel id="pnlSecuencias" header="ULTIMAS SECUENCIAS UTILIZADAS" style="width: 40%; float: left;">
+                        <p:dataTable id="dtSecuencias" value="#{corregirSecuenciaInscripcion.secuencias}" var="sec" rowIndexVar="index1"
+                                     emptyMessage="No se encontró ningún Item." style="text-align: center;width: 400px;margin: 0 auto;" > 
+                            <p:column headerText="Secuencia" >
+                                <h:outputText value="#{sec.inscripcion}" />
+                            </p:column>
+                            <p:column headerText="Período" >
+                                <h:outputText value="#{sec.anio}" />
+                            </p:column>
+                            <p:column headerText="Borrar" width="40">
+                                <p:commandButton icon="pi pi-trash" actionListener="#{corregirSecuenciaInscripcion.borrarSecuencia(sec)}" 
+                                                 style="background-color: darkred;"
+                                                 update="dtSecuencias" title="Eliminar Secuencia" disabled="#{index1 gt 0}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>
+                    <p:panel id="pnlInscripciones" header="SECUENCIAS EN LAS INSCRIPCIONES" style="width: 59%; float: right;" >
+                        <p:dataTable id="dtMovimientos" value="#{corregirSecuenciaInscripcion.inscripciones}" var="ins" rowIndexVar="index2"
+                                     emptyMessage="No se encontró ningún Item." > 
+                            <p:column headerText="Trámite" width="80">
+                                <h:outputText value="#{ins.tramite.tramite.numTramite}" />
+                            </p:column>
+                            <p:column headerText="Acto" >
+                                <h:outputText value="#{ins.acto.nombre}" style="text-transform: uppercase;"/>
+                            </p:column>
+                            <p:column headerText="Inscripción" width="60" >
+                                <h:outputText value="#{ins.numInscripcion}" />
+                            </p:column>
+                            <p:column headerText="Fecha" width="100">
+                                <h:outputText value="#{ins.fechaInscripcion}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"/></h:outputText>
+                            </p:column>
+                            <p:column headerText="Borrar" width="40">
+                                <p:commandButton icon="pi pi-trash" title="Eliminar partida de la inscripcion" disabled="#{index2 gt 0}" 
+                                                 style="background-color: darkred;"
+                                                 update="dtMovimientos" actionListener="#{corregirSecuenciaInscripcion.editarInscripcion(ins)}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:panel>
+                </p:tab>
+            </p:tabView>
+        </h:form>
+
+        <p:dialog widgetVar="dlgCorregir" header="Modificar Secuencias a la Inscripción" modal="true">
+            <h:form id="formCorregir">
+                <h:panelGrid style="margin: 0 auto;" columns="2">
+                    <p:outputLabel value="LIBRO: " style="font-weight: bolder;font-size: 20px;"/>
+                    <p:outputLabel value="#{corregirSecuenciaInscripcion.movimiento.libro.nombre}" 
+                                   style="font-weight: bolder;font-size: 20px;color: blue;text-transform: uppercase;"/>
+                    <p:outputLabel value="ACTO: " style="font-weight: bolder;font-size: 20px;"/>
+                    <p:outputLabel value="#{corregirSecuenciaInscripcion.movimiento.acto.nombre}" 
+                                   style="font-weight: bolder;font-size: 20px;color: blue;text-transform: uppercase;"/>
+                </h:panelGrid><br/>
+                <h:panelGrid columns="4" style="font-weight: bolder;">
+                    <h:panelGroup>
+                        Nro. Repertorio:<br/>
+                        <p:inputNumber value="#{corregirSecuenciaInscripcion.movimiento.numRepertorio}" decimalPlaces="0" 
+                                       thousandSeparator=""/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Fecha Repertorio:<br/>
+                        <p:calendar value="#{corregirSecuenciaInscripcion.movimiento.fechaRepertorio}" pattern="dd/MM/yyyy HH:mm:ss" 
+                                    placeholder="dd/MM/yyyy HH:mm:ss" mask="true" navigator="true" showOn="button"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Nro. Inscripción:<br/>
+                        <p:inputNumber value="#{corregirSecuenciaInscripcion.movimiento.numInscripcion}" decimalPlaces="0" 
+                                       thousandSeparator=""/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Fecha Inscripción:<br/>
+                        <p:calendar value="#{corregirSecuenciaInscripcion.movimiento.fechaInscripcion}" pattern="dd/MM/yyyy HH:mm:ss" 
+                                    placeholder="dd/MM/yyyy HH:mm:ss" mask="true" navigator="true" showOn="button"/>
+                    </h:panelGroup>
+                </h:panelGrid><br/>
+                <center>
+                    <p:commandButton value="Guardar Cambios" icon="pi pi-save" style="background-color: darkred;" 
+                                     actionListener="#{corregirSecuenciaInscripcion.actualizarMovimiento()}"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

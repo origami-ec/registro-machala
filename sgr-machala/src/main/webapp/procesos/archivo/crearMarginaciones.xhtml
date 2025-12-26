@@ -1,0 +1,188 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition
+    xmlns="http://www.w3.org/1999/xhtml"
+    template="/template/bpmTemplate.xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:co="http://xmlns.jcp.org/jsf/composite/co">
+    <ui:define name="content">
+        <h:form  id="formFolios">
+            <style>
+                #marginacion {
+                    position: absolute;
+                    /*top: 100%;*/
+                    margin: -50px auto;
+                    width: 100%;
+                    height: auto;
+                    transform: rotate(270deg);
+                    transform-origin: 0 0;
+                    text-align: start; 
+                }
+                .marginado {
+                    background-color: #ABEBC6 !important;
+                    color: #192a37 !important;
+                }
+                .marginadoMov {
+                    background-color: #D5F5E3 !important;
+                    color: #192a37 !important;
+                }
+            </style>
+            <center><h2>Revision de Marginaciones</h2></center>
+            <p:panelGrid columns="3" style="width: 60%; text-align: center;margin: 0 auto;">
+                <co:inputSelect label="Inscriptor" value="#{crearMarginaciones.inscriptor}" catalogo="#{crearMarginaciones.inscriptores}" var="ins1" itemLabel="#{ins1.ente.nombres} - #{ins1.usuario}" itemValue="#{ins1}"/> 
+                <co:inputDate label="F. Inscripción Desde:" value="#{crearMarginaciones.inscripcionDesde}"  />
+                <co:inputDate label="F. Inscripción Hasta:" value="#{crearMarginaciones.inscripcionHasta}" /> 
+                <!--<co:inputSelect label="Libro" value="# {crearMarginaciones.libro}" catalogo="# {crearMarginaciones.regLibroList}" var="libro" itemLabel="# {libro.nombre}" itemValue="# {libro}"/>-->  
+                <p:commandButton value="Consultar" actionListener="#{crearMarginaciones.consultar()}" icon="fa fa-search" styleClass="btnStyle" update="formFolios"/>
+                <p:commandButton value="Generar Reporte" actionListener="#{crearMarginaciones.generarReporte()}" icon="fa fa-document" styleClass="btnStyle" />
+            </p:panelGrid>
+            <p:dataTable id="dtFolios" paginator="true" lazy="true" rows="20" rowsPerPageTemplate="20,40,100" rowIndexVar="index"
+                         value="#{crearMarginaciones.movimientos}" var="folio" emptyMessage="No se encontró ningún Item."
+                         style="text-align: center;" filterEvent="enter" paginatorAlwaysVisible="false" 
+                         rowStyleClass="#{folio.marginados eq true? 'marginado' : null}">
+                <!--                <p:column headerText="***" style="width: 25px;">
+                                    <p:rowToggler   />
+                                </p:column>-->
+                <p:column headerText="No" style="width: 40px;">
+                    #{index+1} 
+                </p:column>
+                <p:column headerText="Contrato" filterBy="#{folio.acto.nombre}">
+                    <h:outputText  value="#{folio.acto.nombre}"/>
+                </p:column>
+                <p:column headerText="Repertorio" width="100">
+                    <h:outputText value="#{folio.numRepertorio}"/>
+                </p:column>
+                <p:column headerText="Fec.Repertorio" width="100">
+                    <h:outputText value="#{folio.fechaRepertorio}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Inscripcion" width="100" filterBy="#{folio.numInscripcion}" sortBy="#{folio.numInscripcion}">
+                    <h:outputText value="#{folio.numInscripcion}"/>
+                </p:column>
+                <p:column headerText="Fec.Inscripcion" width="100" sortBy="#{folio.fechaInscripcion}">
+                    <h:outputText value="#{folio.fechaInscripcion}">
+                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Opci." width="7%">
+                    <p:commandButton title="Marginar" icon="fa fa-save" actionListener="#{crearMarginaciones.dlfMarginacion(folio, null)}" />
+                </p:column>
+                <!--                <p:rowExpansion >
+                                    # {crearMarginaciones.getReferencias(folio.movimiento)}
+                                    <p:dataTable id="dtDetReferencias" reflow="true" paginator="true" rows="20" rowsPerPageTemplate="20,30,50,100" rowIndexVar="index"
+                                                 value="#{folios.regMovimientoReferenciaCollection}" var="ref1" emptyMessage="No se encontró ningún Item."
+                                                 style="text-align: center;" filterEvent="enter" resizableColumns="true" paginatorAlwaysVisible="false" 
+                                                 rowStyleClass="#{ref1.movimientoReferencia.marginado eq true? 'marginadoMov' : null}">
+                                                                <p:column headerText="Marginacion" >
+                                                                    <h:outputText value="# {ref1.movimientoReferencia.getDescripcionMarginacion(folio)}" />
+                                                                </p:column>
+                                        <p:column headerText="Contrato" width="20%" >
+                                            <h:outputText  value="#{ref1.movimientoReferencia.acto.nombre}"/>
+                                        </p:column>
+                                        <p:column headerText="Repertorio" width="9%">
+                                            <h:outputText value="#{ref1.movimientoReferencia.numRepertorio}"/>
+                                        </p:column>
+                                        <p:column headerText="Inscripcion" width="9%">
+                                            <h:outputText value="#{ref1.movimientoReferencia.numInscripcion}"/>
+                                        </p:column>
+                                        <p:column headerText="Fec.Inscripcion" width="9%">
+                                            <h:outputText value="#{ref1.movimientoReferencia.fechaInscripcion}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                            </h:outputText>
+                                        </p:column>
+                                        <p:column headerText="Opci." width="7%">
+                                            <p:commandButton title="Marginar" icon="fa fa-save" actionListener="#{crearMarginaciones.dlfMarginacion(ref1.movimientoReferencia, folio)}" />
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:rowExpansion>-->
+            </p:dataTable>
+
+        </h:form>
+
+        <p:dialog id="dlgDescripcionMarg" widgetVar="dlgDescripcionMarg" closeOnEscape="true" header="Descripcion de la marginacion"
+                  modal="true" width="92%" height="650" position="top" >
+            <h:form id="frmMarg">
+                <style>
+                    body .ui-datatable .ui-paginator {
+                        padding: 2px 6px;
+                    }
+                </style>
+                <h:panelGrid columns="2" style="width: 100%; " >
+                    <p:panelGrid style="height: 100% !important;" columns="1" layout="grid" >
+                        <p:fieldset legend="Datos de la inscripcion a marginar" style="height: 100% !important; " >
+                            <p:panelGrid columns="3" style="width: 100%">
+                                <co:inputText label="Libro" value="#{crearMarginaciones.movimientoRefencia.libro.nombre}" readonly="true" />
+                                <co:inputText label="Acto" value="#{crearMarginaciones.movimientoRefencia.acto.nombre}" readonly="true" />
+                                <co:inputText label="Numero repertorio" value="#{crearMarginaciones.movimientoRefencia.numRepertorio}" readonly="true" />
+                                <co:inputText label="Fecha repertorio" value="#{crearMarginaciones.movimientoRefencia.fechaRepertorio}" readonly="true"/>
+                                <co:inputText label="Numero inscripcion" value="#{crearMarginaciones.movimientoRefencia.numInscripcion}" readonly="true" />
+                                <co:inputText label="Fecha inscripcion" value="#{crearMarginaciones.movimientoRefencia.fechaInscripcion}" readonly="true"/>
+                            </p:panelGrid>
+
+                        </p:fieldset>
+                        <p:fieldset legend="Datos de la inscripcion referenciada">
+                            <p:dataTable value="#{crearMarginaciones.movimiento.regMovimientoClienteCollection}" var="pro" rowIndexVar="rowIndexProp" 
+                                         resizableColumns="true" style="text-align: center" scrollable="true" scrollHeight="180" > 
+                                <f:facet name="header">
+                                    Intervinientes #{crearMarginaciones.movimiento.acto.nombre}
+                                </f:facet>
+                                <p:column headerText="No" width="30">
+                                    #{rowIndexProp+1}
+                                </p:column>
+                                <p:column headerText="CI/RUC" width="10%">
+                                    <p:outputLabel value="#{pro.enteInterv.cedRuc}"/>
+                                </p:column>
+                                <p:column headerText="Nombre" >
+                                    <p:outputLabel value="#{pro.enteInterv.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Papel" width="15%">
+                                    <p:outputLabel value="#{pro.papel.papel}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:fieldset>
+                        <br/>
+                        <p:fieldset legend="Marginaciones" style="height: 95% !important; margin-top:2px;">
+                            <p:panelGrid columns="2" style="width: 100%" columnClasses="col-md-8 col-md-1" >
+                                <co:inputText id="descMar" label="Descripcion" value="#{crearMarginaciones.nuevaMarg.observacion}" />
+                                <p:commandButton value="Agregar" icon="fa fa-plus" actionListener="#{crearMarginaciones.agregarMarginacion()}" update="frmMarg, descMar, tbBlobs" />
+                            </p:panelGrid>
+                            <p:dataTable value="#{crearMarginaciones.marginaciones}" var="marg1" paginator="true" rows="5" id="tdMarginaciones" rowIndexVar="rowIndex"
+                                         paginatorAlwaysVisible="false" paginatorPosition="top" scrollHeight="200">
+                                <p:column headerText="No." width="30">
+                                    #{rowIndex + 1}
+                                </p:column>
+                                <p:column headerText="Descripcion">
+                                    #{marg1.observacion}
+                                </p:column>
+                                <p:column headerText="Opc." width="8%">
+                                    <p:commandButton title="Elimina" icon="fa fa-trash" actionListener="#{crearMarginaciones.eliminarMarginacion(rowIndex)}" update="frmMarg:tdMarginaciones" />
+                                </p:column>
+                            </p:dataTable>
+
+                            <div style="text-align: center;" >
+                                <p:commandButton title="Guardar Marginacion" icon="fa fa-save" actionListener="#{crearMarginaciones.guardarMarginaciones()}" update="formFolios:dtFolios" />
+                                <p:commandButton title="Cerrar" icon="fa fa-close" onclick="PF('dlgDescripcionMarg').hide();" update="formFolios:dtFolios" />
+                            </div>
+                        </p:fieldset>
+                    </p:panelGrid>
+                    <!--<p:fieldset legend="Imagenes">-->
+                    <p:dataTable value="#{crearMarginaciones.blobsLazy}" var="blob" paginator="true" rows="1" id="tbBlobs" rowIndexVar="rowIndex"
+                                 paginatorAlwaysVisible="false" paginatorPosition="top" rowKey="#{blob.id}" lazy="true" 
+                                 selectionMode="single" selection="#{crearMarginaciones.blobSelecccionado}" disabledTextSelection="true" >
+                        <p:column>
+                            <p:graphicImage id="imagen" value="#{blob.stream}" stream="false" style="border: 1px solid #f1f1f1; margin-top: 10px; width: 95%"  />
+                            <div id="marginacion"  >
+                                <h:outputLabel value="#{crearMarginaciones.showMarginacion()}" escape="false" style="font-weight: bold; font-size: 8px; color: #000000" />
+                            </div>
+                        </p:column>
+                    </p:dataTable>
+                    <!--</p:fieldset>-->
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+    </ui:define>
+</ui:composition>

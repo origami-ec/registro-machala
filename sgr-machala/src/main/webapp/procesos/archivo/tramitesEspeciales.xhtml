@@ -1,0 +1,256 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Trámites Especiales</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2>TRÁMITES ESPECIALES INGRESADOS</h2></center>
+            <p:dataTable id="dtTramites" paginator="true" lazy="true" rows="20" rowsPerPageTemplate="20,50,100" filterEvent="enter" 
+                         currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords}" 
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         value="#{tramitesEspeciales.liquidaciones}" var="liq" resizableColumns="false" >
+                <p:column headerText="N° Trámite" filterBy="#{liq.numTramiteRp}" sortBy="#{liq.numTramiteRp}" width="90" 
+                          filterStyle="width: 95%;">
+                    <h:outputText value="#{liq.numTramiteRp}"/>
+                </p:column>
+                <p:column headerText="N° Oficio" filterBy="#{liq.oficioMemoReferencia}" 
+                          filterStyle="width: 99%;" filterMatchMode="contains">
+                    <h:outputText  value="#{liq.oficioMemoReferencia}"/>
+                </p:column>
+                <p:column headerText="Repertorio" filterBy="#{liq.repertorio}"  width="80" filterStyle="width: 95%;">
+                    <h:outputText value="#{liq.repertorio}"/>
+                </p:column>
+                <p:column headerText="Nº Comprobante" filterBy="#{liq.codigoComprobante}" 
+                          width="150" filterStyle="width: 95%;" rendered="false">
+                    <h:outputText value="#{liq.codigoComprobante}"/>
+                </p:column>
+                <p:column headerText="N° Referencia" filterBy="#{liq.numeroAutorizacion}" 
+                          width="100" filterStyle="width: 95%;" rendered="false">
+                    <h:outputText value="#{liq.numeroAutorizacion}"/>
+                </p:column>
+                <p:column headerText="Certificador o Inscriptor" width="60" rendered="false">
+                    <h:outputText value="#{liq.inscriptor.usuario}"/>
+                </p:column>
+                <p:column headerText="CI/RUC Solicitante" width="100" 
+                          filterBy="#{liq.solicitante.ciRuc}" filterStyle="width: 99%;">
+                    <h:outputText value="#{liq.solicitante.ciRuc}"/>
+                </p:column>
+                <p:column headerText="Nombres Solicitante" filterStyle="width: 99%;" 
+                          filterBy="#{liq.tramite.nombrePropietario}" >
+                    <h:outputText value="#{liq.tramite.nombrePropietario}" style="text-transform: uppercase;"/>
+                </p:column>
+                <p:column headerText="CI/RUC Factura" width="100" filterBy="#{liq.beneficiario.ciRuc}" 
+                          filterStyle="width: 95%;" rendered="false">
+                    <h:outputText value="#{liq.beneficiario.ciRuc}"/>
+                </p:column>
+                <p:column headerText="Nombres Factura" rendered="false">
+                    <h:outputText value="#{liq.beneficiario.nombreCompleto}" style="text-transform: uppercase;"/>
+                </p:column>
+                <p:column field="fechaIngreso" headerText="Join Date" filterMatchMode="between" 
+                          filterBy="#{liq.fechaIngreso}" rendered="false">
+                    <f:facet name="filter">
+                        <p:datePicker selectionMode="range" onchange="PF('customersTable').filter()" />
+                    </f:facet>
+                </p:column>
+                <p:column headerText="Fecha de Ingreso" width="80">
+                    <h:outputText value="#{liq.fechaIngreso}"><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></h:outputText>
+                </p:column>
+                <p:column headerText="Fecha de Entrega" width="80">
+                    <h:outputText value="#{liq.tramite.fechaEntrega}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+                </p:column>
+                <p:column headerText="Contratos">
+                    <ui:repeat value="#{liq.regpLiquidacionDetallesCollection}" var="det">
+                        <p:outputLabel value="#{det.acto.nombre} &lt;br/&gt;" escape="false"  style="font-size: 12px"/>
+                    </ui:repeat>
+                </p:column>
+                <p:column headerText="Opciones" width="110">
+                    <p:commandButton actionListener="#{tramitesEspeciales.viewProcess(liq)}" icon="pi pi-share-alt" 
+                                     title="Visualizar Diagrama" style="background-color: darkkhaki;" rendered="false"/>
+                    
+                    <p:commandButton icon="pi pi-folder-open" title="Ver Tareas"
+                                     actionListener="#{tramitesEspeciales.showInfo(liq)}"/>
+                    <p:spacer width="5" />
+                    <p:commandButton icon="pi pi-file-pdf" actionListener="#{tramitesEspeciales.showProforma(liq)}" 
+                                     title="Solicitud de Trámite Nro. #{liq.numTramiteRp}" style="background-color: orangered;"/>
+                    <p:spacer width="5" />
+                    <p:commandButton icon="pi pi-cloud-upload" actionListener="#{tramitesEspeciales.showDlgDocumentos(liq)}" 
+                                     title="Visualizar Documentos" style="background-color: darkolivegreen;"/>
+                </p:column>
+            </p:dataTable>
+        </h:form>
+
+        <p:dialog id="dlgVerInfo" header="Informacion de Tramite" widgetVar="dlgVerInfoRp" resizable="false" 
+                  closeOnEscape="true" modal="true" width="700" height="500">
+            <h:form id="formInformLiq">
+                <h:panelGrid columns="2">
+                    <p:outputLabel value="No de Tramite:" style="font-weight: bold; font-size: 18px;color: #d2322d"/>
+                    <p:outputLabel value="#{tramitesEspeciales.liquidacion.numTramiteRp}" style="font-weight: bold; font-size: 18px;"/>
+                </h:panelGrid>
+                <h:panelGrid columns="1" rendered="#{tramitesEspeciales.liquidacion.estadoPago.id eq 7}">
+                    <p:outputLabel value="TRÁMITE INGRESADO EN LÍNEA" style="font-weight: bold; font-size: 18px; color: #0033FF;"/>
+                </h:panelGrid>
+                <p:tabView id="tabTramite">
+                    <p:tab title="Tareas" rendered="#{!userSession.roles.contains(51)}">
+                        <p:dataTable value="#{tramitesEspeciales.tareas}" emptyMessage="El tramite no ha sido ingresado."
+                                     var="tarea" scrollable="true" scrollHeight="350" style="text-align: center;width: 99%">
+                            <p:column headerText="Nombre Tarea">
+                                <p:outputLabel value="#{tarea.name}"/>
+                            </p:column>
+                            <p:column headerText="Usuario" width="100">
+                                <p:outputLabel value="#{tarea.assignee}" rendered="#{tarea.assignee ne null}"/>
+                                <p:outputLabel value="#{tramitesEspeciales.usuariosCandidatos(tarea.id)}" rendered="#{tarea.assignee eq null}"/>
+                            </p:column>
+                            <p:column headerText="Fech.Inicio" width="120">
+                                <p:outputLabel value="#{tarea.createTime}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss" />
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Fech.Fin" width="120">
+                                <p:outputLabel value="#{tarea.endTime}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"    />
+                                </p:outputLabel>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Observaciones">
+                        <p:dataTable value="#{tramitesEspeciales.ht.observacionesCollection}" emptyMessage="Sin elementos..."
+                                     var="obs" scrollable="true" scrollHeight="350" style="text-align: center;width: 99%">
+                            <p:column headerText="Tarea" width="150">
+                                <p:outputLabel value="#{obs.tarea}"/>
+                            </p:column>
+                            <p:column headerText="Observacion">
+                                <p:outputLabel value="#{obs.observacion}"/>
+                            </p:column>
+                            <p:column headerText="Fecha" width="60">
+                                <p:outputLabel value="#{obs.fecCre}" ><f:convertDateTime pattern="dd/MM/yyyy HH:mm"/></p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Usuario" width="60">
+                                <p:outputLabel value="#{obs.userCre}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+
+                </p:tabView>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgReasignarTarea" header="ReAsiganar Tarea" widgetVar="dlgReasignar" resizable="false"
+                  closeOnEscape="true" modal="true" width="500">
+            <h:form id="formreasignar">
+                <p:panelGrid styleClass="noBorder" style="font-weight: bolder;font-size: 12px">
+                    <p:row>
+                        <p:column>
+                            *No Tramite:
+                        </p:column>
+                        <p:column colspan="3">
+                            #{tramitesEspeciales.ht.numTramite}
+                        </p:column>
+                    </p:row>
+                    <p:row>
+                        <p:column>
+                            *Tarea Actual:
+                        </p:column>
+                        <p:column>
+                            #{tramitesEspeciales.tareaActual.name}
+                        </p:column>
+                        <p:column>
+                            *Usuario Actual:
+                        </p:column>
+                        <p:column>
+                            #{tramitesEspeciales.tareaActual.assignee}
+                        </p:column>
+                    </p:row>
+                </p:panelGrid>
+                <p:dataTable value="#{tramitesEspeciales.users}" emptyMessage="Sin elementos..." scrollHeight="350" scrollable="true"
+                             var="usuario" style="text-align: center;" rendered="#{tramitesEspeciales.showUsers}">
+                    <p:column headerText="Usuario">
+                        <p:outputLabel value="#{usuario.usuario}"/>
+                    </p:column>
+                    <p:column headerText="Nombre">
+                        <p:outputLabel value="#{usuario.ente.nombres}"/>
+                    </p:column>
+                    <p:column headerText="Selec." width="50">
+                        <p:commandLink actionListener="#{tramitesEspeciales.reasignarTarea(usuario)}">
+                            <p:graphicImage value="/resources/icons/ok.png" height="16"/>
+                            <p:confirm header="Confirmacion" message="Reasignar tarea?" icon="ui-icon-alert"/>
+                        </p:commandLink>
+                    </p:column>
+                    <p:confirmDialog global="true">
+                        <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                        <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                    </p:confirmDialog>
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog widgetVar="dlgDiagrama" header="Diagrama de Proceso" modal="true" position="top" 
+                  closeOnEscape="true" height="650" width="1000">
+            <h:form id="frmDiagrama">
+                <p:graphicImage value="#{tramitesEspeciales.stream}" stream="false" rendered="#{tramitesEspeciales.stream ne null}" />
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="DOCUMENTOS DE TRÁMITES ESPECIALES" widgetVar="dlgDocumentos" resizable="false" 
+                  modal="true" width="700" height="500">
+            <h:form id="formDocumentos">
+                <h:panelGrid columns="3" style="margin: 0 auto;">
+                    <p:outputLabel value="Nro. de Trámite:" style="font-weight: bold; font-size: 18px;color: #d2322d"/>
+                    <p:spacer width="20" height="1"/>
+                    <p:outputLabel value="#{tramitesEspeciales.ht.numTramite}" style="font-weight: bold; font-size: 18px;"/>
+                </h:panelGrid>
+                <p:tabView>
+                    <p:tab title="Documentos Cargados">
+                        <p:dataTable value="#{tramitesEspeciales.docs}" scrollable="true" scrollHeight="300" 
+                                     emptyMessage="Sin documentos digitalizados." var="doc1" >
+                            <p:column headerText="Nombre Documento">
+                                <p:outputLabel id="nameDoc" value="#{doc1.nombreArchivo}"/>
+                                <p:tooltip for="nameDoc" position="top" value="#{doc1.nombreArchivo}"/>
+                            </p:column>
+                            <p:column headerText="Fecha" width="120">
+                                <p:outputLabel value="#{doc1.fecha}">
+                                    <f:convertDateTime pattern="dd-MM-yyyy HH:mm"/>
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Usuario" width="100">
+                                <p:outputLabel value="#{doc1.nameUser}"/>
+                            </p:column>
+                            <p:column headerText="Estado" width="60">
+                                <p:outputLabel value="ACTIVO" rendered="#{doc1.estado}" 
+                                               style="background-color: greenyellow;font-weight: bolder;"/>
+                                <p:outputLabel value="INACTIVO" rendered="#{!doc1.estado}" 
+                                               style="background-color: darksalmon;font-weight: bolder;"/>
+                            </p:column>
+                            <p:column headerText="**" width="30">
+                                <p:commandButton icon="pi pi-cloud-download" title="Descargar" 
+                                                 style="background-color: darkolivegreen;"
+                                                 actionListener="#{tramitesEspeciales.downLoadDoc(doc1)}" />
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Subir Documentos">
+                        <h:panelGrid style="margin: 0 auto;width: 100%;" columns="1">
+                            <p:outputLabel value="ESPERE A QUE LA VENTANA SE CIERRE!!!" 
+                                           style="font-weight: bolder;color: #0033FF;font-size: 16px;"/>
+                            <p:fileUpload listener="#{tramitesEspeciales.handleUpload}" 
+                                          mode="advanced" 
+                                          fileLimit="1" 
+                                          dragDropSupport="false" 
+                                          sizeLimit="10000000000" 
+                                          label="Seleccionar" 
+                                          uploadLabel="Subir" 
+                                          style="width: auto;" 
+                                          cancelLabel="Cancelar" 
+                                          allowTypes="/(\.|\/)(pdf)$/" />
+                        </h:panelGrid>
+                    </p:tab>
+                </p:tabView>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

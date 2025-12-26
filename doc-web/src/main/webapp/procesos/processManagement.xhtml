@@ -1,0 +1,206 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+    <ui:define name="title">Actualización de Versiones</ui:define>
+    <ui:define name="content">
+        <h:form id="formMain">
+            <center>
+                <h2>Actualización de Versiones</h2>
+            </center>
+            <p:tabView id="tdatos">
+                <p:tab id="tprocess" title="Procesos para Desplegar">
+                    <center>
+                        <p:commandButton value="Nuevo Proceso"  styleClass="info-button  rounded-button p-mr-2 p-mb-2"  icon="fa fa-object-ungroup" actionListener="#{processManagement.newProcess()}"/>
+                    </center><br/>
+                    <p:dataTable id="dtprocess" value="#{processManagement.procedures}" var="p"
+                                 paginator="true" rows="15" emptyMessage="No existen procesos para desplegar" reflow="true" rowsPerPageTemplate="15,30,45" 
+                                 paginatorPosition="bottom"
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks}
+                                 {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 tableStyle="table-layout:auto">
+                        <p:column headerText="Key">
+                            #{p.activitykey}
+                        </p:column>
+                        <p:column headerText="Name">
+                            #{p.descripcion}
+                        </p:column>
+                        <p:column headerText="File Bpmn">
+                            #{p.archivoBpmn}
+                        </p:column>
+                        <p:column headerText="Estado">
+                            <p:outputLabel value="Activo" rendered="#{p.estado}"/>
+                            <p:outputLabel value="Inactivo" rendered="#{!p.estado}"/>
+                        </p:column>
+                        <p:column headerText="Acciones">
+                            <p:commandLink actionListener="#{processManagement.editProcess(p)}"  >
+                                <i class="fa fa-edit" style="font-size: 1.2em; margin-right: 5px;"></i>
+                            </p:commandLink>
+                            <p:spacer width="5" />
+                            <p:commandLink actionListener="#{processManagement.cargarProceso(p)}"  >
+                                <i class="fa fa-upload" style="font-size: 1.2em; margin-right: 5px;"></i>
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab id="tprocessDep" title="Procesos Actuales Desplegados">
+                    <p:dataTable id="dtprocessDep" value="#{processManagement.procesosDesplegados}" var="pd" 
+                                 paginatorPosition="bottom"
+                                 paginator="true" rows="10" reflow="true" emptyMessage="No tiene procesos desplegados"
+                                 style="width: 70%;margin: 0 auto;text-align: center;">
+                        <p:column headerText="Identificador">
+                            #{pd.id}
+                        </p:column>
+                        <p:column headerText="Nombre">
+                            #{pd.name}
+                        </p:column>
+                        <p:column headerText="Ult. Versión" style="width: 10%">
+                            #{pd.version}
+                        </p:column>
+                        <p:column headerText="Diagrama" width="50">
+                            <p:commandButton icon="fa fa-area-chart" 
+                                             actionListener="#{processManagement.showDlgDiagram(pd.deploymentId, pd.diagramResourceName)}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Historial de Todos los Procesos">
+                    <p:dataTable value="#{processManagement.allProcesosDesplegados}" var="apd" 
+                                 paginatorPosition="bottom"
+                                 paginator="true" rows="10" reflow="true" emptyMessage="No tiene procesos desplegados"
+                                 style="width: 70%;margin: 0 auto;text-align: center;">
+                        <p:column headerText="Identificador">
+                            #{apd.id}
+                        </p:column>
+                        <p:column headerText="Nombre">
+                            #{apd.name}
+                        </p:column>
+                        <p:column headerText="Ult. Versión" style="width: 10%">
+                            #{apd.version}
+                        </p:column>
+                        <p:column headerText="Diagrama" width="50">
+                            <p:commandButton icon="fa fa-area-chart" 
+                                             actionListener="#{processManagement.showDlgDiagram(apd.deploymentId, apd.diagramResourceName)}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+            </p:tabView>
+        </h:form>
+
+        <p:dialog widgetVar="dlgDiagrama" showHeader="false" modal="true" 
+                  height="600" width="950" position="center">
+            <h:form id="frmDiagrama">
+                <center>
+                    <h3>
+                        Diagrama de Proceso
+                    </h3>
+                </center>
+                <p:graphicImage value="#{processManagement.stream}" stream="false" rendered="#{processManagement.stream ne null}"/>
+                <br/>
+                <center>
+                    <p:commandButton value="Cerrar" icon="fa fa-close" oncomplete="PF('dlgDiagrama').hide();"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+        <p:sidebar widgetVar="dlgProcess" id="dlgProcess" position="right" style="width: 50%">
+            <h:form id="formProcess">
+                <center>
+                    <p:outputLabel value="Definición de Procesos"  style="font-weight: bolder; font-size: 14px"  />
+                </center>
+                <br></br>
+                <h:panelGrid style="font-weight: bolder; width: 100%" columns="2" >
+                    <h:panelGroup>
+                        <p:outputLabel value="Estado:" /><br></br>
+                        <p:selectOneMenu value="#{processManagement.tipoTramite.estado}" style="width: 95% !important;" >
+                            <f:selectItem itemLabel="Activo" itemValue="true"/>
+                            <f:selectItem itemLabel="Inactivo" itemValue="false"/>
+                        </p:selectOneMenu>    
+                    </h:panelGroup>
+                    <h:panelGroup id="panelDept">
+                        <p:outputLabel value="Departamentos"  style="font-weight: bolder" /><br></br>
+                        <p:selectOneMenu value="#{processManagement.tipoTramite.departamento}" filter="true" 
+                                         converter="dtoConverter" autoWidth="true" style="width: 95% !important;" >
+                            <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+                            <f:selectItems value="#{processManagement.departamentos}" var="dpt" itemLabel="#{dpt.nombre}" itemValue="#{dpt}"/>
+                        </p:selectOneMenu>    
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Nombre:" /><br></br>
+                        <p:inputText value="#{processManagement.tipoTramite.descripcion}" style="width: 95%;"/>    
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Activity Key:" /><br></br>
+                        <p:inputText value="#{processManagement.tipoTramite.activitykey}" style="width: 95%;"/>    
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Activity Bpmn:" /><br></br>
+                        <p:inputText value="#{processManagement.tipoTramite.archivoBpmn}" style="width: 95%;"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Abreviatura:" /><br></br>
+                        <p:inputText value="#{processManagement.tipoTramite.abreviatura}" style="width: 95%;"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Duración (dias):" /><br></br>
+                        <p:inputNumber decimalPlaces="0" value="#{processManagement.tipoTramite.dias}" style="width: 95%;"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <p:outputLabel value="Duración (horas):" /><br/>
+                        <p:inputNumber minValue="0" maxValue="24" decimalPlaces="0"
+                                       value="#{processManagement.tipoTramite.horas}" style="width: 95%;"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <p:outputLabel value="Duración (minutos):" /><br/>
+                        <p:inputNumber minValue="0" maxValue="60" decimalPlaces="0" value="#{processManagement.tipoTramite.minutos}" style="width: 95%;"/>
+                    </h:panelGroup>
+
+                    <h:panelGroup>
+                        <p:outputLabel value="Trámite Interno:" /><br/>
+                        <p:selectBooleanCheckbox value="#{processManagement.tipoTramite.interno}"  />
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Color: (#hexadecimal)" /><br/>
+                        <p:inputText value="#{processManagement.tipoTramite.color}"  />
+                    </h:panelGroup>
+                </h:panelGrid>
+                <h:panelGrid style="font-weight: bolder; width: 100%" columns="1" >
+                    <h:panelGroup>
+                        <p:outputLabel value="Definición del Trámite" /><br/>
+                        <p:inputTextarea value="#{processManagement.tipoTramite.definicionTramite}"
+                                         rows="6" cols="33" style="width: 100%"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel id="imagen" value="Imagen #{processManagement.imagen} "  
+                                       style="font-weight:bold; font-size: 12px" /> 
+                        <p:outputLabel  value=" La imagen no debe se mayor a 5 MB" style="font-size: 8px !important" />
+                        <div align="center">
+                            <p:fileUpload  id="imagenUsuario" label="Imagen"
+                                           update="imagen"
+                                           mode="advanced" 
+                                           listener="#{processManagement.handleFileUpload}"
+                                           dragDropSupport="false"
+                                           multiple="false" 
+                                           sizeLimit="5000000" 
+                                           fileLimit="10" 
+                                           style="max-width: 100%"
+                                           allowTypes="/(\.|\/)(jpe?g|png)$/" />
+                        </div>
+                    </h:panelGroup>
+                </h:panelGrid>
+                <br></br>
+                <center>
+                    <p:commandButton value="Guardar" styleClass="info-button  rounded-button" style="margin-right: 5px"
+                                     icon="fa fa-save" actionListener="#{processManagement.saveProcess()}"/>
+                    <p:commandButton value="Cancelar" styleClass="danger-button  rounded-button" 
+                                     icon="fa fa-close" oncomplete="PF('dlgProcess').hide();"/>
+                </center>
+            </h:form>   
+        </p:sidebar>
+    </ui:define>
+</ui:composition>

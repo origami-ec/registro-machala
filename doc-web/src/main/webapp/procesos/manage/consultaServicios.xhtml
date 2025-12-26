@@ -1,0 +1,502 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <ui:define name="title">
+        Trámites Ingresados
+    </ui:define>
+    <style>
+        .custom-marker {
+            display: flex;
+            width: 2rem;
+            height: 2rem;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .ui-chronoline-event-content,
+        .ui-chronoline-event-opposite {
+            line-height: 1;
+        }
+        .ui-chronoline-event .ui-chronoline-event-separator .ui-chronoline-event-connector{
+            width: 1px !important;
+            background: black !important;
+        }
+        @media screen and (max-width: 960px) {
+            .customized-chronoline .ui-chronoline-event:nth-child(even) {
+                flex-direction: row !important;
+            }
+
+            .customized-chronoline .ui-chronoline-event:nth-child(even) .ui-chronoline-event-content {
+                text-align: left !important;
+            }
+
+            .customized-chronoline .ui-chronoline-event-opposite {
+                flex: 0;
+            }
+            .customized-chronoline    .ui-chronoline-event-connector{
+                width: 1px !important;
+                background: black !important;
+            }
+
+            .customized-chronoline .ui-card {
+                margin-top: 1rem;
+            }
+        }
+    </style>
+
+    <ui:define name="content">
+        <h:form id="formMain" prependId="false">
+            <center>
+                <h2>Trámites Ingresados</h2>
+            </center>
+            <h:panelGroup rendered="#{!consultaServiciosMB.renderedView}">
+                <p:outputLabel value="Departamentos"  style="font-weight: bolder" /><br></br>
+                <p:selectOneMenu value="#{consultaServiciosMB.departamento}" filter="true" 
+                                 filterMatchMode="contains"
+                                 converter="dtoConverter" style="width: 50% !important;" >
+                    <f:selectItem itemLabel="Seleccione" itemValue="#{null}" noSelectionOption="true"/>
+                    <f:selectItems value="#{consultaServiciosMB.departamentos}" var="dep"
+                                   itemLabel="#{dep.nombre}" itemValue="#{dep}"/>
+                    <p:ajax listener="#{consultaServiciosMB.loadModel()}" update="formMain"/>
+                </p:selectOneMenu>    
+            </h:panelGroup>
+            <br/><br/>
+
+            <p:tabView id="tabView" rendered="#{!consultaServiciosMB.renderedView}">
+                <p:ajax event="tabChange" listener="#{consultaServiciosMB.onTabChange}" update="tabView"/>
+                <p:tab title="Ventanilla Única" id="tabVU">
+                    <center>
+                        <p:dataTable id="datosServicios" var="dato"
+                                     value="#{consultaServiciosMB.lazyVentanilla}"
+                                     lazy="true" widgetVar="datosServicios" rowIndexVar="i" filterEvent="enter"
+                                     rows="20" reflow="true" paginator="true" 
+                                     tableStyle="table-layout:auto"
+                                     rowsPerPageTemplate="20,50,100"  paginatorPosition="bottom"
+                                     emptyMessage="No existen registros"
+                                     rowStyleClass="#{dato.finalizado? 'finishOrInactive' : null}"
+                                     currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros">
+                            <p:column field="fecha" headerText="Fecha">
+                                <f:facet name="filter">
+                                    <p:datePicker  maxdate="#{consultaServiciosMB.fechaActual}"  hideOnDateTimeSelect="true" 
+                                                  selectionMode="range" onchange="PF('datosServicios').filter()"/>
+                                </f:facet>
+                                <p:outputLabel value="#{dato.fechaCreacion}" >
+                                    <f:convertDateTime pattern="dd-MM-yyyy HH:mm:ss" />
+                                </p:outputLabel>
+                            </p:column>
+
+                            <p:column headerText="Referencia" filterBy="#{dato.campoReferencia}" style="text-align: center">
+                                <h:outputText value="#{dato.campoReferencia}" />
+                            </p:column>
+                            <p:column headerText="Trámite" filterBy="#{dato.tramite.codigo}" style="text-align: center" 
+                                      filterMatchMode="contains">
+                                <h:outputText value="#{dato.tramite.codigo}" />
+                            </p:column>
+                            <p:column headerText="Identificación" style="text-align: center" filterBy="#{dato.enteSolicitante.ciRuc}">
+                                <h:outputText value="#{dato.enteSolicitante.identificacion}" />
+                            </p:column>
+                            <p:column headerText="Apellidos/Razón Social" style="text-align: center">
+                                <h:outputText value="#{dato.enteSolicitante.identificacion.length() eq 13 ? dato.enteSolicitante.razonSocial:dato.enteSolicitante.apellidos}"/>
+                            </p:column>
+                            <p:column headerText="Nombres/Nombre Comercial" style="text-align: center">
+                                <h:outputText value="#{dato.enteSolicitante.identificacion.length() eq 13 ? dato.enteSolicitante.nombreComercial:dato.enteSolicitante.nombres}"/>
+                            </p:column>
+                            <p:column headerText="Servicio" style="text-align: center;" filterBy="#{dato.tipoServicio.nombre}">
+                                <h:outputText value="#{dato.tipoServicio.nombre}" />
+                                <f:facet name="filter">
+                                    <p:selectOneMenu onchange="PF('datosServicios').filter()" styleClass="custom-filter"
+                                                     filter="true" filterMatchMode="contains" style="min-width:100% !important; max-width: 0 !important">
+                                        <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                        <f:selectItems itemLabel="#{serv.nombre}" var="serv" 
+                                                       value="#{consultaServiciosMB.serviciosDepartamentos}"
+                                                       itemValue="#{serv.nombre}"/>
+                                    </p:selectOneMenu> 
+                                </f:facet>
+                            </p:column>
+                            <p:column headerText="Finalizado" style="text-align: center" filterBy="#{dato.finalizado}">
+                                <f:facet name="filter">
+                                    <p:selectOneMenu onchange="PF('datosServicios').filter()">
+                                        <f:selectItem itemLabel="Seleccione..." itemValue="#{null}"/>
+                                        <f:selectItem itemLabel="Sí" itemValue="#{true}"/>
+                                        <f:selectItem itemLabel="No" itemValue="#{false}"/>
+                                    </p:selectOneMenu> 
+                                </f:facet>
+                                <h:outputText value="#{dato.finalizado?'Sí':'No'}" />
+                            </p:column>
+                            <p:column headerText="Acciones" style="text-align: center" width="100">
+                                <p:commandLink title="Ticket" actionListener="#{consultaServiciosMB.showReporteTicket(dato)}"
+                                               update="formMain">
+                                    <i class="fa fa-fw fa-file-pdf-o" style="font-size: 1.5em; margin-right: 8px; color: #00796B;"></i>
+                                </p:commandLink>
+                                <p:commandLink title="Detalle" actionListener="#{consultaServiciosMB.detalleSolicitudServicio(dato)}"
+                                               update="formMain">
+                                    <i class="fa fa-fw fa-folder-open-o" style="font-size: 1.5em; margin-right: 8px; color: #00796B;"></i>
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </center>
+                </p:tab>
+                <p:tab title="Mis Trámites Iniciados" id="tabTI" titletip="Trámites que has iniciado hacia otras áreas" >
+
+                    <center>
+                        <p:dataTable id="datosMisServicios" var="miDato"
+                                     value="#{consultaServiciosMB.lazyMiVentanilla}"
+                                     lazy="true" widgetVar="datosMisServicios" rowIndexVar="i" filterEvent="enter"
+                                     rows="10" reflow="true" paginator="true" 
+                                     tableStyle="table-layout:auto"
+                                     rowsPerPageTemplate="10,50,100"  paginatorPosition="bottom"
+                                     emptyMessage="No existen registros"
+                                     rowStyleClass="#{miDato.finalizado? 'finishOrInactive' : null}"
+                                     currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros">
+                            <p:column field="fecha" headerText="Fecha">
+                                <f:facet name="filter">
+                                    <p:datePicker  selectionMode="range" onchange="PF('datosMisServicios').filter()"  readonlyInput="false" />
+                                </f:facet>
+                                <p:outputLabel value="#{miDato.fechaCreacion}" >
+                                    <f:convertDateTime pattern="dd-MM-yyyy HH:mm:ss" />
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Referencia" filterBy="#{miDato.campoReferencia}" style="text-align: center;">
+                                <h:outputText value="#{miDato.campoReferencia}" />
+                            </p:column>
+                            <p:column headerText="Trámite" filterBy="#{miDato.tramite.codigo}" style="text-align: center">
+                                <h:outputText value="#{miDato.tramite.codigo}" />
+                            </p:column>
+                            <p:column headerText="Identificación" style="text-align: center" filterBy="#{miDato.enteSolicitante.identificacion}">
+                                <h:outputText value="#{miDato.enteSolicitante.identificacion}" />
+                            </p:column>
+                            <p:column headerText="Apellidos" style="text-align: center">
+                                <h:outputText value="#{miDato.enteSolicitante.identificacion.length() eq 13 ? miDato.enteSolicitante.razonSocial:miDato.enteSolicitante.apellidos}"/>
+                            </p:column>
+                            <p:column headerText="Nombres" style="text-align: center">
+                                <h:outputText value="#{miDato.enteSolicitante.identificacion.length() eq 13 ? miDato.enteSolicitante.nombreComercial:miDato.enteSolicitante.nombres}"/>
+                            </p:column>
+                            <p:column headerText="Servicio" style="text-align: center" filterBy="#{miDato.tipoServicio.nombre}" filterMatchMode="contains">
+                                <h:outputText value="#{miDato.tipoServicio.nombre}" /> 
+                            </p:column>
+                            <p:column headerText="Coordinación Actual" style="text-align: center">
+                                <h:outputText value="#{consultaServiciosMB.obtenerDepartamentoActual(miDato.id)}"/>
+                            </p:column>
+                            <p:column headerText="Finalizado" style="text-align: center" filterBy="#{miDato.finalizado}">
+                                <f:facet name="filter">
+                                    <p:selectOneMenu onchange="PF('datosMisServicios').filter()">
+                                        <f:selectItem itemLabel="Seleccione..." itemValue="#{null}"/>
+                                        <f:selectItem itemLabel="Sí" itemValue="#{true}"/>
+                                        <f:selectItem itemLabel="No" itemValue="#{false}"/>
+                                    </p:selectOneMenu> 
+                                </f:facet>
+                                <h:outputText value="#{miDato.finalizado?'Sí':'No'}" />
+                            </p:column>
+                            <p:column headerText="Acciones" style="text-align: center" width="100">
+                                <p:commandLink title="Ticket" actionListener="#{consultaServiciosMB.showReporteTicket(miDato)}"
+                                               update="formMain">
+                                    <i class="fa fa-fw fa-file-pdf-o" style="font-size: 1.5em; margin-right: 8px; color: #00796B;"></i>
+                                </p:commandLink>
+                                <p:commandLink title="Detalle" actionListener="#{consultaServiciosMB.detalleSolicitudServicio(miDato)}"
+                                               update="formMain">
+                                    <i class="fa fa-fw fa-folder-open-o" style="font-size: 1.5em; margin-right: 8px; color: #00796B;"></i>
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </center>
+                </p:tab>
+                <p:tab id="tabArchivo" title="Trámites General" rendered="false">
+                    <center>
+                        <p:dataTable id="datosTodos" var="todo"
+                                     value="#{consultaServiciosMB.lazyVentanillaTodos}"
+                                     lazy="true" widgetVar="datosTodos" rowIndexVar="i"
+                                     rows="10" reflow="true" paginator="true"  filterEvent="enter"
+                                     rowsPerPageTemplate="10,50,100"  paginatorPosition="bottom"
+                                     emptyMessage="No existen registros"
+                                     currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros">
+                            <p:column headerText="Fecha" style="text-align: center">
+                                <h:outputText value="#{todo.fechaCreacion}" >
+                                    <f:convertDateTime pattern="dd-MM-yyyy hh:mm:ss"/>
+                                </h:outputText>
+                            </p:column>
+                            <p:column headerText="N° Trámite" filterBy="#{todo.tramite.secuencial}" style="text-align: center">
+                                <h:outputText value="#{todo.tramite.secuencial}" />
+                            </p:column>
+                            <p:column headerText="Trámite" filterBy="#{todo.tramite.codigo}" style="text-align: center">
+                                <h:outputText value="#{todo.tramite.codigo}" />
+                            </p:column>
+                            <p:column headerText="Identificación" style="text-align: center" filterBy="#{todo.enteSolicitante.identificacion}">
+                                <h:outputText value="#{todo.enteSolicitante.identificacion}" />
+                            </p:column>
+                            <p:column headerText="Apellidos" style="text-align: center">
+                                <h:outputText value="#{todo.enteSolicitante.identificacion.length() eq 13 ? todo.enteSolicitante.razonSocial:todo.enteSolicitante.apellidos}"/>
+                            </p:column>
+                            <p:column headerText="Nombres" style="text-align: center">
+                                <h:outputText value="#{todo.enteSolicitante.identificacion.length() eq 13 ? todo.enteSolicitante.nombreComercial:todo.enteSolicitante.nombres}"/>
+                            </p:column>
+                            <p:column headerText="Servicio" style="text-align: center" filterBy="#{todo.tipoTramite.descripcion}">
+                                <h:outputText value="#{todo.tipoServicio.nombre}" />
+                                <f:facet name="filter">
+                                    <p:selectOneMenu onchange="PF('datosTodos').filter()" styleClass="custom-filter"
+                                                     filter="true" filterMatchMode="contains" style="min-width:100% !important; max-width: 0 !important">
+                                        <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                        <f:selectItems itemLabel="#{serv.nombre}" var="serv" 
+                                                       value="#{consultaServiciosMB.serviciosDepartamentos}"
+                                                       itemValue="#{serv.nombre}"/>
+                                    </p:selectOneMenu> 
+                                </f:facet>
+                            </p:column>
+                            <p:column headerText="Finalizado" style="text-align: center" filterBy="#{todo.finalizado}">
+                                <f:facet name="filter">
+                                    <p:selectOneMenu onchange="PF('datosTodos').filter()" styleClass="custom-filter"
+                                                     filter="true">
+                                        <f:selectItem itemLabel="Seleccione..." itemValue="#{null}"/>
+                                        <f:selectItem itemLabel="Sí" itemValue="#{true}"/>
+                                        <f:selectItem itemLabel="No" itemValue="#{false}"/>
+                                    </p:selectOneMenu> 
+                                </f:facet>
+                                <h:outputText value="#{todo.finalizado?'Sí':'No'}" />
+                            </p:column>
+                            <p:column headerText="Acciones" style="text-align: center">
+                                <p:commandLink title="Ticket" actionListener="#{consultaServiciosMB.showReporteTicket(todo)}"
+                                               update="formMain">
+                                    <i class="fa fa-fw fa-file-pdf-o" style="font-size: 1.5em; margin-right: 8px; color: #00796B;"></i>
+                                </p:commandLink>
+                                <p:commandLink title="Detalle" actionListener="#{consultaServiciosMB.detalleSolicitudServicio(todo)}"
+                                               update="formMain">
+                                    <i class="fa fa-fw fa-folder-open-o" style="font-size: 1.5em; margin-right: 8px; color: #00796B;"></i>
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </center> 
+                </p:tab>
+            </p:tabView>
+            <center>
+                <h:panelGrid id="panelDetalle" rendered="#{consultaServiciosMB.renderedView}">
+                    <p:fieldset legend="Detalle de la Solicitud">
+                        <p:panelGrid  columns="2" layout="grid" styleClass="form-group ui-panelgrid-blank"
+                                      columnClasses="ui-grid-col-5, ui-grid-col-7">
+                            <p:panelGrid columns="1" style="margin-top: 5px; width: 98%">
+                                <p:commandButton value="Generar PDF" icon="fa fa-file-pdf-o"
+                                                 actionListener="#{consultaServiciosMB.generarPDF()}"/>
+                                <h:panelGroup>
+                                    <p:outputLabel value="# Trámite" /><br/>
+                                    <p:outputLabel value="#{consultaServiciosMB.solicitudServicio.tramite.codigo}" 
+                                                   style="font-weight: bold"/><br/>
+                                    <p:outputLabel value="#{consultaServiciosMB.solicitudServicio.tipoServicio.nombre}" 
+                                                   rendered="#{consultaServiciosMB.solicitudServicio.tipoServicio ne null}"
+                                                   style="font-weight: bold"/>
+                                    <p:outputLabel value="#{consultaServiciosMB.solicitudServicio.campoReferencia}"  
+                                                   rendered="#{consultaServiciosMB.solicitudServicio.tipoServicio ne null}"
+                                                   style="font-weight: bold" />
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Fecha de ingreso:" /><br/>
+                                    <p:outputLabel value="#{consultaServiciosMB.solicitudServicio.tramite.fechaIngreso}" 
+                                                   style="font-weight: bold">
+                                        <f:convertDateTime pattern="dd-MM-yyyy HH:mm:ss"/>
+                                    </p:outputLabel><br/>
+                                    <p:outputLabel value="Fecha de entrega esperada:"  /><br/>
+                                    <p:outputLabel value="#{consultaServiciosMB.solicitudServicio.tramite.fechaEntrega}" 
+                                                   style="font-weight: bold">
+                                        <f:convertDateTime pattern="dd-MM-yyyy HH:mm:ss"/>
+                                    </p:outputLabel>
+                                    <br/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Departamento Solicitante" /><br/>
+                                    <p:outputLabel value="#{consultaServiciosMB.solicitudServicio.departamento.nombre}" 
+                                                   style="font-weight: bold"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Usuario Solicitante" /><br/>
+                                    <p:outputLabel value="#{consultaServiciosMB.solicitudServicio.usuarioIngreso.usuarioNombre}" 
+                                                   style="font-weight: bold"/><br/>
+                                    <p:outputLabel value="#{consultaServiciosMB.solicitudServicio.usuarioIngreso.nombreUsuario}" 
+                                                   style="font-weight: bold"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Solicitante" /><br/>
+                                    <p:outputLabel value="#{consultaServiciosMB.solicitudServicio.enteSolicitante.identificacion}" 
+                                                   style="font-weight: bold"/><br/>
+                                    <p:outputLabel value="#{consultaServiciosMB.solicitudServicio.enteSolicitante.nombreCompleto}" 
+                                                   rendered="#{consultaServiciosMB.solicitudServicio.enteSolicitante.esPersona}" 
+                                                   style="font-weight: bold"/>
+                                    <p:outputLabel value="#{consultaServiciosMB.solicitudServicio.enteSolicitante.razonSocial}" 
+                                                   rendered="#{!consultaServiciosMB.solicitudServicio.enteSolicitante.esPersona}" 
+                                                   style="font-weight: bold"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Usuarios Asignados" style="font-weight: bold"/><br/>
+                                    <p:dataTable value="#{consultaServiciosMB.tareas}" 
+                                                 var="tarea" tableStyle="table-layout:auto" 
+                                                 rows="5" reflow="true" paginator="true" 
+                                                 rowsPerPageTemplate="5,50,100"  paginatorPosition="bottom"
+                                                 filterEvent="enter" emptyMessage="No existen registros">
+                                        <p:column headerText="Nombre Tarea">
+                                            <p:outputLabel value="#{tarea.name}"/>
+                                        </p:column>
+                                        <p:column headerText="Usuario" width="120">
+                                            <p:outputLabel value="#{tarea.assignee}" rendered="#{tarea.assignee ne null}"/>
+                                            <p:outputLabel value="#{consultaServiciosMB.usuariosCandidatos(tarea.id)}" rendered="#{tarea.assignee eq null}"/>
+                                            <p:outputLabel value=" #{consultaServiciosMB.getNombresUsuario(tarea.assignee)}" rendered="#{tarea.assignee ne null}"/>
+                                        </p:column>
+                                        <p:column headerText="Departamento" width="120" rendered="false">
+                                            <p:outputLabel value=" #{consultaServiciosMB.obtenerDepartamentoByUsuario(tarea.assignee,tarea.id)}"/>
+                                        </p:column>
+                                        <p:column headerText="Fech.Inicio" width="120">
+                                            <p:outputLabel value="#{tarea.createTime}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"    />
+                                            </p:outputLabel>
+                                        </p:column>
+                                        <p:column headerText="Fech.Fin" width="120">
+                                            <p:outputLabel value="#{tarea.endTime}">
+                                                <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"    />
+                                            </p:outputLabel>
+                                        </p:column>
+                                    </p:dataTable>
+                                </h:panelGroup>
+                            </p:panelGrid>
+                            <p:panelGrid id="pnlDocsObs" styleClass="form-group ui-panelgrid-blank" columns="1" style="margin-top: 5px; width: 98%;">
+                                <p:tabView id="tvDocsObs">
+                                    <p:tab id="tbDocs" title="Documentos">
+                                        <!--                                        <div align="left">
+                                                                                    <p:commandButton icon="pi pi-plus" actionListener="# {consultaServiciosMB.abrirDlgArchivos(null,null)}"
+                                                                                                     rendered="# {consultaServiciosMB.servicioActivo}"
+                                                                                                     style="margin-right:20px;" title="Agregar Documento">
+                                                                                        <f:param name="productId" value="30" />
+                                                                                    </p:commandButton>
+                                                                                </div>-->
+                                        <p:panelGrid id="pnlDocs" columns="1">
+                                            <p:dataTable id="docs"  var="doc" value="#{consultaServiciosMB.documentos}" widgetVar="docs"
+                                                         emptyMessage="No existen documentos" rowIndexVar="i">
+                                                <p:column headerText="**" width="15">
+                                                    <center>
+                                                        #{i+1}
+                                                    </center>
+                                                </p:column>
+                                                <p:column headerText="Fecha" width="150" style="text-align: center">
+                                                    <p:outputLabel value="#{doc.fechaCreacion}" >
+                                                        <f:convertDateTime pattern="dd-MM-yyyy HH:mm:ss" />
+                                                    </p:outputLabel>
+                                                </p:column>
+                                                <p:column headerText="Requisito"  >
+                                                    <p:outputLabel value="#{doc.requisito.nombre}" style="float: left"/><br/>
+                                                    <p:outputLabel value="#{doc.nombreArchivo}" style="float: left"/>
+                                                </p:column>
+                                                <p:column headerText="Acción" width="100" style="text-align: center">
+                                                    <center>
+                                                        <p:commandLink title="Ver Documento" actionListener="#{consultaServiciosMB.getPDF(doc)}" process="@this" rendered="#{doc.rutaArchivo ne null }">
+                                                            <i class="fa fa-fw fa-file-pdf-o" style="font-size: 1.3em; margin-right: 8px; color: #00796B;"></i>
+                                                        </p:commandLink>
+                                                        <p:spacer width="3" />
+                                                        <p:commandLink title="Descargar" actionListener="#{consultaServiciosMB.getDownloadFile(doc)}" process="@this" rendered="false">
+                                                            <i class="fa fa-fw fa-download" style="font-size: 1.3em; margin-right: 8px; color: #00796B;"></i>
+                                                        </p:commandLink>
+                                                        <p:commandLink title="Subir" disabled="#{consultaServiciosMB.solicitudServicio.finalizado}"
+                                                                       actionListener="#{consultaServiciosMB.abrirDlgArchivos(doc, i)}" 
+                                                                       process="@form" rendered="false">
+                                                            <i class="fa fa-fw fa-upload" style="font-size: 1.3em; margin-right: 8px; color: #00796B;"></i>
+                                                            <p:ajax event="dialogReturn" update="docs" />
+                                                        </p:commandLink>
+                                                        <p:spacer width="3" />
+                                                    </center>
+                                                </p:column>
+                                            </p:dataTable>
+                                        </p:panelGrid>
+                                    </p:tab>
+                                    <p:tab title="Estado del trámite">
+                                        <p:card style="width: 25rem; margin-bottom: 2em">
+                                            <f:facet name="title"><h4>Respuesta/Informe</h4></f:facet>
+                                            <p>#{consultaServiciosMB.solicitudServicio.informe!=null? consultaServiciosMB.solicitudServicio.informe:'No existe una respuesta'}</p>
+                                        </p:card><br/>
+                                        <p:dataTable value="#{consultaServiciosMB.observaciones}" emptyMessage="Sin elementos..."
+                                                     var="obs" style="text-align: center;width: 99%" rendered="false">
+                                            <p:column headerText="Tarea" width="150">
+                                                <p:outputLabel value="#{obs.tarea}"/>
+                                            </p:column>
+                                            <p:column headerText="Observación">
+                                                <p:outputLabel value="#{obs.observacion}"/>
+                                            </p:column>
+                                            <p:column headerText="Usuario" width="100">
+                                                <p:outputLabel value="#{consultaServiciosMB.usuarioObs(obs.userCre)}"/>
+                                            </p:column>
+                                        </p:dataTable>
+                                        <p:chronoline id="chronoline" value="#{consultaServiciosMB.events}" var="event" align="alternate" styleClass="customized-chronoline">
+
+                                            <p:card>
+                                                <f:facet name="title">
+                                                    <p:outputLabel value="#{event.status}" style="font-weight: bolder" />
+                                                </f:facet>
+                                                <f:facet name="subtitle">
+                                                    <p:outputLabel value="#{event.users}" style="font-weight: bolder" /><br/>
+                                                    <p:outputLabel value="#{event.date}" style="font-weight: bolder" />
+                                                </f:facet> 
+                                                <p>#{event.details}</p>
+
+                                            </p:card>
+
+                                            <f:facet name="marker">
+                                                <span class="custom-marker p-shadow-2" style="background-color: #{event.color}"><i class="#{event.icon}"/></span>
+                                                <div class="ui-chronoline-event-connector" style="width: 1px !important; background: black !important;"/>
+                                            </f:facet>
+
+                                        </p:chronoline>
+                                    </p:tab>
+                                    <p:tab title="Flujo">
+                                        <h3>Diagrama del Proceso</h3>
+                                        <p:graphicImage value="#{consultaServiciosMB.imageProcessInstance}" stream="false"
+                                                        rendered="#{not empty consultaServiciosMB.imageProcessInstance}"/>
+                                    </p:tab>
+                                </p:tabView>
+                            </p:panelGrid>
+                        </p:panelGrid>
+                        <center>
+                            <p:commandButton value="Regresar"
+                                             icon="fa fa-fw fa-mail-reply-all"
+                                             actionListener="#{consultaServiciosMB.loadModel()}"
+                                             styleClass="blue-btn rounded-btn"
+                                             update="formMain"
+                                             process="@form" />
+
+                            <p:spacer width="10" />
+
+                        </center>
+                    </p:fieldset>                    
+                </h:panelGrid>
+            </center>
+        </h:form>
+        <p:dialog id="DlgoDocumento" width="700"  showHeader="false"  
+                  widgetVar="DlgoDocumento" modal="true" showEffect="fade" 
+                  hideEffect="fade" resizable="false"  closable="false" height="330">
+            <h:form id="formDocumento"  prependId="false" enctype="multipart/form-data">
+
+                <h:panelGroup>
+                    <p:outputLabel for="requisitoDocumento" value="Documentos" style="font-weight: bolder; font-size: 12px;" /><br></br>  
+                    <p:selectOneMenu  id="requisitoDocumento" value="#{consultaServiciosMB.documento.requisito}" converter="dtoConverter" 
+                                      rendered="#{consultaServiciosMB.documento.id eq null}" >
+                        <f:selectItem itemValue="#{null}" itemLabel="Seleccione" />
+                        <f:selectItems value="#{consultaServiciosMB.requisitos}" var="req" itemLabel="#{req.nombre}" itemValue="#{req}"/>
+                        <p:ajax update="requisitoDocumento" process="requisitoDocumento"/>
+                    </p:selectOneMenu>
+                </h:panelGroup>
+
+                <h:panelGroup>
+                    <p:fileUpload listener="#{consultaServiciosMB.handleFileUpload}"
+                                  process="formDocumento"
+                                  style="width: 100%" accept=".pdf" update="tvDocsObs:docs"
+                                  skinSimple="true" allowTypes="/(\.|\/)(pdf)$/i"
+                                  mode="advanced" dragDropSupport="false" 
+                                  label="Buscar" uploadLabel="Subir" cancelLabel="Cancelar" previewWidth="60"   />
+                </h:panelGroup>
+                <br></br>
+                <center>
+                    <p:commandButton value="Cerrar"  update="formMain" oncomplete="PF('DlgoDocumento').hide()" icon="fa fa-close" style="width: auto;"/>
+                </center>
+            </h:form>
+        </p:dialog>         
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,364 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+    <ui:define name="title">Trámite</ui:define>
+    <ui:define name="content">
+        <style type="text/css">
+            .finish {
+                background-color: #dadbe7 !important;
+                background-image: none !important;
+                color: #000000 !important;
+            }
+        </style>
+        <h:form id="formMain" prependId="false">
+            <div class="ui-g ui-fluid">
+                <div class="ui-g-12">
+                    <div class="car card-w-title Wid100" >
+                        <h1>
+                            <center>
+                                Rendimiento de Usuario 📊
+                            </center>
+                        </h1>
+                    </div>
+                </div>
+            </div>
+            <p:tabView>
+                <p:tab title="Trámites">
+                    <h4>Trámites Atendidos-Pendientes</h4>
+                    <p:panelGrid columns="8" layout="grid">
+                        <h:panelGroup>
+                            <p:outputLabel for="@next" value="Fecha Inicio"/><br/>
+                            <p:calendar id="fechaDesde" value="#{rendimientoUsuarioMB.fechaDesde}"
+                                        readonlyInput="true"
+                                        pattern="yyyy-MM-dd" 
+                                        maxdate="#{rendimientoUsuarioMB.fechaHasta}">
+                                <p:ajax event="dateSelect" update="fechaHasta"/>
+                            </p:calendar>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel for="@next" value="Fecha Fin"/><br/>
+                            <p:calendar id="fechaHasta" value="#{rendimientoUsuarioMB.fechaHasta}"
+                                        readonlyInput="true"
+                                        disabled="#{empty rendimientoUsuarioMB.fechaDesde}"
+                                        mindate="#{rendimientoUsuarioMB.fechaDesde}"
+                                        pattern="yyyy-MM-dd">
+                                <p:ajax event="dateSelect" update="fechaDesde"/>
+                            </p:calendar>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:commandButton value="Actualizar" 
+                                             styleClass="rounded-btn"
+                                             icon="fa fa-refresh"
+                                             style="width: auto; margin-top: 15px"
+                                             update="@form"
+                                             actionListener="#{rendimientoUsuarioMB.loadBarModel()}" />
+                            <p:commandButton value="Limpiar" 
+                                             styleClass="rounded-btn"
+                                             icon="fa fa-trash"
+                                             process="@this"
+                                             style="width: auto; margin-top: 15px; margin-left: 10px"
+                                             update="@form"
+                                             actionListener="#{rendimientoUsuarioMB.loadModel()}" />
+                        </h:panelGroup>
+                    </p:panelGrid>
+                    <br/>
+                    <div class="ui-fluid">
+                        <div class="ui-g">
+                            <div class="ui-g-12 ui-md-4 ui-lg-4">
+                                <h:panelGroup>
+                                    <h5>Trámites Disponibles</h5>
+                                    <p:dataTable id="tramites" value="#{rendimientoUsuarioMB.tipoTramites}"
+                                                 var="tramite" tableStyle="table-layout:auto"
+                                                 stripedRows="true" reflow="true"
+                                                 resizableColumns="true" size="small">
+                                        <p:column>
+                                            <h:outputText value="#{tramite.abreviatura}"/>
+                                        </p:column>
+                                        <p:column>
+                                            <h:outputText value="#{tramite.descripcion}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </h:panelGroup>
+                            </div>
+                            <div class="ui-g-12 ui-md-8 ui-lg-8">
+                                <h:panelGroup style="float: right">
+                                    <p:commandButton value="Generar PDF" icon="fa fa-file-pdf-o" 
+                                                     actionListener="#{rendimientoUsuarioMB.generarPDF()}"
+                                                     style="width: auto"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:barChart model="#{rendimientoUsuarioMB.barModel}" style="width: 100%; height: 500px;">
+                                        <p:ajax event="itemSelect" listener="#{rendimientoUsuarioMB.itemSelect}"/>
+                                    </p:barChart>
+                                </h:panelGroup>
+                            </div>
+                        </div>
+                    </div>
+                </p:tab>
+                <p:tab title="Trámites Usuario">
+                    <h4>Trámites Atendidos-Pendientes</h4>
+                    <p:panelGrid id="panelDatosTramite" columns="8" layout="grid">
+                        <h:panelGroup>
+                            <p:outputLabel for="@next" value="Trámites"/><br/>
+                            <p:selectOneMenu value="#{rendimientoUsuarioMB.tipoTramite}"
+                                             converter="dtoConverter" autoWidth="false"  
+                                             style="width: 250px !important;">
+                                <p:ajax  listener="#{rendimientoUsuarioMB.initDepartamentoDesdeTipoTramite()}" 
+                                         update="panelDatosTramite,dtUsuarios"/>
+                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}" noSelectionOption="true"/>
+                                <f:selectItems value="#{rendimientoUsuarioMB.tipoTramites}" var="tipoTramite"
+                                               itemLabel="#{tipoTramite.abreviatura} - #{tipoTramite.descripcion}" 
+                                               itemValue="#{tipoTramite}"/>
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <h:panelGroup id="panelDept">
+                            <p:outputLabel id="lblDepartamento" value="Departamentos" 
+                                           style="font-weight: bolder" /><br/>
+                            <p:selectOneMenu id="cmbDepartamento" value="#{rendimientoUsuarioMB.departamento}"
+                                             filter="true"
+                                             filterMatchMode="contains"
+                                             var="depa"
+                                             disabled="#{!rendimientoUsuarioMB.tipoTramite.interno}"
+                                             converter="dtoConverter" autoWidth="false"  
+                                             style="width: 200px;">
+                                <p:ajax listener="#{rendimientoUsuarioMB.initServiciosDepartamentos()}" 
+                                        update="panelDatosTramite,dtUsuarios"/>
+                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}" />
+                                <f:selectItems value="#{rendimientoUsuarioMB.departamentos}" var="dpt"
+                                               itemLabel="#{dpt.nombre}" itemValue="#{dpt}"/>
+                                <p:column>
+                                    <f:facet name="header">Unidad</f:facet>
+                                    <h:outputText value="#{depa.nombre}"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header">Tipo Unidad</f:facet>
+                                    <h:outputText value="#{depa.tipoUnidad.valor}"/>
+                                </p:column>
+                            </p:selectOneMenu>    
+                        </h:panelGroup> 
+                        <h:panelGroup id="panelItems">
+                            <p:outputLabel id="lblServicios" value="Servicio" style="font-weight: bolder"/><br/>
+                            <p:selectOneMenu value="#{rendimientoUsuarioMB.item}" 
+                                             disabled="#{!rendimientoUsuarioMB.tipoTramite.interno}"
+                                             converter="dtoConverter" autoWidth="false"
+                                             style="width: 250px !important;" >
+                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}" />
+                                <f:selectItems value="#{rendimientoUsuarioMB.itemList}"
+                                               var="item" itemLabel="#{item.nombre}" itemValue="#{item}"/>
+                            </p:selectOneMenu>    
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel for="@next" value="Fecha Inicio"/><br/>
+                            <p:calendar id="fechaDesdeUT" value="#{rendimientoUsuarioMB.fechaDesdeUT}"
+                                        readonlyInput="true"
+                                        pattern="yyyy-MM-dd" 
+                                        maxdate="#{rendimientoUsuarioMB.fechaHastaUT}">
+                                <p:ajax event="dateSelect" update="fechaHastaUT"/>
+                            </p:calendar>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel for="@next" value="Fecha Fin"/><br/>
+                            <p:calendar id="fechaHastaUT" value="#{rendimientoUsuarioMB.fechaHastaUT}"
+                                        readonlyInput="true"
+                                        disabled="#{empty rendimientoUsuarioMB.fechaDesdeUT}"
+                                        mindate="#{rendimientoUsuarioMB.fechaDesdeUT}"
+                                        pattern="yyyy-MM-dd">
+                                <p:ajax event="dateSelect" update="fechaDesdeUT"/>
+                            </p:calendar>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:commandButton id="button-refresh" value="Actualizar" 
+                                             styleClass="rounded-btn"
+                                             icon="fa fa-refresh"
+                                             style="width: auto; margin-top: 15px"
+                                             update="panelDatosTramite,panelCharData"
+                                             actionListener="#{rendimientoUsuarioMB.loadBarModelUsuarioTramite()}" />
+                            <p:commandButton id="button-clean" value="Limpiar" 
+                                             styleClass="rounded-btn"
+                                             icon="fa fa-trash"
+                                             process="@this"
+                                             style="width: auto; margin-top: 15px; margin-left: 10px"
+                                             update="panelDatosTramite,panelCharData,dtUsuarios"
+                                             actionListener="#{rendimientoUsuarioMB.loadModelUsuarioTramite()}" />
+                        </h:panelGroup>
+                    </p:panelGrid>
+                    <br/>
+                    <div class="ui-fluid">
+                        <div class="ui-g">
+                            <div class="ui-g-12 ui-md-4 ui-lg-4">
+                                <h:panelGroup>
+                                    <p:dataTable id="dtUsuarios" rendered="#{rendimientoUsuarioMB.eleccionUsuarios}"
+                                                 value="#{rendimientoUsuarioMB.usuariosLista}" var="user"
+                                                 rowKey="#{user.id}"
+                                                 selection="#{rendimientoUsuarioMB.usuariosAsignadosList}"
+                                                 widgetVar="dtUsuarios" rowIndexVar="i"
+                                                 size="small" emptyMessage="No existen registros" style="font-size: 12px"
+                                                 tableStyle="table-layout:auto">
+                                        <p:column headerText="**" width="10">
+                                            <center>
+                                                <h:outputText value="#{i + 1}"/>
+                                            </center>
+                                        </p:column>
+                                        <p:column headerText="Usuario" filterBy="#{user.usuario.user}" filterMatchMode="contains">
+                                            <h:outputText value="#{user.usuario.user}"/>
+                                        </p:column>
+                                        <p:column headerText="Nombres" filterBy="#{user.usuario.ente.nombreCompleto}" filterMatchMode="contains">
+                                            <h:outputText value="#{user.usuario.ente.nombreCompleto}"/>
+                                        </p:column>
+                                        <p:column headerText="Asignar" style="text-align: center" width="40" 
+                                                  selectionMode="multiple"/>
+                                    </p:dataTable>
+                                </h:panelGroup>
+                            </div>
+                            <div class="ui-g-12 ui-md-8 ui-lg-8">
+                                <h:panelGroup style="float: right">
+                                    <p:commandButton value="Generar PDF" icon="fa fa-file-pdf-o" 
+                                                     actionListener="#{rendimientoUsuarioMB.generarPDFUsuario()}"
+                                                     style="width: auto"/>
+                                </h:panelGroup>
+                                <h:panelGroup id="panelCharData">
+                                    <p:barChart model="#{rendimientoUsuarioMB.barModelUsuarioTramite}" 
+                                                style="width: 100%; height: 500px;">
+                                        <p:ajax event="itemSelect" listener="#{rendimientoUsuarioMB.itemSelect}"/>
+                                    </p:barChart>
+                                </h:panelGroup>
+                            </div>
+                        </div>
+                    </div>
+                </p:tab>
+                <p:tab title="Tareas Pendientes">
+                    <h4>Tareas Pendientes - Finalizadas</h4>
+                    <p:outputPanel id="panel-tramites">
+                        <!--                        <p:toolbarGroup align="left">
+                                                    <p:commandButton value="Export" icon="pi pi-upload" styleClass="ui-button-help" ajax="false">
+                                                        <p:dataExporter type="pdf" target="dtDetail" fileName="reporte_usuario"/>
+                                                    </p:commandButton>
+                                                </p:toolbarGroup>-->
+                        <!--                        <br/>-->
+                        <p:dataTable  id="dtDetail" value="#{rendimientoUsuarioMB.lazyTareasHistoricas}" var="tram" 
+                                      rows="10"
+                                      widgetVar="dtDetail"
+                                      rowsPerPageTemplate="10,20,30" reflow="true"
+                                      paginatorPosition="bottom"
+                                      rowStyleClass="#{tram.endTime ne null? 'finish' : 'estado-normal'}"
+                                      lazy="true" 
+                                      filterEvent="enter"
+                                      emptyMessage="No existen datos"
+                                      paginator="true"
+                                      paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                      currentPageReportTemplate="{startRecord}-{endRecord} de {totalRecords} registros"
+                                      tableStyle="table-layout:auto">
+                            <p:column headerText="Usuario" filterBy="#{tram.assignee}" style="text-align: center">
+                                <p:outputLabel value="#{tram.assignee}"/>
+                            </p:column>
+                            <p:column headerText="Tipo Tramite" filterBy="#{tram.tramite.tipoTramite.descripcion}" 
+                                      style="text-align: center">
+                                <p:outputLabel value="#{tram.tramite.tipoTramite.descripcion}"/>
+                            </p:column>
+                            <p:column headerText="# Trámite" style="text-align: center"
+                                      filterBy="#{tram.tramite.codigo}" >
+                                <p:outputLabel value="#{tram.tramite.codigo}"/>
+                            </p:column>
+                            <p:column headerText="Tarea" style="text-align: center"
+                                      filterBy="#{tram.name_}" >
+                                <p:outputLabel value="#{tram.name_}"/>
+                            </p:column>
+                            <p:column headerText="Fecha Ingreso" filterBy="#{tram.startTimeString}"  style="text-align: center">
+                                <f:facet name="filter">
+                                    <p:datePicker pattern="yyyy-MM-dd" onchange="PF('dtDetail').filter()" />
+                                </f:facet>
+                                <p:outputLabel value="#{tram.startTimeString}"/>
+                            </p:column>
+                            <p:column headerText="Fecha Finalización" filterBy="#{tram.endTimeString}"  style="text-align: center">
+                                <f:facet name="filter">
+                                    <p:datePicker pattern="yyyy-MM-dd" onchange="PF('dtDetail').filter()" />
+                                </f:facet>
+                                <p:outputLabel value="#{tram.endTimeString}"/>
+                            </p:column>
+                            <p:column headerText="Periodo" filterBy="#{tram.periodo}" style="text-align: center">
+                                <p:outputLabel value="#{tram.periodo}"/>
+                            </p:column>
+                            <p:column headerText="Terminado" filterBy="#{tram.terminado}" style="text-align: center">
+                                <f:facet name="filter">
+                                    <p:selectOneMenu onchange="PF('dtDetail').filter()" styleClass="custom-filter">
+                                        <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                        <f:selectItem itemLabel="Sí" itemValue="#{true}"/>
+                                        <f:selectItem itemLabel="No" itemValue="#{false}"/>
+                                    </p:selectOneMenu> 
+                                </f:facet>
+                                <p:outputLabel value="#{tram.terminado?'Sí':'No'}"/>
+                            </p:column>
+                            <p:column headerText="Tasks" rendered="false">
+                                <p:commandLink actionListener="#{rendimientoUsuarioMB.showDetalis(tram)}">
+                                    <i class="pi pi-bookmark"></i>
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </p:outputPanel>
+                </p:tab>
+            </p:tabView>
+        </h:form>
+        <p:dialog id="dlgVerInfoRp"  widgetVar="dlgVerInfoRp" resizable="false" showHeader="false" closeOnEscape="true" modal="true" width="820" height="500">
+            <h:form id="formInformLiq" prependId="false">
+                <center>
+                    <p:outputLabel value="Información de Trámites" style="font-size: 16px; font-weight: bold" /><br></br>
+                    <p:outputLabel value="No de Trámite: #{rendimientoUsuarioMB.tareasHistoricas.tramite.codigo}" 
+                                   style="font-weight: bold; font-size: 14px;"/>
+                </center>
+                <br></br>
+                <p:tabView>
+                    <p:tab title="Tareas">
+                        <p:dataTable value="#{rendimientoUsuarioMB.tareas}" emptyMessage="El trámite no ha sido ingresado."
+                                     var="tarea"   style="text-align: center; width: 99%">
+                            <p:column headerText="Nombre Tarea">
+                                <p:outputLabel value="#{tarea.name}"/>
+                            </p:column>
+                            <p:column headerText="Usuario" width="100">
+                                <p:outputLabel value="#{tarea.assignee}" rendered="#{tarea.assignee ne null}"/>
+                                <p:outputLabel value="#{tramitesRp.usuariosCandidatos(tarea.id)}" rendered="#{tarea.assignee eq null}"/>
+                            </p:column>
+                            <p:column headerText="Fech.Inicio" width="120">
+                                <p:outputLabel value="#{tarea.createTime}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"    />
+                                </p:outputLabel>
+                            </p:column>
+                            <p:column headerText="Fech.Fin" width="120">
+                                <p:outputLabel value="#{tarea.endTime}">
+                                    <f:convertDateTime pattern="dd/MM/yyyy HH:mm:ss"    />
+                                </p:outputLabel>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+                    <p:tab title="Observaciones">
+                        <p:dataTable value="#{rendimientoUsuarioMB.observaciones}" emptyMessage="Sin elementos..."
+                                     var="obs" style="text-align: center;width: 99%">
+                            <p:column headerText="Tarea" width="150">
+                                <p:outputLabel value="#{obs.tarea}"/>
+                            </p:column>
+                            <p:column headerText="Observación">
+                                <p:outputLabel value="#{obs.observacion}"/>
+                            </p:column>
+                            <p:column headerText="Usuario" width="100">
+                                <p:outputLabel value="#{obs.userCre}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </p:tab>
+
+                    <p:tab title="Flujo">
+                        <p:graphicImage value="#{rendimientoUsuarioMB.imageProcessInstance}" stream="false" width="100%" rendered="#{not empty rendimientoUsuarioMB.imageProcessInstance}"   />
+                    </p:tab>
+                </p:tabView><br></br><br></br>
+                <center>
+                    <p:commandButton value="Cerrar" actionListener="#{rendimientoUsuarioMB.closeDlogoViewTramite()}" icon="fa fa-close" 
+                                     style="width: auto;"  />
+                </center>
+            </h:form>
+        </p:dialog>
+    </ui:define>
+</ui:composition>
+

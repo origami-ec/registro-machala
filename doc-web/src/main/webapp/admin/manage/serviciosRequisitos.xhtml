@@ -1,0 +1,190 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Requisitos de servicios</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm" prependId="false">
+            <center>
+                <h2>Requisitos de servicios</h2>
+            </center>
+            <div class="ui-g ui-fluid">
+                <div class="ui-g-12">
+                    <div class="car card-w-title Wid100" >
+                        <div class="ui-g">
+                            <div class="ui-g-12 ui-md-12 ui-lg-4">
+                                <p:fieldset legend="Departamentos y Servicios">
+                                    <p:panelGrid columns="1" layout="grid">
+                                        <h:panelGroup id="panelDept">
+                                            <p:outputLabel id="lblDepartamento" value="Departamentos"  style="font-weight: bolder" /><br></br>
+                                            <p:selectOneMenu id="cmbDepartamento" value="#{serviciosRequisitosMB.departamento}" style="width: 50%"
+                                                             filter="true" converter="dtoConverter" autoWidth="false" filterMatchMode="contains">
+                                                <p:ajax listener="#{serviciosRequisitosMB.initServiciosDepartamentos()}" 
+                                                        update="panelItems"/>
+                                                <f:selectItem class="select_one_menu" itemLabel="Seleccione" itemValue="#{null}"/>
+                                                <f:selectItems value="#{serviciosRequisitosMB.departamentos}" var="dpt" 
+                                                               itemLabel="#{dpt.nombre}" itemValue="#{dpt}" class="select_one_menu"/>
+                                            </p:selectOneMenu>    
+                                        </h:panelGroup> 
+                                        <h:panelGroup id="panelItems"  >
+                                            <p:outputLabel id="lblServicios" value="Servicio"
+                                                           style="font-weight: bolder" /><br></br>
+                                            <p:selectOneMenu value="#{serviciosRequisitosMB.item}" style="width:  50%"
+                                                             converter="dtoConverter" autoWidth="false" filter="true" filterMatchMode="contains">
+                                                <f:selectItem itemLabel="Seleccione" itemValue="#{null}" />
+                                                <f:selectItems value="#{serviciosRequisitosMB.itemList}"
+                                                               var="item" itemLabel="#{item.nombre}" itemValue="#{item}"/>
+                                                <p:ajax update="panelRequisito" listener="#{serviciosRequisitosMB.initRequisitos()}"/>
+                                            </p:selectOneMenu>    
+                                        </h:panelGroup>
+                                    </p:panelGrid>
+                                    <br/><br/>
+                                </p:fieldset>
+                            </div>
+                            <div class="ui-g-12 ui-md-12 ui-lg-8">
+                                <p:outputPanel id="panelRequisito">
+                                    <p:fieldset legend="Requisitos">
+                                        <center>
+                                            <p:outputLabel value="#{serviciosRequisitosMB.tipoTramite.descripcion}" 
+                                                           style="font-size: 16px; font-weight: bolder" 
+                                                           rendered="#{serviciosRequisitosMB.tipoTramite.id !=null}"/>
+                                        </center><br/>
+                                        <center><p:outputLabel value="#{serviciosRequisitosMB.item.nombre}" style="font-weight: bold;"/> </center>
+                                        <br/><br/>
+                                        <p:commandButton value="Limpiar" icon="fa fa-trash" styleClass="rounded-button help-button" style="float: right;width: auto; margin-right: 5px"    
+                                                         actionListener="#{serviciosRequisitosMB.iniciarTipo()}"
+                                                         update="mainForm" rendered="#{serviciosRequisitosMB.item.id != null
+                                                                     or serviciosRequisitosMB.tipoTramite.id != null}"/> 
+                                        <p:commandButton value="Nuevo Requisito" icon="fa fa-plus" styleClass="rounded-button info-button" style="float: right; margin-right: 5px;width: auto"    
+                                                          actionListener="#{serviciosRequisitosMB.openModalRequisito()}"
+                                                         rendered="#{serviciosRequisitosMB.item.id != null
+                                                                     or serviciosRequisitosMB.tipoTramite.id != null}"/><br></br><br></br>
+
+                                        <p:dataTable id="dItems" value="#{serviciosRequisitosMB.serviciosRequisitoList}" var="dato"  
+                                                     widgetVar="dItems" rowIndexVar="i" rows="10" reflow="true" paginator="true" 
+                                                     rowsPerPageTemplate="10,50"  paginatorPosition="bottom" filterEvent="enter" 
+                                                     emptyMessage="No existen registros" style="font-size: 12px" rowKey="#{dato.id}">
+                                            <p:column headerText="**" width="50">
+                                                <center>
+                                                    <h:outputText value="#{i + 1}"/>
+                                                </center>
+                                            </p:column>
+                                            <p:column headerText="Nombre" filterBy="#{dato.nombre}" filterMatchMode="contains">
+                                                <h:outputText value="#{dato.nombre}"/>
+                                            </p:column>
+                                            <p:column headerText="Descripción" filterBy="#{dato.descripcion}" filterMatchMode="contains" >
+                                                <h:outputText value="#{dato.descripcion}"/>
+                                            </p:column>
+                                            <p:column headerText="Obligatorio" style="text-align: center" width="80" filterBy="#{dato.requerido}">
+                                                <f:facet name="filter">
+                                                    <p:selectOneMenu onchange="PF('dItems').filter()" styleClass="custom-filter"
+                                                                     style="min-width:100% !important; max-width: 0 !important">
+                                                        <f:selectItem itemLabel="Todos" itemValue="#{null}" noSelectionOption="true"/>
+                                                        <f:selectItem itemLabel="SI" itemValue="#{true}"/>
+                                                        <f:selectItem itemLabel="NO" itemValue="#{false}"/>
+                                                    </p:selectOneMenu>
+                                                </f:facet>
+                                                <h:outputText value="#{dato.requerido ? 'SI':'NO'}"/>
+                                            </p:column>                          
+
+                                            <p:column headerText="Acciones" width="70">
+                                                <center>
+                                                    <p:spacer width="5"/>
+                                                    <p:commandLink title="Editar" actionListener="#{serviciosRequisitosMB.editarRequisito(dato)}" styleClass="edit">
+                                                        <i class="fa fa-edit" style="font-size: 1.2em; margin-right: 5px;"></i>
+                                                    </p:commandLink>
+                                                    <p:spacer width="5"/>
+                                                    <p:commandLink title="Eliminar" actionListener="#{serviciosRequisitosMB.eliminarRequisito(dato)}" 
+                                                                   styleClass="delete" update="dItems">
+                                                        <i class="fa fa-trash" style="font-size: 1.2em; margin-right: 5px;"></i>
+                                                        <p:confirm header="Confirmación" message="Está seguro de eliminar requisito?" 
+                                                                   icon="pi pi-exclamation-triangle" />
+                                                    </p:commandLink>
+                                                </center>
+                                            </p:column>
+                                        </p:dataTable>
+                                    </p:fieldset>
+                                </p:outputPanel>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+
+        <p:dialog id="dlgNuevoRequisito" widgetVar="dlgNuevoRequisito"  showHeader="false" modal="true" 
+                  resizable="false" width="400" closeOnEscape="true">
+            <h:form id="formNuevoRequisito">
+                <center>
+                    <p:outputLabel value="#{serviciosRequisitosMB.requisito.id == null ? 'Datos del Requisito' : 'Editar Requisito'}"
+                                   style="font-weight: bolder; font-size: 16px;" />
+                    <p:outputLabel value="#{serviciosRequisitosMB.requisito.nombre}" style="font-weight: bolder; font-size: 14px; margin-top: 10px" />
+                </center>
+                <p:panelGrid columns="1" layout="grid">
+                    <h:panelGroup>
+                        <p:outputLabel value="Nombre: *"  style="font-weight: bolder" /><br></br>
+                        <p:inputText value="#{serviciosRequisitosMB.requisito.nombre}" 
+                                     style="text-transform: uppercase; width: 100%"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Descripción"  style="font-weight: bolder" /><br></br>
+                        <p:inputTextarea value="#{serviciosRequisitosMB.requisito.descripcion}"
+                                         style="text-transform: uppercase;width: 100%" rows="6" cols="33" autoResize="false"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Tamaño máximo de archivo *"  style="font-weight: bolder" /><br></br>
+                        <p:selectOneMenu value="#{serviciosRequisitosMB.requisito.tamanioArchivo}" 
+                                         style="width: 100%;">
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                            <f:selectItem itemLabel="1 MB" itemValue="#{1048576}" />
+                            <f:selectItem itemLabel="5 MB" itemValue="#{5242880}" />
+                            <f:selectItem itemLabel="10 MB" itemValue="#{10485760}" />
+                            <f:selectItem itemLabel="15 MB" itemValue="#{15728640}" />
+                            <f:selectItem itemLabel="30 MB" itemValue="#{31457280}" />
+                            <f:selectItem itemLabel="50 MB" itemValue="#{52428800}" />
+                            <f:selectItem itemLabel="100 MB" itemValue="#{104857600}" />
+                            <f:selectItem itemLabel="1 GB" itemValue="#{1073741824}" />
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Tipo Archivo *"  style="font-weight: bolder" /><br></br>
+                        <p:selectOneMenu value="#{serviciosRequisitosMB.requisito.formato_archivo}" style="width: 100%;">
+                            <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                            <f:selectItem itemLabel="Imagen" itemValue="image/jpeg" />
+                            <f:selectItem itemLabel="PDF" itemValue="application/pdf" />
+                            <f:selectItem itemLabel="ZIP" itemValue="application/x-zip-compressed" />
+                            <f:selectItem itemLabel="WORD" itemValue="application/word" />
+                            <f:selectItem itemLabel="EXCEL" itemValue="application/excel" />
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Obligatorio "  style="font-weight: bolder" />
+                        <p:selectBooleanCheckbox value="#{serviciosRequisitosMB.requisito.requerido}"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Orden *" style="font-weight: bolder" /><br></br>
+                        <p:inputText value="#{serviciosRequisitosMB.requisito.orden}" onkeypress="validateIntegerValueAndFocusNext(event, '')"  style="width: 100%;"/>
+                    </h:panelGroup>
+                </p:panelGrid>
+                <br/><br/>
+                <center>
+                    <p:commandButton value="Guardar" icon="fa fa-save" styleClass="rounded-button"
+                                     update="dItems" style="width: auto; margin-right: 5px"
+                                     actionListener="#{serviciosRequisitosMB.guardarRequisito()}"
+                                     process="formNuevoRequisito"/>
+                    <p:commandButton value="Cancelar" style="width: auto;" icon="fa fa-close" styleClass="danger-button rounded-button"
+                                     actionListener="#{serviciosRequisitosMB.initServiciotRequisito()}"
+                                     oncomplete="PF('dlgNuevoRequisito').hide();"/>
+                </center>
+            </h:form>
+        </p:dialog>
+        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+            <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+            <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+        </p:confirmDialog>
+    </ui:define>
+</ui:composition>

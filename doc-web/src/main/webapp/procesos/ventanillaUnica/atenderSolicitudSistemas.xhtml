@@ -1,0 +1,285 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+    <ui:define name="title">Atender Solicitud</ui:define>
+    <ui:define name="head">
+        <style type="text/css">
+            .ui-panelgrid.form-elements .ui-grc-2 {
+                padding-left: 60px;
+            }
+
+            @media (max-width:1024px) {
+                .ui-panelgrid.form-elements .ui-grc-2 {
+                    padding-left: 20px;
+                }
+            }
+
+            @media (max-width:640px) {
+                .ui-panelgrid.form-elements .ui-grc-2 {
+                    padding-left: 6px;
+                }
+            }
+
+            .dialogDemo label {
+                line-height: 2.1em;
+            }
+
+            .logo {
+                width: 5%
+            }
+
+            .detail {
+                width: 95%;
+                padding-left: 25px;
+            }
+
+            .detail td {
+                font-size: 24px;
+            }
+
+            iframe{
+                overflow:hidden !important;
+            }
+
+            .detail td{
+                font-family: 'Sarabun';
+                font-size: 20px;
+            }
+            .panelcard{
+                box-shadow: 0 0 0 0 rgba(0,0,0,0.2);
+                transition: 0.3s;
+            }
+            .panelcard:hover{
+                box-shadow: 0 5px 10px 0 rgba(0,0,228,0.2);
+            }
+            .ui-panelgrid-cell{
+                vertical-align: top !important;
+
+            }
+
+        </style>
+    </ui:define>
+    <ui:define name="content">
+        <h:form id="formMain" prependId="false">
+            <div class="ui-g ui-fluid">
+                <div class="ui-g-12">
+                    <div class="car card-w-title Wid100" >
+                        <h1>
+                            <center>
+                                Asignar/Atender Solicitud <br/>
+                            </center>
+                        </h1>
+                        <h3>
+                            <center>
+                                #{ventanillaUnicaMB.solicitudServicios.tipoServicio.nombre}
+                            </center>
+                        </h3>
+                    </div>
+                </div>
+            </div>
+            <p:tabView id="tbSolicitud">
+                <p:tab title="Resolver">
+                    <p:panelGrid id="pnlInfo" columns="3" layout="grid" style="margin-top: 5px; width: 98%; vertical-align: top !important" >
+                        <h:panelGroup>
+                            <h:panelGrid columns="1" style="margin-top: 5px; width: 98%;">
+                                <h:panelGroup>
+                                    <p:outputLabel value="# Trámite" /><br/>
+                                    <p:outputLabel value="#{ventanillaUnicaMB.historicoTramites.codigo}" style="font-weight: bold"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Solicitante" /><br/>
+                                    <p:outputLabel value="#{ventanillaUnicaMB.solicitudServicios.enteSolicitante.nombres} #{ventanillaUnicaMB.solicitudServicios.enteSolicitante.apellidos}" rendered="#{ventanillaUnicaMB.solicitudServicios.enteSolicitante.esPersona}" style="font-weight: bold"/>
+                                    <p:outputLabel value="#{ventanillaUnicaMB.solicitudServicios.enteSolicitante.razonSocial} / #{ventanillaUnicaMB.solicitudServicios.enteSolicitante.nombreComercial}" rendered="#{!ventanillaUnicaMB.solicitudServicios.enteSolicitante.esPersona}" style="font-weight: bold"/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Fecha de Ingreso" /><br/>
+                                    <p:outputLabel value="#{ventanillaUnicaMB.solicitudServicios.fechaCreacion}" style="font-weight: bold">
+                                        <f:convertDateTime pattern="dd-MM-yyyy HH:mm" />
+                                    </p:outputLabel>
+                                    <br/>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel value="Observación" /><br/>
+                                    <p:outputLabel value="#{ventanillaUnicaMB.solicitudServicios.descripcionInconveniente}" style="font-weight: bold"/><br/>
+                                </h:panelGroup>
+                                <h:panelGroup rendered="false">
+                                    <p:outputLabel  value="Fecha de Solicitud:" /><br/>
+                                    <p:calendar  value="#{ventanillaUnicaMB.solicitudServicios.fechaInconveniente}" showOn="button" mindate="sysdate" />
+                                </h:panelGroup>
+                                <h:panelGroup >
+                                    <p:outputLabel  value="Fecha máxima de respuesta:" /><br/>
+                                    <p:calendar  value="#{ventanillaUnicaMB.solicitudServicios.fechaMaximaRespuesta}" mindate="sysdate" showOn="button" />
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:dataList value="#{ventanillaUnicaMB.departamentosSolicitud}" var="deps">
+                                        #{deps.nombre}
+                                    </p:dataList>
+                                </h:panelGroup>
+                            </h:panelGrid>        
+                        </h:panelGroup>
+                        <h:panelGroup  style="vertical-align: top !important">
+                            <p:outputLabel value="Respuesta/Informe" style="font-weight: bold" /><br/>
+                            <p:inputTextarea value="#{ventanillaUnicaMB.solicitudServicios.informe}" rows="10" cols="50"  />        
+                        </h:panelGroup >
+                        <h:panelGroup   style="vertical-align: top !important">
+                            <p:outputLabel for="observacion" value="Observación" style="font-weight: bold" /><br/>
+                            <p:inputTextarea id="observacion" value="#{ventanillaUnicaMB.solicitudServicios.descripcionInconveniente}" rows="10" cols="50" readonly="true" />
+                        </h:panelGroup>
+                    </p:panelGrid>
+                    <br/>
+                    <center>
+
+                        <p:commandButton value="Finalizar"
+                                         icon="fa fa-check"
+                                         styleClass="info-button rounded-button p-mr-2 p-mb-2"
+                                         update="pnlInfo"
+                                         actionListener="#{ventanillaUnicaMB.completarTareaSistemas(true)}"
+                                         process="@form" />
+                        <p:commandButton icon="fa fa-times" value="Regresar"
+                                         styleClass="danger-button rounded-button p-mr-2 p-mb-2"
+                                         process="@this"
+                                         actionListener="#{ventanillaUnicaMB.completarTareaSistemas(false)}"/>
+
+                    </center>
+                </p:tab>
+
+                <p:tab title="Asignar">
+                    <p:panelGrid id="pnlAsignar" columns="2" layout="grid" 
+                                 columnClasses="forty-percent, sixty-percent"
+                                 style="margin-top: 5px; width: 98%; vertical-align: top !important;" >
+                        <h:panelGroup id="panelDept">
+                            <p:outputLabel value="Departamentos" style="font-weight: bold" /><br></br>
+                            <p:selectOneMenu value="#{ventanillaUnicaMB.departamento}" filter="true"
+                                             converter="dtoConverter" autoWidth="true"  
+                                             style="width: 80% !important;" >
+                                <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+                                <f:selectItems value="#{ventanillaUnicaMB.departamentos}" var="dpt" itemLabel="#{dpt.nombre}" itemValue="#{dpt}"/>
+                                <p:ajax listener="#{ventanillaUnicaMB.initListUsuarios()}" update="pnlAsignar,dtUsuarios"/>
+                            </p:selectOneMenu>    <br/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:dataTable id="dtUsuarios"
+                                         value="#{ventanillaUnicaMB.userList}" var="user"
+                                         paginatorPosition="bottom" 
+                                         rowKey="#{user.id}"
+                                         selection="#{ventanillaUnicaMB.usuariosSeleccionados}"
+                                         widgetVar="dtUsuarios"  rowIndexVar="i" paginator="true" rows="10"
+                                         filterEvent="enter"
+                                         emptyMessage="No existen registros"  style="font-size: 12px">
+                                <p:column headerText="**" width="50" selectionMode="multiple" />
+                                <p:column headerText="Usuario" width="90" filterBy="#{user.user}">
+                                    <h:outputText value="#{user.user}"/>
+                                </p:column>
+                                <p:column headerText="Nombre" filterBy="#{user.ente.nombreCompleto}">
+                                    <h:outputText value="#{user.ente.nombreCompleto}"/>
+                                </p:column> 
+                            </p:dataTable>           
+                        </h:panelGroup>
+                    </p:panelGrid>
+                    <br/>
+                    <center>
+                        <p:commandButton value="Continuar"
+                                         icon="fa fa-check"
+                                         styleClass="info-button rounded-button p-mr-2 p-mb-2"
+                                         actionListener="#{ventanillaUnicaMB.validarReasignar()}"  />
+                    </center>
+                </p:tab>
+                <p:tab title="Observaciones">
+                    <ui:include src="_observaciones.xhtml" />
+                </p:tab>
+                <p:tab title="Documentos">
+                    <ui:include src="_documentos.xhtml" />
+                    <center>
+                        <p:commandButton value="Continuar"
+                                         icon="fa fa-check"
+                                         styleClass="info-button rounded-button p-mr-2 p-mb-2"
+                                         update="pnlInfo"
+                                         actionListener="#{ventanillaUnicaMB.completarTareaAsignarAtenderSolicitud(false, false)}"
+                                         process="@form" /> 
+                    </center>
+                </p:tab>
+            </p:tabView>
+        </h:form>
+        <p:dialog   showHeader="false" widgetVar="rechazoDlg"  modal="true" height="250" width="400" resizable="false" showEffect="fade" >
+            <h:form prependId="false" id="frmContinuar">
+                <h3 style="margin-top: 0">Rechazo de trámite</h3>
+                <br/>
+                <h:panelGrid columns="1" style="width: 98%">
+                    <p:inputTextarea value="#{ventanillaUnicaMB.observacionReasignacion}" placeholder="Ingrese una Observación"  rows="6" cols="33" required="true" style="width: 100%"/>
+                </h:panelGrid>
+                <center>
+                    <p:commandButton value="Terminar Trámite"
+                                     icon="fa fa-check"
+                                     styleClass="success-button rounded-button"
+                                     actionListener="#{ventanillaUnicaMB.completarTareaAsignarAtenderSolicitud(true, true)}"
+                                     process="frmContinuar" />
+                    <p:spacer width="5" />
+                    <p:commandButton value="Cerrar"
+                                     icon="fa fa-close"
+                                     style="width: auto; margin-top: 10px" 
+                                     oncomplete="PF('rechazoDlg').hide()"/>
+
+                </center>
+            </h:form>
+        </p:dialog>
+
+
+        <p:dialog showHeader="true" header="Reasignar trámite" widgetVar="reasignarDlg"  modal="true" height="250" width="400" resizable="false" showEffect="fade"  closable="true">
+            <h:form prependId="false" id="frmReasignar">
+                <h:panelGrid columns="1" style="width: 98%">
+                    <p:inputTextarea value="#{ventanillaUnicaMB.observacionReasignacion}" placeholder="Ingrese una Observación" rows="6" cols="33" required="true" style="width: 100%"/>
+                </h:panelGrid>
+                <br/>
+                <center>
+                    <p:commandButton value="Terminar Trámite"
+                                     icon="fa fa-check"
+                                     styleClass="success-button rounded-button"
+                                     actionListener="#{ventanillaUnicaMB.completarTareaAsignarAtenderSolicitud(true, false)}"
+                                     process="frmReasignar" />
+                    <p:spacer width="5" />
+                    <p:commandButton value="Cerrar"
+                                     icon="fa fa-close"
+                                     styleClass="danger-button rounded-button"
+                                     oncomplete="PF('reasignarDlg').hide()"/>
+                </center>
+            </h:form>
+        </p:dialog>
+
+
+        <p:dialog id="DlgoDocumento" width="700"  showHeader="false" widgetVar="DlgoDocumento" 
+                  modal="true" showEffect="fade" 
+                  hideEffect="fade" resizable="false"  closable="false" height="330">
+            <br></br>
+            <center>
+                <p:outputLabel value="Documentos" style="font-weight: bolder; font-size: 16px;" /><br></br> 
+            </center>
+            <br></br>
+            <h:form id="formDocumento"  prependId="false" enctype="multipart/form-data">
+                <p:outputLabel value="Los tipo de archivos permitidos: pdf" class="Fs15" />
+                <p:fileUpload listener="#{ventanillaUnicaMB.handleFileUpload}"  style="width: 100%" accept="pdf"
+                              skinSimple="true" allowTypes="/(\.|\/)(pdf)$/i" mode="advanced" dragDropSupport="false" 
+                              label="Buscar" uploadLabel="Subir" cancelLabel="Cancelar"  previewWidth="60"   />
+                <br></br>
+                <center>
+                    <p:commandButton value="Firmar y Grabar" update="tbSolicitud:docNuevos" 
+                                     icon="fa fa-copyright" 
+                                     actionListener="#{ventanillaUnicaMB.agregarFirmarDocumento(true)}"
+                                     style="width: auto;" >
+                        <p:ajax event="dialogReturn" listener="#{ventanillaUnicaMB.archivoFirmado}" 
+                                update="tbSolicitud:docNuevos"/>
+                    </p:commandButton>
+                    <p:spacer width="5" />
+                    <p:commandButton value="Grabar" update="tbSolicitud:docNuevos" 
+                                     actionListener="#{ventanillaUnicaMB.agregarDocumento(false, '')}" icon="fa fa-check" style="width: auto;" />
+                    <p:spacer width="5" />
+                    <p:commandButton value="Cancelar" icon="fa fa-close" onclick="PF('DlgoDocumento').hide()" style="width: auto;" />
+                </center>
+            </h:form>
+        </p:dialog> 
+    </ui:define>
+</ui:composition>

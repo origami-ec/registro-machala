@@ -1,0 +1,8 @@
+server:
+  port: 8782
+
+spring:
+  application:
+    name: sigeri-email
+  main:
+    allow-bean-definition-overriding: true

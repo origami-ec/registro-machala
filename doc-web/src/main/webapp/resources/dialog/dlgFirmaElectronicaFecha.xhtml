@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:poue="http://primefaces.org/ui/extensions">
+    <h:head>
+        <title>Ingrese la clave de su firma electrónica</title>
+        <ui:include src="styleTemplete.xhtml" />
+    </h:head>
+    <h:body>
+        <h:form id="mainForm" prependId="false">
+
+            <br></br>
+            <center>
+                <h:panelGrid id="pnlClaveFirma" columns="3"  style="font-weight: bolder;"   rendered="#{!dlgFirmaElectronicaFecha.existenImagenes}">
+                    <h:panelGroup>
+                        <p:outputLabel value="Clave" /><br/>
+                        <p:password autocomplete="false" value="#{dlgFirmaElectronicaFecha.clave}" placeholder="Clave" redisplay="true"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="# Página" /><br/>
+                        <p:inputText  value="#{dlgFirmaElectronicaFecha.firmaElectronica.firmaElectronica.numeroPagina}" placeholder="Número de página" />
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <center>
+                              <p:outputLabel value="" /><br/>
+                            <p:commandButton value="Validar" process="pnlClaveFirma" update="pnlClaveFirma" icon="pi pi-check" rendered="#{!dlgFirmaElectronicaFecha.imagenPDF}" actionListener="#{dlgFirmaElectronicaFecha.validarFirmarDocumento()}"/>
+                            <p:commandButton value="Validar" process="pnlClaveFirma" update="mainForm" icon="pi pi-check" rendered="#{dlgFirmaElectronicaFecha.imagenPDF}"  actionListener="#{dlgFirmaElectronicaFecha.validarFirmaImagenPDF()}"/>
+                        </center>
+                    </h:panelGroup>
+                </h:panelGrid>
+
+                <p:dataGrid  id="dtPdfs" value="#{dlgFirmaElectronicaFecha.imagenesPdfs}" var="imagen"
+                             paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             rendered="#{dlgFirmaElectronicaFecha.imagenPDF}"
+                             columns="1" layout="grid" emptyMessage="Valide su firma electrónica"
+                             rows="1" paginator="true" 
+                             style="width: 100% !important; height: 400px">
+
+                    <p:graphicImage id="img" value="#{imagen.url}"  style="border: 1px solid; border-color: #39414b" />
+                    <poue:imageAreaSelect id="areaSelect"
+                                          for="img" 
+                                          minHeight="50" minWidth="150"
+                                          maxWidth="150" maxHeight="50" 
+                                          widgetVar="areaSelct"
+                                          handles="true">
+                        <p:ajax event="selectEnd" listener="#{dlgFirmaElectronicaFecha.selectEndListener}"/>
+                    </poue:imageAreaSelect>
+                </p:dataGrid>
+            </center>
+        </h:form>
+    </h:body>
+</html>

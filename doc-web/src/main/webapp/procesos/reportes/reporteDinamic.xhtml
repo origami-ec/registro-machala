@@ -1,0 +1,249 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:pe="http://primefaces.org/ui/extensions"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns="http://www.w3.org/1999/xhtml">
+
+    <ui:define name="top"><h3>Reporte de cruce de campos</h3></ui:define>
+    <ui:define name="title">Reporte de cruce de campos</ui:define>
+    <ui:define name="content">
+        <center>
+            <h2> Reporte de cruce de campos</h2>
+        </center>
+        <h:form id="formMain" prependId="false" enctype="multipart/form-data" style="height: 80%">
+            <style type="text/css">
+                .cheap {
+                    background-color: #4cb9fc !important;
+                    background-image: none !important;
+                    color: #ffffff !important;
+                }
+            </style>
+            <p:panelGrid id="pnlDinamic" columns="3" columnClasses="twenty-percent, twenty-percent, sixty-percent" 
+                         styleClass="ui-panelgrid-blank" 
+                         style="width: 98% !important; margin-left: 20px" >
+                <h:panelGroup>
+                    <p:dataGrid var="tbl" value="#{reporteDinamicMB.tablas}" columns="1" layout="grid" lazy="false" id="dtTablas" >
+                        <f:facet name="header">
+                            Tablas disponibles
+                        </f:facet>
+                        <div class="product-grid-item card" style="margin-bottom: 0">
+                            <div class="product-grid-item-top">
+                                <div>
+                                    <i class="pi pi-tag product-category-icon"/>
+                                    <span class="product-category">
+                                        <p:outputLabel value="#{tbl.detalle}" style="font-weight: bolder"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <br/>
+                            <div class="product-grid-item-content">
+                                <p:fieldset toggleable="true" collapsed="true" legend="Campos disponibles">
+                                    <p:dataTable value="#{tbl.campos}" var="field"  lazy="false"   rowStyleClass="#{field.esObjecto ? 'cheap' : null}">
+
+                                        <p:column headerText="Descripción">
+                                            <p:outputLabel value="#{field.detailField}"/><br/>
+                                            <p:outputLabel value="#{field.field}"/><br/>
+                                        </p:column>
+                                        <p:column headerText="**" width="20">
+                                            <center>
+                                                <p:commandLink  actionListener="#{reporteDinamicMB.agregarCampo(tbl, field)}" update="pnlSeleccionados"
+                                                                styleClass="edit" style="margin-right: 10px" title="Escoger campo">
+                                                    <i class="fa fa-plus" style="font-size: 1.2em; margin-right: 5px;"></i>
+                                                </p:commandLink> 
+                                            </center>
+                                        </p:column>
+                                    </p:dataTable>
+                                </p:fieldset>
+                            </div>
+                        </div>
+                    </p:dataGrid>    
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:panel header="Filtros" >
+                        <p:panelGrid id="pnlFiltrosFecha" columns="3" styleClass="ui-panelgrid-blank" >
+                            <h:panelGroup>
+                                <p:outputLabel value="Desde: "  style="font-weight: bolder"/><br/>
+                                <p:calendar value="#{reporteDinamicMB.desde}" placeholder="dd-MM-yyyy" pattern="dd-MM-yyyy" 
+                                            style="min-width:100% !important; max-width: 0 !important"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Hasta: " style="font-weight: bolder"/><br/>
+                                <p:calendar value="#{reporteDinamicMB.hasta}" placeholder="dd-MM-yyyy" pattern="dd-MM-yyyy" 
+                                            style="min-width:100% !important; max-width: 0 !important"/>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Considerar fecha: "  style="font-weight: bolder"/><br/>
+                                <p:selectBooleanCheckbox value="#{reporteDinamicMB.incluirFechas}" />
+                            </h:panelGroup>
+                        </p:panelGrid>
+                        <p:panelGrid id="pnlFiltrosDeps" columns="1" styleClass="ui-panelgrid-blank" >
+                            <h:panelGroup>
+                                <p:outputLabel value="Departamento: "  style="font-weight: bolder"/><br/>
+                                <p:selectOneMenu  value="#{reporteDinamicMB.departamento}" 
+                                                  converter="dtoConverter" style="min-width:100% !important; max-width: 0 !important"
+                                                  filter="true" filterMatchMode="contains">
+                                    <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}"/>
+                                    <f:selectItems value="#{reporteDinamicMB.departamentos}" var="d" itemValue="#{d}" itemLabel="#{d.nombre}"/>
+                                    <p:ajax  event="change" listener="#{reporteDinamicMB.cargarUsuariosXdepartamento()}" update="rolUsuario" />
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <p:outputLabel value="Usuario: "  style="font-weight: bolder"/><br/>
+                                <p:selectOneMenu id="rolUsuario" value="#{reporteDinamicMB.usuario}" converter="dtoConverter" 
+                                                 style="min-width:100% !important; max-width: 0 !important"
+                                                 filter="true" filterMatchMode="contains">
+                                    <f:selectItem itemLabel="Todos" itemValue="#{null}" />
+                                    <f:selectItems value="#{reporteDinamicMB.usuarios}" var="usr1" itemValue="#{usr1}" itemLabel="#{usr1.nombreUsuario}"/>
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                        </p:panelGrid>
+                        <p:panelGrid id="pnlPlantillas" columns="1" styleClass="ui-panelgrid-blank" >
+                            <h:panelGroup>
+                                <p:dataTable value="#{reporteDinamicMB.plantillas}" var="p" id="dtPlantillas">
+                                    <p:column headerText="Plantilla">
+                                        #{p.code}
+                                    </p:column>
+                                    <p:column headerText="***" width="100">
+                                        <center>
+                                            <p:commandLink  actionListener="#{reporteDinamicMB.eliminarPlantilla(p)}" update="dtPlantillas"
+                                                            style="margin-right: 10px" title="Eliminar plantilla">
+                                                <i class="fa fa-close" style="font-size: 1.2em;color: red; margin-right: 5px;"></i>
+                                                <p:confirm header="Confirmación" message="Esta seguro de eliminar la plantilla" icon="ui-icon-alert" />
+                                            </p:commandLink> 
+                                            <p:spacer width="5" />
+                                            <p:commandLink  actionListener="#{reporteDinamicMB.cargarPlantilla(p)}" update="pnlSeleccionados"
+                                                            style="margin-right: 10px" title="Cargar plantilla">
+                                                <i class="fa fa-arrow-right" style="font-size: 1.2em; margin-right: 5px;"></i>
+                                            </p:commandLink> 
+                                        </center>
+                                    </p:column>
+                                </p:dataTable>
+                            </h:panelGroup>
+                        </p:panelGrid>
+                    </p:panel>
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:panel id="pnlSeleccionados" header="Campos seleccionados" >
+                        <p:panelGrid id="pnlReporte" columns="1" styleClass="ui-panelgrid-blank" >
+                            <h:panelGroup>
+                                <p:panelGrid columns="2">
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Nombre del reporte" style="font-weight: bolder"/><br/>
+                                        <p:inputText value="#{reporteDinamicMB.nombreReporte}" /><br/>
+                                        <p:outputLabel value="" /><br/>
+                                        <p:commandButton value="Generar reporte" actionListener="#{reporteDinamicMB.generarReporte()}" icon="fa fa-save"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <p:outputLabel value="Nombre de la plantilla" style="font-weight: bolder"/><br/>
+                                        <p:inputText value="#{reporteDinamicMB.nombrePlantilla}" /><br/>
+                                        <p:outputLabel value="" /><br/>
+                                        <p:commandButton value="Grabar plantilla reporte" actionListener="#{reporteDinamicMB.guardarPlantilla()}" update="dtPlantillas" icon="fa fa-save"/>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+
+                                    </h:panelGroup>
+                                </p:panelGrid>
+                            </h:panelGroup>
+                            <h:panelGroup>
+                                <br/>
+                                <p:dataTable id="dtSeleccionados" lazy="false" rowKey="#{field.detailField}"
+                                             editable="true" widgetVar="dtSeleccionados" editMode="cell"
+                                             value="#{reporteDinamicMB.seleccionados}" var="field" rowStyleClass="#{field.esObjecto ? 'cheap' : null}">
+                                    <p:ajax event="rowEdit" listener="#{reporteDinamicMB.onRowEdit}" />
+                                    <p:ajax event="rowEditCancel" listener="#{reporteDinamicMB.onRowCancel}" />
+
+                                    <p:column headerText="Campo" width="140">
+                                        <p:outputLabel value="#{field.detailField}"/>
+                                    </p:column>
+                                    <p:column headerText="Filtro - Operador" width="110">
+                                        <p:cellEditor rendered="#{!field.esObjecto}">
+                                            <f:facet name="output">
+                                                <p:outputLabel value="#{field.operador}"/>
+                                            </f:facet>
+                                            <f:facet name="input"  > 
+                                                <p:selectOneMenu value="#{field.operador}"  style="width:100%; margin: 10px" rendered="#{field.typeField eq  'java.lang.String'}"> 
+                                                    <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                                    <f:selectItem itemLabel="IGUAL" itemValue="IGUAL" />
+                                                    <f:selectItem itemLabel="CONTIENE" itemValue="CONTIENE" />
+                                                </p:selectOneMenu> 
+                                                <p:selectOneMenu value="#{field.operador}"  style="width:100%; margin: 10px"  rendered="#{field.typeField eq  'java.lang.Long'}"> 
+                                                    <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                                    <f:selectItem itemLabel="IGUAL" itemValue="IGUAL"/>
+                                                    <f:selectItem itemLabel="MENOR IGUAL QUE" itemValue="MENOR IGUAL QUE" />
+                                                    <f:selectItem itemLabel="MAYOR IGUAL QUE" itemValue="MAYOR IGUAL QUE" />
+                                                </p:selectOneMenu> 
+                                                <p:selectOneMenu value="#{field.operador}"  style="width:100%; margin: 10px" rendered="#{field.typeField eq  'java.util.Date'}"> 
+                                                    <f:selectItem itemLabel="Seleccione" itemValue="#{null}"/>
+                                                    <p:ajax update="dtSeleccionados" />
+                                                    <f:selectItem itemLabel="IGUAL" itemValue="IGUAL" />
+                                                    <f:selectItem itemLabel="RANGO FECHA" itemValue="RANGO FECHA" />
+                                                </p:selectOneMenu> 
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column headerText="Filtro - Valor">
+                                        <p:cellEditor rendered="#{!field.esObjecto}">
+                                            <f:facet name="output">
+                                                <p:outputLabel value="#{field.valor}" rendered="#{field.typeField ne 'java.util.Date'}"/>
+                                                <p:outputLabel value="Desde: " rendered="#{field.typeField eq 'java.util.Date' and  field.operador eq 'RANGO FECHA' }" />
+                                                <p:outputLabel value="#{field.fecha}" rendered="#{field.typeField eq 'java.util.Date'  and field.operador eq 'IGUAL' or  field.operador eq 'RANGO FECHA' }">
+                                                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                                                </p:outputLabel>
+                                                <br/>
+                                                <p:outputLabel value="Hasta: " rendered="#{field.typeField eq 'java.util.Date' and  field.operador eq 'RANGO FECHA' }" />    
+                                                <p:outputLabel value="#{field.fechaHasta}" rendered="#{field.typeField eq 'java.util.Date' and field.operador eq 'RANGO FECHA'}">
+                                                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                                                </p:outputLabel>
+                                            </f:facet>
+                                            <f:facet name="input" > 
+                                                <p:inputText id="modelInput" value="#{field.valor}" style="width:95%; margin: 10px"
+                                                             rendered="#{field.typeField eq 'java.lang.String'}"/>
+
+                                                <p:inputText id="text2" value="#{field.valor}" rendered="#{field.typeField eq 'java.lang.Long'}" style="width:95%; margin: 10px">
+                                                    <p:keyFilter mask="num" />
+                                                </p:inputText>
+                                                <p:selectBooleanButton onLabel="SI" offLabel="NO" value="#{field.valor}" rendered="#{field.typeField eq 'java.lang.Boolean'}"
+                                                                       onIcon="pi pi-check" offIcon="pi pi-times" style="width:6rem; margin: 10px" />
+
+                                                <p:calendar id="datetime" value="#{field.fecha}"  style="width:60%; margin: 10px" 
+                                                            showOn="button" placeholder="yyyy-MM-dd" navigator="true"
+                                                            pattern="yyyy-MM-dd" rendered="#{field.typeField eq 'java.util.Date' and field.operador eq 'IGUAL' or  field.operador eq 'RANGO FECHA' }">
+                                                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                                                </p:calendar>
+                                                <p:calendar id="datetimeHasta" value="#{field.fechaHasta}"  style="width:60%; margin: 10px" 
+                                                            showOn="button" placeholder="yyyy-MM-dd" navigator="true"
+                                                            pattern="yyyy-MM-dd" rendered="#{field.typeField eq 'java.util.Date' and field.operador eq 'RANGO FECHA' }">
+                                                    <f:convertDateTime pattern="yyyy-MM-dd" />
+                                                </p:calendar>
+
+
+                                            </f:facet>
+                                        </p:cellEditor>
+                                    </p:column>
+                                    <p:column headerText="**" width="40">
+                                        <center>
+                                            <p:commandLink  actionListener="#{reporteDinamicMB.eliminarCampo(field)}" update="dtSeleccionados"
+                                                            styleClass="edit" style="margin-right: 10px" title="Eliminar campo">
+                                                <i class="fa fa-trash" style="font-size: 1.2em; margin-right: 5px; color: red"></i>
+                                            </p:commandLink> 
+                                        </center>
+                                    </p:column>
+                                </p:dataTable>
+                            </h:panelGroup>
+                        </p:panelGrid>
+                    </p:panel>
+                </h:panelGroup>
+            </p:panelGrid>
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="NO" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+        </h:form>
+
+
+    </ui:define>
+</ui:composition>

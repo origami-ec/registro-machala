@@ -1,0 +1,215 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:comp="http://xmlns.jcp.org/jsf/composite/dialog"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:panelGrid id="pnlDatosTramite" columns="2" style="width: 100%; font-weight: bold" columnClasses="fifty-percent, fifty-percent" >
+        <h:panelGroup>
+            <p:fieldset id="fldDepsServ" legend="Departamentos y Servicios">
+                <h:panelGroup id="panelDept">
+                    <p:outputLabel id="lblDepartamento" value="Departamentos"  style="font-weight: bolder" /><br></br>
+                    <p:selectOneMenu id="cmbDepartamento" value="#{iniciarTramiteMB.departamento}" filter="true" 
+                                     converter="dtoConverter" filterMatchMode="contains"
+                                     style="min-width:100% !important; max-width: 0 !important" autoWidth="true">
+                        <p:ajax listener="#{iniciarTramiteMB.initServiciosDepartamentos()}" 
+                                update="formMain"/>
+                        <f:selectItem class="select_one_menu" itemLabel="Seleccione" itemValue="#{null}"/>
+                        <f:selectItems value="#{iniciarTramiteMB.departamentos}" var="dpt" 
+                                       itemLabel="#{dpt.nombre}" itemValue="#{dpt}" class="select_one_menu"/>
+                    </p:selectOneMenu>    
+                </h:panelGroup><br/>
+                <h:panelGroup id="panelItems">
+                    <p:outputLabel id="lblServicios" value="Servicio" style="font-weight: bolder"/><br></br>
+                    <p:selectOneMenu value="#{iniciarTramiteMB.item}" 
+                                     converter="dtoConverter" style="min-width:100% !important; max-width: 0 !important"
+                                     filter="true" filterMatchMode="contains" autoWidth="true">
+                        <f:selectItem itemLabel="Seleccione" itemValue="#{null}" />
+                        <f:selectItems value="#{iniciarTramiteMB.itemList}"
+                                       var="item" itemLabel="#{item.nombre}" itemValue="#{item}"/>
+                        <p:ajax update="panelTipoItem, dtUsuariosSelect" listener="#{iniciarTramiteMB.initRequisitos()}"/>
+                    </p:selectOneMenu>   
+                </h:panelGroup><br/>
+                <h:panelGroup id="panelTipoItem">
+                    <p:outputLabel id="lblTipoServicios" value="Tipo de Servicio" style="font-weight: bolder"/><br></br>
+                    <p:selectOneMenu value="#{iniciarTramiteMB.solicitudInterna}" 
+                                     style="min-width:100% !important; max-width: 0 !important"
+                                     filter="true" filterMatchMode="contains" autoWidth="true">
+                        <f:selectItem itemLabel="Seleccione" itemValue="#{null}" noSelectionOption="true"/>
+                        <f:selectItem itemLabel="Interno" itemValue="#{true}" />
+                        <f:selectItem itemLabel="Externo" itemValue="#{false}" />
+                    </p:selectOneMenu>    
+                </h:panelGroup>
+                <h:panelGroup>
+                    <p:panelGrid columns="1" layout="grid"> 
+                        <p:dataTable id="dtUsuariosSelect"
+                                     value="#{iniciarTramiteMB.userList}" var="user"  
+                                     widgetVar="dtUsuariosSelect"  rowIndexVar="i"
+                                     rows="10" reflow="true" paginator="true" 
+                                     rowsPerPageTemplate="10,50"  paginatorPosition="bottom"
+                                     filterEvent="enter" emptyMessage="No existen registros"  
+                                     style="font-size: 12px"
+                                     rowKey="#{user.id}" 
+                                     selection="#{iniciarTramiteMB.usuariosSelect}">
+                            <p:column headerText="Usuario" filterBy="#{user.usuario.nombreUsuario}" filterMatchMode="contains">
+                                <h:outputText value="#{user.usuario.nombreUsuario}"/><br/>
+                                <h:outputText value="#{user.usuario.cargo}" style="font-size: 10px; font-weight: bolder"/><br/>
+                                <h:outputText value="#{user.usuario.recursoHumano.persona.correo}" style="font-size: 8px; font-weight: bolder"/><br/>
+                                <h:outputText value="#{user.usuario.estadoDisponible}" style="font-size: 10px; font-weight: bolder; color: red" rendered="#{!user.usuario.disponible}"/>
+                            </p:column>
+                            <p:column headerText="***" style="text-align: center" width="40" 
+                                      selectionMode="multiple"/>
+                        </p:dataTable>
+
+                    </p:panelGrid>
+                </h:panelGroup>
+            </p:fieldset> 
+
+        </h:panelGroup>
+        <h:panelGroup>
+            <p:fieldset  id="pnlSolicitante" legend="Solicitante" style="font-weight: bold; width: 100% !important">
+                <h:panelGroup>
+                    <p:outputLabel value="Identificación*" /> <br></br>
+                    <div class="ui-inputgroup"> 
+                        <p:inputText value="#{iniciarTramiteMB.solicitante.identificacion}" 
+                                     placeholder="Ingrese la Identificación" style="width: 100%" 
+                                     readonly="#{iniciarTramiteMB.solicitante.id ne null}"
+                                     onkeypress="if (event.keyCode == 13) {
+                                                 return false;
+                                             }">
+                            <!--<p:keyFilter regEx="/[0-9-a-zA-ZÀ-ú\\s\\ ]+/"/>-->
+                        </p:inputText>
+                        <p:spacer width="5" />
+                        <p:commandButton  icon="fa fa-search" update="formMain:pnlSolicitante" 
+                                          actionListener="#{iniciarTramiteMB.buscarSolicitante()}" >
+                            <p:ajax event="dialogReturn" listener="#{iniciarTramiteMB.selectSolicitante}" update="formMain:pnlSolicitante"/>
+                        </p:commandButton>
+                        <p:remoteCommand name="buscar" actionListener="#{iniciarTramiteMB.buscarSolicitante()}"  />
+                        <p:spacer width="5" />
+                        <p:commandButton  icon="fa fa-trash" update="formMain:pnlSolicitante"
+                                          actionListener="#{iniciarTramiteMB.limpiarDatosSolicitante()}" >
+                        </p:commandButton>
+                    </div>
+
+                </h:panelGroup>
+                <h:panelGrid id="panelSolicitante" columns="2">
+                    <h:panelGroup rendered="#{iniciarTramiteMB.solicitante.esPersona}">
+                        <p:outputLabel value="Nombres*" /> <br></br>
+                        <p:inputText value="#{iniciarTramiteMB.solicitante.nombres}" 
+                                     disabled="true"
+                                     style="text-transform: uppercase;width: 98%">
+                            <p:keyFilter regEx="/[a-zA-ZÀ-ú\\s\\ ]+/"/>
+                        </p:inputText>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{iniciarTramiteMB.solicitante.esPersona}">
+                        <p:outputLabel value="Apellidos*" /> <br></br>
+                        <p:inputText value="#{iniciarTramiteMB.solicitante.apellidos}" 
+                                     disabled="true"
+                                     style="text-transform: uppercase;width: 98%">
+                            <p:keyFilter regEx="/[a-zA-ZÀ-ú\\s\\ ]+/"/>
+                        </p:inputText>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{!iniciarTramiteMB.solicitante.esPersona}">
+                        <p:outputLabel value="Razón Social*" /> <br></br>
+                        <p:inputText value="#{iniciarTramiteMB.solicitante.razonSocial}" 
+                                     disabled="true"
+                                     style="text-transform: uppercase;width: 98%">
+                            <p:keyFilter regEx="/[0-9-a-zA-ZÀ-ú\\s\\ ]+/"/>
+                        </p:inputText>
+                    </h:panelGroup>
+                    <h:panelGroup rendered="#{!iniciarTramiteMB.solicitante.esPersona}">
+                        <p:outputLabel value="Nombre Comercial*" /> <br></br>
+                        <p:inputText value="#{iniciarTramiteMB.solicitante.nombreComercial}" 
+                                     disabled="true"
+                                     style="text-transform: uppercase;width: 98%">
+                            <p:keyFilter regEx="/[0-9-a-zA-ZÀ-ú\\s\\ ]+/"/>
+                        </p:inputText>
+                    </h:panelGroup>
+
+                </h:panelGrid>
+
+                <!--                <h:panelGroup>
+                                    <p:outputLabel value="Dirección" /> <br></br>
+                                    <p:inputText id="direccionSolicitante"  value="#{iniciarTramiteMB.solicitante.direccion}" style="text-transform: uppercase;width: 98%">
+                                        <p:keyFilter regEx="/[0-9-a-zA-ZÀ-ú\\s\\ ]+/"/>
+                                    </p:inputText>
+                                </h:panelGroup>-->
+                <h:panelGroup>
+                    <p:outputLabel value="Correo*" /> <br></br>
+                    <div class="ui-inputgroup">
+                        <p:inputText id="intputcorreoEdit" value="#{iniciarTramiteMB.correo}" disabled="#{iniciarTramiteMB.deshabilitarCorreo()}"
+                                     size="#{iniciarTramiteMB.size}" style="min-width:63% !important; max-width: 0 !important">
+                            <p:keyFilter for="intputcorreoEdit" testFunction="return c != '@';"/>
+                        </p:inputText>
+                        <p:selectOneMenu id="hideNoselectionOption" value="#{iniciarTramiteMB.dominio}" 
+                                         disabled="#{iniciarTramiteMB.deshabilitarCorreo()}"
+                                         style="min-width:27% !important; max-width: 0 !important" autoWidth="false"
+                                         editable="true" filter="true" filterMatchMode="contains">
+                            <f:selectItems value="#{iniciarTramiteMB.dominios}"
+                                           var="d"
+                                           itemLabel="#{d.descripcion}" itemValue="#{d.descripcion}"/>                                    
+                        </p:selectOneMenu>
+                        <div class="ui-inputgroup-addon">
+                            <p:selectBooleanCheckbox id="selectPrim" rendered="#{iniciarTramiteMB.habilitarCorreoSecundario()}" 
+                                                     value="#{iniciarTramiteMB.seleccionarCorreo}"/>
+                        </div>
+                    </div>
+                </h:panelGroup>
+                <h:panelGroup rendered="#{iniciarTramiteMB.habilitarCorreoSecundario()}">
+                    <p:outputLabel value="Correo Secundario" /> <br></br>
+                    <div class="ui-inputgroup">
+                        <p:inputText id="intputcorreoInstEdit" value="#{iniciarTramiteMB.correoSecundario}"
+                                     size="#{iniciarTramiteMB.size}" style="min-width:63% !important; max-width: 0 !important">
+                            <p:keyFilter for="intputcorreoInstEdit" testFunction="return c != '@';"/>
+                        </p:inputText>
+                        <p:selectOneMenu id="hideintputcorreoInst" value="#{iniciarTramiteMB.dominioSecundario}"
+                                         style="min-width:27% !important; max-width: 0 !important" autoWidth="false"
+                                         editable="true" filter="true" filterMatchMode="contains">
+                            <f:selectItems value="#{iniciarTramiteMB.dominios}"
+                                           var="d"
+                                           itemLabel="#{d.descripcion}" itemValue="#{d.descripcion}"/>                                    
+                        </p:selectOneMenu>
+                        <div class="ui-inputgroup-addon">
+                            <p:selectBooleanCheckbox id="selectSecund" rendered="#{iniciarTramiteMB.habilitarCorreoSecundario()}"
+                                                     value="#{iniciarTramiteMB.selecionarCorreoSecundario}"/>
+                        </div>
+                    </div>
+                </h:panelGroup>
+                <h:panelGrid columns="2">
+                    <!--                    <h:panelGroup>
+                                            <p:outputLabel value="Celular:" /> <br></br>
+                                            <p:inputMask mask="9999999999" value="#{iniciarTramiteMB.solicitante.celular}" 
+                                                         style="text-transform: uppercase;width: 98%"/>
+                                        </h:panelGroup>-->
+                    <h:panelGroup>
+                        <p:outputLabel value="Teléfono:" /> <br></br>
+                        <p:inputMask mask="(99)9999999" value="#{iniciarTramiteMB.solicitante.telefono}" 
+                                     style="text-transform: uppercase;width: 98%"/>
+                    </h:panelGroup>
+                </h:panelGrid>
+                <br></br> 
+                <center>
+                    <p:commandButton value="Actualizar" icon="fa fa-refresh" 
+                                     styleClass="info-button rounded-button p-mr-2 p-mb-2"
+                                     update="formMain:pnlSolicitante" style=" margin-top: 10px "
+                                     actionListener="#{iniciarTramiteMB.actualizarDatosSolicitante()}" />
+                </center> 
+            </p:fieldset>
+            <br/>
+            <div align="right">
+                <p:commandButton id="btnSiguiente" value="Siguiente"   update="formMain, requisitos"
+                                 process="formMain"
+                                 styleClass="info-button rounded-button p-mr-2 p-mb-2" 
+                                 actionListener="#{iniciarTramiteMB.mostrarPasoDos()}" 
+                                 icon="pi pi-chevron-right"  style="float: right " />
+            </div>
+
+        </h:panelGroup>
+
+
+
+    </h:panelGrid>
+</html>
+

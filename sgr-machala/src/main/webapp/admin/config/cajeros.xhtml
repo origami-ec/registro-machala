@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui">
+    <ui:define name="title">Configuración de Cajeros</ui:define>
+    <ui:define name="content">
+        <h:form id="mainForm">
+            <center><h2>CONFIGURACIÓN DE CAJEROS</h2></center>
+            <p:accordionPanel id="accMantenimiento" activeIndex="1">
+                <p:tab title="SUCURSALES" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <p:dataTable id="dtPuntosEmision" reflow="true" paginator="true" lazy="true" rows="20" rowsPerPageTemplate="20,50,100" filterEvent="enter" 
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 value="#{cajeros.puntosEmision}" var="punto" emptyMessage="No se encontró ningún Item" style="text-align: center;">
+                        <p:column headerText="ID SUCURSAL" >
+                            <h:outputText value="#{punto.id}"/>
+                        </p:column>
+                        <p:column headerText="NOMBRE SUCURSAL" >
+                            <h:outputText value="#{punto.usuario}"/>
+                        </p:column>
+                        <p:column headerText="COD. SUCURSAL" >
+                            <h:outputText value="#{punto.puntoEmision}"/>
+                        </p:column>
+                        <p:column headerText="UBICACION SUCURSAL">
+                            <h:outputText value="#{punto.variableSecuenciaFacturas}"/>
+                        </p:column>
+                        <p:column headerText="ENTIDAD" >
+                            <h:outputText value="#{punto.entidad.nombreEntidad}"/>
+                        </p:column>
+                        <p:column headerText="COD. ENTIDAD" >
+                            <h:outputText value="#{punto.entidad.establecimiento}"/>
+                        </p:column>
+                        <p:column headerText="Estado" width="100">
+                            <h:outputText value="ACTIVO" rendered="#{punto.estado}"/>
+                            <h:outputText value="INACTIVO" rendered="#{!punto.estado}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="REGISTRO DE USUARIOS CAJEROS" titleStyle="font-weight: bold;background: #616161; color: #FFFFFF;">
+                    <center>
+                        <p:commandButton value="Nuevo Cajero" icon="pi pi-user-plus" actionListener="#{cajeros.showDlgCaja()}"/>
+                    </center>
+                    <p:dataTable id="dtcajeros" reflow="true" paginator="true" lazy="true" rows="20" rowsPerPageTemplate="20,50,100" filterEvent="enter" 
+                                 paginatorTemplate="{FirstPageLink} {PreviousPageLink} {PageLinks} {CurrentPageReport} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 value="#{cajeros.cajeros}" var="caja" emptyMessage="No se encontró ningún Item" >
+                        <p:column headerText="ID VENDEDOR" >
+                            <h:outputText value="#{caja.id}"/>
+                        </p:column>
+                        <p:column headerText="USUARIO" >
+                            <h:outputText value="#{caja.usuario.usuario}"/>
+                        </p:column>
+                        <p:column headerText="NOMBRES" width="300">
+                            <h:outputText value="#{caja.usuario.ente.nombreCompleto}"/>
+                        </p:column>
+                        <p:column headerText="ID SUCURSAL" >
+                            <h:outputText value="#{caja.cajero.id}"/>
+                        </p:column>
+                        <p:column headerText="MOMBRE SUCURSAL">
+                            <h:outputText value="#{caja.cajero.usuario}"/>
+                        </p:column>
+                        <p:column headerText="UBICACION SUCURSAL">
+                            <h:outputText value="#{caja.cajero.variableSecuenciaFacturas}"/>
+                        </p:column>
+                        <p:column headerText="ESTADO">
+                            <h:outputText value="ACTIVO" rendered="#{caja.habilitado}"/>
+                            <h:outputText value="INACTIVO" rendered="#{!caja.habilitado}"/>
+                        </p:column>
+                        <p:column headerText="***" width="50">
+                            <p:commandButton icon="pi pi-pencil" style="background-color: darkcyan;"
+                                             actionListener="#{cajeros.showDlgEditCaja(caja)}" />
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+            </p:accordionPanel>
+        </h:form>
+
+        <p:dialog header="Detalle de Usuario" widgetVar="usuarioCaja" modal="true" resizable="false">
+            <h:form id="formCajero" >
+                <h:panelGrid columns="1" style="font-weight: bolder;">
+                    Usuario:
+                </h:panelGrid>
+                <h:panelGrid columns="2">
+                    <p:inputText value="#{cajeros.cajero.usuario.usuario}" readonly="true"/>
+                    <p:commandButton icon="pi pi-search" 
+                                     actionListener="#{cajeros.buscarUsuario('/resources/dialog/dlglazyusers')}">
+                        <p:ajax event="dialogReturn" listener="#{cajeros.procesar}" update="formCajero"/>
+                    </p:commandButton>
+                </h:panelGrid>
+                <h:panelGrid columns="1" style="font-weight: bolder;">
+                    Seleccionar Sucursal:
+                    <p:selectOneMenu value="#{cajeros.cajero.cajero}" converter="entityConverter" autoWidth="false" 
+                                     style="display: block; margin-top: 3px; min-width: 0px !important; width: 250px !important;">  
+                        <f:selectItem itemLabel="Seleccione..." itemValue="#{null}" />
+                        <f:selectItems value="#{cajeros.puntosEmision}" var="pe" itemLabel="#{pe.usuario}" itemValue="#{pe}"/>
+                    </p:selectOneMenu>
+                    Estado:
+                    <p:selectOneMenu value="#{cajeros.cajero.habilitado}" style="width: 150px;">
+                        <f:selectItem itemLabel="ACTIVO" itemValue="#{true}"/>
+                        <f:selectItem itemLabel="INACTIVO" itemValue="#{false}"/>
+                    </p:selectOneMenu>
+                    <!--Tipo Usuario:
+                    <p:selectOneMenu value="# {cajeros.cajero.supervisor}" style="width: 150px;">
+                        <f:selectItem itemLabel="NORMAL" itemValue="# {false}"/>
+                        <f:selectItem itemLabel="SUPERVISOR" itemValue="# {true}"/>
+                    </p:selectOneMenu>-->
+                </h:panelGrid>
+                <div align="center" style="padding-top: 10px; ">
+                    <p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{cajeros.guardarCaja()}" />
+                </div>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

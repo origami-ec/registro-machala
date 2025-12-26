@@ -1,0 +1,931 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                template="/template/bpmTemplate.xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:co="http://xmlns.jcp.org/jsf/composite/co">
+    <!--<ui:define name="title">Inscripcion Nueva # # {inscribirPI.tt.detalle.liquidacion.numTramiteRp}</ui:define>-->
+    <ui:define name="content">
+        <h:form id="formNuevInsc">
+            <center><h2>* Trámite: #{inscribirPI.tt.detalle.liquidacion.numTramiteRp} - #{inscribirPI.movimiento.acto.nombre} *</h2></center>
+            <p:tabView id="tVdetalle">
+                <p:tab title="Datos de Inscripción">
+                    <br></br>
+                    <h:panelGrid columns="4" style="font-weight: bolder; width: 100%">
+                        <h:panelGroup layout="block">
+                            <p:outputLabel value="Nro Repertorio:" /><br/>
+                            <p:inputText value="#{inscribirPI.movimiento.numRepertorio}" disabled="true"/><br/>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            <p:outputLabel value="Fec.Repertorio:" /><br/>
+                            <p:calendar value="#{inscribirPI.movimiento.fechaRepertorio}" pattern="dd/MM/yyyy" maxdate="sysdate" disabled="true"/>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" >
+                            Nro Inscripcion: <br></br>
+                            <p:inputText value="#{inscribirPI.movimiento.numInscripcion}" disabled="true"/>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            Fec.Inscripción:<br></br>
+                            <p:calendar value="#{inscribirPI.movimiento.fechaInscripcion}" pattern="dd/MM/yyyy" maxdate="sysdate" disabled="true" />
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            Nro Tomo:<br></br>
+                            <p:inputText value="#{inscribirPI.movimiento.numTomo}" disabled="true" />
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            Folio Inicio:<br></br>
+                            <p:inputText value="#{inscribirPI.movimiento.folioInicio}" disabled="true" />
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            Folio Fin:<br></br>
+                            <p:inputText value="#{inscribirPI.movimiento.folioFin}" disabled="true" />
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            Secuencia:<br></br>
+                            <p:inputText value="#{inscribirPI.movimiento.indice}" disabled="true"/>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block" rendered="false">
+                            Estado:<br></br>
+                            <p:selectOneMenu value="#{inscribirPI.movimiento.registro}" style="width: 160px;">
+                                <f:selectItem itemLabel="Selecccione..." itemValue="#{null}" />
+                                <f:selectItem itemLabel="Vendido" itemValue="#{1}" />
+                                <f:selectItem itemLabel="Vendido Parcial" itemValue="#{2}" />
+                                <f:selectItem itemLabel="Cancelado" itemValue="#{3}" />
+                                <f:selectItem itemLabel="Cancelado Parcial" itemValue="#{4}" />
+                                <f:selectItem itemLabel="Vigente" itemValue="#{5}" />
+                                <f:selectItem itemLabel="Propietario" itemValue="#{6}" />
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            Cuantía:<br></br>
+                            <p:inputNumber value="#{inscribirPI.movimiento.cuantia}" decimalPlaces="2" />
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            Avalúo:<br></br>
+                            <p:inputNumber value="#{inscribirPI.movimiento.avaluoMunicipal}" decimalPlaces="2" />
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            Cuantía Indeterminada:<br></br>
+                            <p:selectBooleanCheckbox value="#{inscribirPI.movimiento.indeterminada}" />
+                        </h:panelGroup>
+                        <h:panelGroup layout="block">
+                            <p:commandButton value="Copiar Datos" icon="pi pi-copy" style="background-color: darkcyan;"
+                                             actionListener="#{inscribirPI.showDlgWith('/resources/dialog/dlglazyinscripciones')}">
+                                <p:ajax event="dialogReturn" listener="#{inscribirPI.copiarDatosMov}" update="formNuevInsc"/>
+                            </p:commandButton>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                    <p:fieldset legend="Datos de Escrituras"  style="font-weight: bolder; width: 100%">
+                        <h:panelGrid id="pnlgdIngre" columnClasses="ui-g-12 ui-md-3,ui-g-12 ui-md-3,ui-g-12 ui-md-3 ui-grc-3,ui-g-12 ui-md-3"
+                                     columns="4" styleClass="ui-panelgrid-blank form-group form-elements" style="width: 100%;">
+                            <h:panelGroup layout="block">
+                                <p:outputLabel value="Libro:"/><br/>
+                                <p:selectOneMenu id="nomblibro" value="#{inscribirPI.movimiento.libro}" converter="entityConverter" 
+                                                 disabled="#{!inscribirPI.habilitar}" 
+                                                 style="width: 80%" var="nomlib" filter="true" filterMatchMode="startsWith">
+                                    <f:selectItems value="#{inscribirPI.libros}" var="lib" itemValue="#{lib}" itemLabel="#{lib.nombre}" />  
+                                    <p:column>
+                                        <f:facet name="header">Tipo</f:facet>
+                                        <h:outputText value="#{nomlib.propiedad ? 'Propiedad' : 'Mercantil'}"/>
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="header">Nombre</f:facet>
+                                        <h:outputText value="#{nomlib.nombre}"/>
+                                    </p:column>
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <p:outputLabel value="Acto:"/>
+                                <div class="ui-g ui-fluid">
+                                    <div class="ui-g-12">
+                                        <div class="ui-inputgroup">
+                                            <p:inputText id="actonomb" value="#{inscribirPI.movimiento.acto.nombre}" readonly="true" />
+                                            <p:commandButton icon="pi pi-search" rendered="#{inscribirPI.habilitar}" 
+                                                             actionListener="#{inscribirPI.showDlg('/resources/dialog/dlglazyactos')}" 
+                                                             disabled="#{inscribirPI.movimiento.numInscripcion ne null}">
+                                                <p:ajax event="dialogReturn" listener="#{inscribirPI.selectObjectActo}" update="actonomb"/>
+                                            </p:commandButton>    
+                                        </div>
+                                    </div>
+                                </div> 
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <p:outputLabel value="Notaria/Juzg :"/>
+                                <div class="ui-g ui-fluid">
+                                    <div class="ui-g-12">
+                                        <div class="ui-inputgroup">
+                                            <p:inputText id="enteJudnomb" value="#{inscribirPI.movimiento.enteJudicial.nombre}" readonly="true" />
+                                            <p:commandButton icon="pi pi-search" rendered="#{inscribirPI.habilitar}" 
+                                                             actionListener="#{inscribirPI.showDlg('/resources/dialog/dlglazynotarias')}">
+                                                <p:ajax event="dialogReturn" listener="#{inscribirPI.selectObjectJudicial}" update="enteJudnomb"/>
+                                            </p:commandButton>
+                                            <p:spacer width="5" />
+                                            <p:commandButton icon="pi pi-trash"  rendered="#{inscribirPI.habilitar}"
+                                                             actionListener="#{inscribirPI.movimiento.setEnteJudicial(null)}"  
+                                                             title="Eliminar Notaria" update="formNuevInsc:tVdetalle:enteJudnomb"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <p:outputLabel value="Canton:" />  
+                                <p:selectOneMenu  value="#{inscribirPI.movimiento.domicilio}" converter="entityConverter" 
+                                                  style="display: block; margin-top: 3px; min-width: 0px !important; width: 200px !important" 
+                                                  disabled="#{!inscribirPI.habilitar}" filter="true" filterMatchMode="startsWith">  
+                                    <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />  
+                                    <f:selectItems value="#{inscribirPI.domicilios}" var="can" itemLabel="#{can.nombre}" itemValue="#{can}"/>  
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <co:inputDate label="Fech.Celebracion:" value="#{inscribirPI.movimiento.fechaOto}" maxdate="sysdate" />
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <co:inputDate label="Fech.Resolucion:" value="#{inscribirPI.movimiento.fechaResolucion}" maxdate="sysdate" />
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <p:outputLabel value="Escrit/Juic/Provi/Resolucion:"/>
+                                <p:inputText value="#{inscribirPI.movimiento.escritJuicProvResolucion}" style="width: 80%" readonly="#{!inscribirPI.habilitar}"/>
+                            </h:panelGroup>
+                            <h:panelGroup layout="block">
+                                <p:outputLabel  value="Inscripcion por Orden Judicial:"/>
+                                <p:selectOneMenu  value="#{inscribirPI.movimiento.ordJud}" disabled="#{!inscribirPI.habilitar}" 
+                                                  style="display: block; margin-top: 3px; min-width: 0px !important; width: 200px !important" >  
+                                    <f:selectItem itemLabel="SI" itemValue="#{true}"/>  
+                                    <f:selectItem itemLabel="NO" itemValue="#{false}"/>
+                                </p:selectOneMenu>
+                            </h:panelGroup>
+                        </h:panelGrid>
+                    </p:fieldset>
+                </p:tab>
+                <p:tab title="Intervinientes">
+                    <br></br>
+                    <h:panelGrid style="width: 100%">
+                        <p:row>
+                            <p:column >
+                                <div align="right">
+                                    <p:commandButton icon="pi pi-search" value="Buscar Interviniente" 
+                                                     actionListener="#{inscribirPI.showDlg('/resources/dialog/dlglazyinterv')}" >
+                                        <p:ajax event="dialogReturn" listener="#{inscribirPI.selectInterv}" update="dtInterviniente"/>
+                                    </p:commandButton>
+                                    <p:spacer width="20" height="1"/>
+                                    <p:commandButton icon="pi pi-user-plus" value="Nuevo Interviniente" 
+                                                     actionListener="#{inscribirPI.showDlgNewInterv(1)}" />
+                                </div>
+                            </p:column>
+                        </p:row>
+                    </h:panelGrid>
+                    <br></br>
+                    <p:dataTable id="dtInterviniente" value="#{inscribirPI.mcs}" 
+                                 selection="#{inscribirPI.selects}"                                  
+                                 var="inter" emptyMessage="Agregar Intervinientes" 
+                                 rowIndexVar="indexCli"
+                                 resizableColumns="true" 
+                                 liveResize="true" 
+                                 scrollable="true" 
+                                 scrollHeight="200" 
+                                 rowKey="#{inter.enteInterv.id}">
+                        <p:column selectionMode="multiple" width="20"/>
+                        <p:column headerText="No" width="20">
+                            #{indexCli+1}
+                        </p:column>
+                        <p:column headerText="UAF" width="40" rendered="#{inscribirPI.uaf}">
+                            <p:commandLink actionListener="#{inscribirPI.showDlgInfoUaf(indexCli)}">
+                                <p:graphicImage value="/resources/icons/unir.png" height="16"/>   
+                            </p:commandLink>
+                        </p:column>
+                        <p:column headerText="CI/RUC/DOC" width="120">
+                            <p:outputLabel value="#{inter.enteInterv.cedRuc}"/>
+                        </p:column>
+                        <p:column headerText="Nombres">
+                            <p:outputLabel value="#{inter.enteInterv.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Estado Civil" width="150">
+                            <p:outputLabel value="#{inter.estado}"/>
+                        </p:column>
+                        <p:column headerText="Papel" width="150">
+                            <p:outputLabel value="#{inter.papel.papel}"/>
+                        </p:column>
+                        <p:column headerText="Domicilio" width="150">
+                            <p:outputLabel value="#{inter.domicilio.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Opciones" width="60" >
+                            <p:commandButton icon="pi pi-pencil" style="background-color: darkgoldenrod;" title="Editar"
+                                             actionListener="#{inscribirPI.showDlgEditInterv(indexCli, 1)}"/>
+                            <p:spacer width="10"/>
+                            <p:commandButton icon="pi pi-trash" style="background-color: orangered;" title="Eliminar"
+                                             update="dtInterviniente" actionListener="#{inscribirPI.deleteInterv(indexCli)}"/>
+                        </p:column>
+                    </p:dataTable>
+                </p:tab>
+                <p:tab title="Partes" rendered="false">
+                    <p:tabView id="tabPartes">
+                        <p:tab title="Capital">
+                            <h:panelGrid id="pnlCapital" columns="7" style="margin: 0 auto;font-weight: bolder;">
+                                Capital:
+                                <p:inputNumber value="#{inscribirPI.movCap.valor}" decimalPlaces="2"/>
+                                <p:spacer width="40" height="1"/>
+                                Tipo de Capital:
+                                <p:selectOneMenu value="#{inscribirPI.movCap.capital}" converter="entityConverter">
+                                    <f:selectItem itemLabel="Seleccionar" itemValue="#{null}"/>  
+                                    <f:selectItems value="#{inscribirPI.regCapitales}" var="caps" itemLabel="#{caps.nombre}" itemValue="#{caps}"/>  
+                                </p:selectOneMenu>
+                                <p:spacer width="40" height="1"/>
+                                <p:commandButton value="Agregar" icon="pi pi-plus" actionListener="#{inscribirPI.addCapital()}"/>
+                            </h:panelGrid><br/>
+                            <p:dataTable id="dtcapitales" value="#{inscribirPI.mcps}" var="cap" rowIndexVar="capIndex"
+                                         scrollable="true" scrollHeight="250" style="width: 700px;margin: 0 auto;">
+                                <p:column headerText="No" width="40">
+                                    #{capIndex+1}
+                                </p:column>
+                                <p:column headerText="Tipo Capital">
+                                    <p:outputLabel value="#{cap.capital.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Valor" style="text-align: right;" width="200">
+                                    <p:outputLabel value="#{cap.valor}"><f:convertNumber type="currency" currencySymbol="$"/></p:outputLabel>
+                                </p:column>
+                                <p:column headerText="Borrar" width="40" style="text-align: center;">
+                                    <p:commandButton icon="pi pi-trash" style="background-color: orangered;" 
+                                                     update="dtcapitales" actionListener="#{inscribirPI.deleteCapitales(capIndex)}" />
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="Otros Representantes">
+                            <h:panelGrid style="width: 100%">
+                                <p:row>
+                                    <p:column>
+                                        <div align="right">
+                                            <p:commandButton icon="pi pi-search" value="Buscar Representante" 
+                                                             actionListener="#{inscribirPI.showDlg('/resources/dialog/dlglazyinterv')}">
+                                                <p:ajax event="dialogReturn" listener="#{inscribirPI.selectRepresentante}" update="dtrepresentantes"/>
+                                            </p:commandButton>
+                                            <p:spacer width="20" height="1"/>
+                                            <p:commandButton icon="pi pi-plus" value="Nuevo Representante"  
+                                                             actionListener="#{inscribirPI.showDlgNewInterv(2)}"/>
+                                        </div>
+                                    </p:column>
+                                </p:row>
+                            </h:panelGrid><br/>
+                            <p:dataTable id="dtrepresentantes" value="#{inscribirPI.mres}" var="repr" emptyMessage="Agregar Representantes" rowIndexVar="indexRepr"
+                                         resizableColumns="true" liveResize="true" scrollable="true" scrollHeight="200" style="text-align: center;">
+                                <p:column headerText="No" style="width: 45px">
+                                    #{indexRepr+1}
+                                </p:column>
+                                <p:column headerText="CI/RUC/DOC" width="150">
+                                    <p:outputLabel value="#{repr.enteInterv.cedRuc}"/>
+                                </p:column>
+                                <p:column headerText="Nombres">
+                                    <p:outputLabel value="#{repr.enteInterv.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Cargo" width="150">
+                                    <p:outputLabel value="#{repr.cargo.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Domicilio" width="150">
+                                    <p:outputLabel value="#{repr.domicilio.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Tiempo" width="70">
+                                    <p:outputLabel value="#{repr.codTiempo.valor}"/>
+                                </p:column>
+                                <p:column headerText="Plazo" width="70">
+                                    <p:outputLabel value="#{repr.tiempo}"/>
+                                </p:column>
+                                <p:column headerText="Edit" width="40">
+                                    <p:commandButton icon="pi pi-pencil" actionListener="#{inscribirPI.showDlgEditInterv(indexRepr, 2)}" 
+                                                     style="background-color: darkgoldenrod;"/>
+                                </p:column>
+                                <p:column headerText="Del" width="40">
+                                    <p:commandButton icon="pi pi-trask" actionListener="#{inscribirPI.deleteRepresentante(indexRepr)}"  
+                                                     style="background-color: orangered;" update="dtrepresentantes" />
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                        <p:tab title="Socios">
+                            <h:panelGrid style="width: 100%" >
+                                <p:row>
+                                    <p:column style="float: right;">
+                                        <div align="right"> 
+                                            <p:commandButton icon="pi pi-search" value="Buscar Socio" 
+                                                             actionListener="#{inscribirPI.showDlg('/resources/dialog/dlglazyinterv')}">
+                                                <p:ajax event="dialogReturn" listener="#{inscribirPI.selectSocio}" update="dtsocios"/>
+                                            </p:commandButton>
+                                            <p:spacer width="20" height="1"/>
+                                            <p:commandButton icon="pi pi-plus" value="Nuevo Socio"  
+                                                             actionListener="#{inscribirPI.showDlgNewInterv(3)}"/>
+                                        </div>
+                                    </p:column>
+                                </p:row>
+                            </h:panelGrid><br/>
+                            <p:dataTable id="dtsocios" value="#{inscribirPI.msos}" var="socio" emptyMessage="Agregar Socios" rowIndexVar="indexSocio"
+                                         resizableColumns="true" liveResize="true" scrollable="true" scrollHeight="200" style="text-align: center;">
+                                <p:column headerText="No" style="width: 45px">
+                                    #{indexSocio+1}
+                                </p:column>
+                                <p:column headerText="CI/RUC/DOC" >
+                                    <p:outputLabel value="#{socio.enteInterv.cedRuc}"/>
+                                </p:column>
+                                <p:column headerText="Nombres">
+                                    <p:outputLabel value="#{socio.enteInterv.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Participacion" width="200">
+                                    <p:outputLabel value="#{socio.tipoParticipacion.nombre}"/>
+                                </p:column>
+                                <p:column headerText="Cant./Unid." width="150">
+                                    <p:outputLabel value="#{socio.cantidad}"><f:convertNumber maxFractionDigits="2"/></p:outputLabel>
+                                </p:column>
+                                <p:column headerText="Valor/Total" width="150">
+                                    <p:outputLabel value="#{socio.valor}"><f:convertNumber maxFractionDigits="2"/></p:outputLabel>
+                                </p:column>
+                                <p:column headerText="Edit" width="40">
+                                    <p:commandButton icon="pi pi-pencil" actionListener="#{inscribirPI.showDlgEditInterv(indexSocio, 3)}"  
+                                                     style="background-color: darkgoldenrod;"/>
+                                </p:column>
+                                <p:column headerText="Del" width="40">
+                                    <p:commandButton icon="pi pi-trask" actionListener="#{inscribirPI.deleteSocio(indexSocio)}"  
+                                                     style="background-color: orangered;" update="dtsocios" />
+                                </p:column>
+                            </p:dataTable>
+                        </p:tab>
+                    </p:tabView>
+                </p:tab>
+                <p:tab title="Observación">
+                    <br></br>
+                    <h:panelGrid columns="2" style="font-weight: bolder;">
+                        Motivacion:
+                        <p:selectOneMenu value="#{inscribirPI.movimiento.esNegativa}" disabled="#{!inscribirPI.habilitar}" 
+                                         style="width: 100px;">
+                            <f:selectItem itemLabel="SI" itemValue="#{true}"/>
+                            <f:selectItem itemLabel="NO" itemValue="#{false}"/>
+                        </p:selectOneMenu>
+                    </h:panelGrid>
+                    <br></br>
+                    <p:inputTextarea value="#{inscribirPI.movimiento.observacion}" rows="14" cols="130" 
+                                     scrollHeight="250" autoResize="false" readonly="#{!inscribirPI.habilitar}"/>
+                    <p:spacer height="5"/>
+                </p:tab>
+                <p:tab title="Fichas Registrales">
+                    <h:panelGrid style="margin: 0 auto;font-weight: bolder;" columns="5" rendered="#{inscribirPI.habilitar}">
+                        Tipo de Ficha:
+                        <p:selectOneMenu value="#{inscribirPI.tipoFicha}" converter="entityConverter" autoWidth="false" disabled="true" 
+                                         style="display: block; margin-top: 3px; min-width: 0px !important; width: 250px !important;">
+                            <f:selectItems value="#{inscribirPI.regTiposFicha}" var="tf" itemLabel="#{tf.nombre}" itemValue="#{est}" />
+                            <p:ajax update="dtFichas" />
+                        </p:selectOneMenu>
+                        Nro de Ficha:
+                        <p:inputNumber value="#{inscribirPI.ficha}" decimalPlaces="0" thousandSeparator=""/>
+                        <p:commandButton icon="pi pi-search" value="Buscar Ficha" update="dtFichas,pnlDescripcion" 
+                                         actionListener="#{inscribirPI.buscarByNumFicha()}"/>
+                    </h:panelGrid>
+                    <br></br>
+                    <p:dataTable id="dtFichas" value="#{inscribirPI.mfs}" var="f" rowIndexVar="rowIndex" 
+                                 emptyMessage="No se han agregado Fichas registrales."
+                                 scrollable="true" scrollHeight="250" style="text-align: center;width: 75%;margin: 0 auto;">
+                        <p:column headerText="No" style="width: 45px">
+                            #{rowIndex+1}
+                        </p:column>
+                        <p:column headerText="No Ficha" width="150">
+                            <p:outputLabel value="#{f.ficha.numFicha}"/>
+                        </p:column>
+                        <p:column headerText="Cod.Catastral/Identf./Chasis">
+                            <p:outputLabel value="#{f.ficha.claveCatastral}"/>
+                        </p:column>
+                        <p:column headerText="Código Predio" width="80">
+                            <p:outputLabel value="#{f.ficha.fichaMatriz}"/>
+                        </p:column>
+                        <p:column headerText="Estado" width="80">
+                            <p:outputLabel value="#{f.ficha.state.valor}"/>
+                        </p:column>
+                        <p:column headerText="Editar" width="40" rendered="false">
+                            <p:commandButton icon="pi pi-pencil" style="background-color: darkgoldenrod;" 
+                                             actionListener="#{inscribirPI.showDlgEditarFicha(rowIndex)}"/>
+                        </p:column>
+                        <p:column headerText="Opciones" width="180">
+                            <p:commandButton icon="pi pi-pencil" style="background-color: darkgoldenrod;" title="Editar Ficha" 
+                                             actionListener="#{inscribirPI.showDlgEditarFicha(rowIndex)}"/>
+                            <p:spacer width="10" />
+                            <p:commandButton icon="pi pi-folder" title="Visualizar Datos" 
+                                             actionListener="#{inscribirPI.showDlgViewFicha(rowIndex)}"/>
+                            <p:spacer width="10"/>
+                            <p:commandButton icon="pi pi-file-pdf" style="background-color: orangered;" 
+                                             title="Visualizar Reporte Ficha"
+                                             update="dtFichas" actionListener="#{inscribirPI.imprimirFichaRegistral(rowIndex)}" />
+                            <p:spacer width="10"/>
+                            <p:commandButton icon="pi pi-trash" style="background-color: darkred;" 
+                                             title="Eliminar Ficha" update="dtFichas,formNuevInsc:tVdetalle:pnlDescripcion" 
+                                             actionListener="#{inscribirPI.deleteFicha(rowIndex)}" />
+                        </p:column>
+                    </p:dataTable>
+                    <br/>
+                    <h:panelGrid id="pnlDescripcion" columns="1" style="width: 75%;margin: 0 auto;" >
+                        <p:outputLabel value="Descripción de Bien Inmueble:" style="font-size: 16px;font-weight: bolder;" 
+                                       rendered="#{inscribirPI.mfs.size() eq 0}"/>
+                        <p:inputTextarea value="#{inscribirPI.movimiento.descripcionBien}" style="width: 100%" rows="10" 
+                                         rendered="#{inscribirPI.mfs.size() eq 0}"
+                                         autoResize="false" readonly="#{inscribirPI.mfs.size() gt 0}" 
+                                         placeholder="Ingresar información de bien inmueble solo cuando no se vaya asociar ninguna Ficha."/>
+                    </h:panelGrid>
+                </p:tab>
+                <p:tab title="Referencias">
+                    <h:panelGrid columns="3" style="float: right;">
+                        <!--<p:commandButton icon="pi pi-home" value="Agregar Referencias Ficha" style="background-color: darkgoldenrod;"
+                                         actionListener="# {inscribirPI.showDlgWithFicha('/resources/dialog/dlglazyinscripciones')}">
+                            <p:ajax event="dialogReturn" listener="# {inscribirPI.selectObjectReferencia}" update="dtMovimientosReff"/>
+                        </p:commandButton>-->
+                        <p:commandButton icon="pi pi-home" value="Agregar Referencias Ficha" style="background-color: darkgoldenrod;"
+                                         actionListener="#{inscribirPI.showDlgWithFicha('/resources/dialog/dlglazymovimientos')}">
+                            <p:ajax event="dialogReturn" listener="#{inscribirPI.selectMovimientosReferencias}" update="dtMovimientosReff"/>
+                        </p:commandButton>
+                        <p:spacer width="20"/>
+                        <p:commandButton icon="pi pi-search" value="Buscar en Inscripciones" style="background-color: darkolivegreen;"
+                                         actionListener="#{inscribirPI.showDlg('/resources/dialog/dlglazyinscripciones')}">
+                            <p:ajax event="dialogReturn" listener="#{inscribirPI.selectObjectReferencia}" update="dtMovimientosReff"/>
+                        </p:commandButton>
+                    </h:panelGrid>
+                    <div style="clear: both;width: 100%"/>
+                    <p:spacer width="0" height="5"/>
+                    <p:dataTable id="dtMovimientosReff" value="#{inscribirPI.mrs}" var="m" widgetVar="cellMovimientosReff" 
+                                 emptyMessage="No se ha Agregado Ninguna Referencia" scrollable="true" scrollHeight="240" 
+                                 rowIndexVar="rowIndex" >
+                        <p:column headerText="No" style="width: 45px">
+                            #{rowIndex+1}
+                        </p:column>
+                        <p:column headerText="Libro">
+                            <p:outputLabel value="#{m.movimientoReferencia.libro.nombre}" style="text-transform: uppercase;"/>
+                        </p:column>
+                        <p:column headerText="Acto">
+                            <p:outputLabel value="#{m.movimientoReferencia.acto.nombre}" style="text-transform: uppercase;"/>
+                        </p:column>
+                        <p:column headerText="Inscripcion" width="100">
+                            <p:outputLabel value="#{m.movimientoReferencia.numInscripcion}"/>
+                        </p:column>
+                        <p:column headerText="Repertorio" width="100">
+                            <p:outputLabel value="#{m.movimientoReferencia.numRepertorio}"/>
+                        </p:column>
+                        <p:column headerText="Fec.Inscripcion" width="120">
+                            <p:outputLabel value="#{m.movimientoReferencia.fechaInscripcion}">
+                                <f:convertDateTime pattern="dd/MM/yyyy"/>
+                            </p:outputLabel>
+                        </p:column>
+                        <p:column headerText="Del." width="50" >
+                            <p:commandButton icon="pi pi-trash" style="background-color: orangered;" 
+                                             update="dtMovimientosReff" actionListener="#{inscribirPI.deleteMovsRef(rowIndex)}"/>
+                        </p:column>
+                    </p:dataTable>
+                    <br></br>
+                </p:tab>
+            </p:tabView><br/>
+            <h:panelGrid style="width: 100%;">
+                <p:row>
+                    <p:column>
+                        <div align="center">
+                            <p:commandButton icon="pi pi-save" value="Guardar Datos" rendered="#{inscribirPI.habilitar}" 
+                                             actionListener="#{inscribirPI.guardarRevisionLegal()}" update="formNuevInsc" />   
+                            <p:spacer width="20"/>
+                            <p:commandButton icon="pi pi-refresh" value="Regresar a Revisión Legal" 
+                                             actionListener="#{inscribirPI.regresarRevisionLegal()}" />
+                        </div>
+                    </p:column>
+                </p:row>
+            </h:panelGrid>
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="SI" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+            </p:confirmDialog> 
+        </h:form>
+
+        <p:dialog id="dlgCrearInterv" showHeader="false" widgetVar="dlgCrearInterviniente" resizable="false" modal="true" 
+                  closable="true" closeOnEscape="true">
+            <h:form id="formCreaInterv">
+                <center>
+                    <p:outputLabel value="Ingreso de Interviniente" style="font-weight: bolder; font-size: 16px;" />
+                </center>
+                <br></br>
+                <h:panelGrid columns="1" id="pnlInterviniente"
+                             style="font-weight: bolder; font-size: 12px;">
+                    <h:panelGroup>
+                        <p:outputLabel value="Tipo Persona:" for="tipoInterv"/><br></br>
+                        <p:selectOneMenu value="#{inscribirPI.re.tipoInterv}" id="tipoInterv" style="width: 150px;"> 
+                            <f:selectItem itemLabel="Natural" itemValue="N" />
+                            <f:selectItem itemLabel="Juridica" itemValue="J" />
+                        </p:selectOneMenu>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Identificación:" /> <br></br>
+                        <p:inputText value="#{inscribirPI.re.cedRuc}" />
+                        <p:spacer width="10" />
+                        <p:commandButton icon="pi pi-cloud" value="Buscar Dinarp" title="Buscar" 
+                                         update="formCreaInterv:pnlInterviniente" 
+                                         actionListener="#{inscribirPI.buscarIntervinienteDianardap()}"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        <p:outputLabel value="Nombres:" /> <br></br>
+                        <p:inputText value="#{inscribirPI.re.nombre}" style="width: 300px;"/>
+                    </h:panelGroup>                    
+                </h:panelGrid>
+                <br></br>
+                <div align="center">
+                    <p:commandButton id="saveIntervButon" value="Guardar" icon="pi pi-save" 
+                                     actionListener="#{inscribirPI.guardarInterviniente()}" />
+                    <p:spacer width="10" />
+                    <p:commandButton id="closeIntervButon" value="Cerrar" icon="pi pi-ban"
+                                     oncomplete="PF('dlgCrearInterviniente').hide();" />
+                </div>
+                <br></br>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgAsignacionTomoid" header="Completar Datos de Inscripción" widgetVar="dlgAsignacionTomo" resizable="false" 
+                  modal="true" width="60%" height="70%" position="center">
+            <h:form id="formAsignacionTomo">
+                <p:dataTable id="dtMovimientoTomos" value="#{inscribirPI.movimientosPorTomosList}" var="mov" resizableColumns="true">
+                    <f:facet name="header">  
+                        Inscripciones Anteriores del Libro <b>#{mov.libro.nombre}</b>
+                    </f:facet>
+                    <p:column headerText="Libro" width="150">
+                        <h:outputText id="nomLibroMov" value="#{mov.libro.nombre}"/>
+                        <p:tooltip for="contratoMov" value="#{mov.libro.nombre}" position="top" />
+                    </p:column>
+                    <p:column headerText="Contrato" >
+                        <h:outputText id="contratoMov" value="#{mov.acto.nombre}"/>
+                        <p:tooltip for="contratoMov" value="#{mov.acto.nombre}" position="top" />
+                    </p:column>
+                    <p:column headerText="Inscripción" width="80">
+                        <h:outputText value="#{mov.numInscripcion}"/>
+                    </p:column>
+                    <p:column headerText="F.Inscripción" width="80">
+                        <h:outputText value="#{mov.fechaInscripcion}"><f:convertDateTime pattern="dd/MM/yyyy"/></h:outputText>
+                    </p:column>
+                    <p:column headerText="Tomo" width="50">
+                        <h:outputText value="#{mov.numTomo}"/>
+                    </p:column>
+                    <p:column headerText="Folio Inicio" width="80">
+                        <h:outputText value="#{mov.folioInicio}"/>
+                    </p:column>
+                    <p:column headerText="Folio Fin" width="80">
+                        <h:outputText value="#{mov.folioFin}"/>
+                    </p:column>
+                </p:dataTable><br/>
+                <h:panelGrid columns="13">
+                    <p:outputLabel value="No.Tomo: " style="font-weight: bolder"/>
+                    <p:spacer width="10" height="1" />
+                    <p:inputText value="#{inscribirPI.movimiento.numTomo}" />
+                    <p:spacer width="20" height="1" />
+                    <p:outputLabel value="Folio Inicio: " style="font-weight: bolder"/>
+                    <p:spacer width="10" height="1" />
+                    <p:inputText value="#{inscribirPI.movimiento.folioInicio}" />
+                    <p:spacer width="20" height="1" />
+                    <p:outputLabel value="Folio Fin: " style="font-weight: bolder"/>
+                    <p:spacer width="10" height="1" />
+                    <p:inputText value="#{inscribirPI.movimiento.folioFin}" />
+                    <p:spacer width="20" height="1" />
+                    <p:commandButton icon="ui-icon-disk" value="Guardar Inscripcion" actionListener="#{inscribirPI.generarInscripcion(true)}" 
+                                     styleClass="btnStyle" update="formNuevInsc" />
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Información de Interviniente" widgetVar="dlgEditInter" resizable="false" modal="true" 
+                  position="center" width="550" showHeader="false">
+            <h:form id="formEditInterv">
+                <!--<p:outputLabel value="** En el modulo de Mantenimiento de Intervinientes se pueden editar los nombres del interviniente." style="color: #0033FF;font-weight: bolder;"/>-->
+                <p:panel header="Ingresar Datos Interviniente">
+                    <h:panelGrid style="width: 100%;font-weight: bolder;" columns="1">
+                        <h:panelGroup style="block">
+                            <p:outputLabel value="**Nombres:" /><br></br>
+                            <p:inputText value="#{inscribirPI.interv.enteInterv.nombre}" readonly="true" style="width: 100%;"/>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                    <h:panelGrid style="width: 100%;font-weight: bolder;" columns="2">
+                        <h:panelGroup>
+                            <p:outputLabel value="**Identificación:" /><br></br>
+                            <p:inputText value="#{inscribirPI.interv.enteInterv.cedRuc}" readonly="true" style="width: 200px;"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Papel: " /> <br></br>
+                            <p:selectOneMenu value="#{inscribirPI.interv.papel}" converter="entityConverter" 
+                                             filter="true" filterMatchMode="startsWith" style="width: 200px;">  
+                                <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" /> 
+                                <f:selectItems value="#{inscribirPI.papeles}" var="p" itemLabel="#{p.papel}" itemValue="#{p}"/>  
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Domicilio:" /> <br></br>
+                            <p:selectOneMenu value="#{inscribirPI.interv.enteInterv.domicilio}" converter="entityConverter" 
+                                             filter="true" filterMatchMode="startsWith" style="width: 200px;">  
+                                <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />  
+                                <f:selectItems value="#{inscribirPI.domicilios}" var="dom" itemLabel="#{dom.nombre}" itemValue="#{dom}"/>  
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Estado Civil:" /> <br></br>
+                            <p:selectOneMenu value="#{inscribirPI.interv.enteInterv.estadoCivil}" 
+                                             converter="entityConverter" style="width: 200px;">  
+                                <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" /> 
+                                <f:selectItems value="#{inscribirPI.estadosCivil}" var="e" itemLabel="#{e.valor}" itemValue="#{e}"/>  
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Nacionalidad:" /> <br></br>
+                            <p:selectOneMenu value="#{inscribirPI.interv.enteInterv.nacionalidad}" converter="entityConverter"
+                                             style="display: block; margin-top: 3px; min-width: 0px !important; width: 82% !important" 
+                                             filter="true" filterMatchMode="startsWith">  
+                                <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" /> 
+                                <f:selectItems value="#{inscribirPI.nacionalidades}" var="na" itemLabel="#{na.descripcion}" 
+                                               itemValue="#{na}"/>  
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                    </h:panelGrid>    
+                </p:panel>
+                <p:panel header="Referencias de Interviniente" id="pngInterEdit" >
+                    <h:panelGrid columns="2" style="width: 100%;font-weight: bolder;" >
+                        <h:panelGroup>
+                            <p:outputLabel value="Identificación:" /><br></br>
+                            <p:inputText value="#{inscribirPI.interv.enteInterv.cedulaRelacion}"/><p:spacer width="10" height="1"/>
+                            <p:commandButton icon="pi pi-search" actionListener="#{inscribirPI.buscarInterviniente()}"
+                                             update="pngInterEdit" styleClass="btnStyle"/><p:spacer width="10" height="1"/>
+                            <p:commandButton actionListener="#{inscribirPI.limpiarDatos()}" update="pngInterEdit" icon="pi pi-trash"/>
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <p:outputLabel value="Mostrar Relacion de:" /><br></br>
+                            <p:selectOneMenu value="#{inscribirPI.interv.tipoInterviniente}" style="width: 100%;">
+                                <f:selectItem itemLabel="Seleccione..." itemValue="#{0}"/>
+                                <f:selectItem itemLabel="Conyuge" itemValue="#{1}"/>
+                                <f:selectItem itemLabel="Representante" itemValue="#{2}"/>
+                                <p:ajax update="pngInterEdit" event="change"/>
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                    <h:panelGrid columns="1" style="width: 100%;font-weight: bolder;" >
+                        <h:panelGroup>
+                            <p:outputLabel value="Nombre:" /><br></br>
+                            <p:inputText value="#{inscribirPI.interv.enteInterv.nombreRelacion}" style="width: 100%;"/>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                    <h:panelGrid columns="1" style="width: 100%;font-weight: bolder;" >
+                        <h:panelGroup rendered="#{inscribirPI.interv.tipoInterviniente eq 2}">
+                            <p:outputLabel value="Cargo:" /><br></br>
+                            <p:selectOneMenu value="#{inscribirPI.interv.enteInterv.cargoRepresentante}" 
+                                             filter="true" filterMatchMode="startsWith" 
+                                             converter="entityConverter" style="width: 200px;">
+                                <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                                <f:selectItems value="#{inscribirPI.ctlgCargos}" var="carg" itemLabel="#{carg.nombre}" 
+                                               itemValue="#{carg}"/>
+                            </p:selectOneMenu>
+                        </h:panelGroup>
+                    </h:panelGrid>
+                </p:panel><br/>
+                <div align="center">
+                    <p:commandButton value="Guardar" icon="pi pi-save" actionListener="#{inscribirPI.agregarListaIntervEdit()}" />
+                    <p:spacer width="10"/>
+                    <p:commandButton value="Cancelar" icon="pi pi-ban" oncomplete="PF('dlgEditInter').hide()"/>
+                </div>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Informacion UAF" widgetVar="dlgUafe" resizable="false" modal="true">
+            <h:form id="formUaf">
+                <p:panelGrid columns="2" styleClass="noBorder" style="font-weight: bolder; font-size: 12px;">
+                    CI/RUC:
+                    <p:outputLabel value="#{inscribirPI.interv.enteInterv.cedRuc}"/>
+                    NOMBRES:
+                    <p:outputLabel value="#{inscribirPI.interv.enteInterv.nombre}"/>
+                </p:panelGrid>
+                <p:panelGrid id="pnlNacionalidad" columns="3" styleClass="noBorder" style="font-weight: bolder; font-size: 12px;">
+                    NACIONALIDAD:
+                    <p:inputText value="#{inscribirPI.interv.enteInterv.nacionalidad.descripcion}" readonly="true"/>
+                    <p:commandButton icon="ui-icon-search" styleClass="btnStyle" actionListener="#{inscribirPI.showDlg('/resources/dialog/dlglazynacionalidad')}">
+                        <p:ajax event="dialogReturn" listener="#{inscribirPI.selectNacUaf}" update="pnlNacionalidad"/>
+                    </p:commandButton>
+                </p:panelGrid>
+                <p:panelGrid columns="4" styleClass="noBorder" style="font-weight: bolder; font-size: 12px;">
+                    ROL:
+                    <p:selectOneMenu value="#{inscribirPI.uafrol}">
+                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" />
+                        <f:selectItem itemLabel="OTORGADO POR" itemValue="#{1}" />
+                        <f:selectItem itemLabel="A FAVOR DE" itemValue="#{2}" />
+                    </p:selectOneMenu>
+                    PAPEL:
+                    <p:selectOneMenu value="#{inscribirPI.interv.uafPapel}" converter="entityConverter">
+                        <f:selectItem itemLabel="Seleccionar" itemValue="#{null}" /> 
+                        <f:selectItems value="#{inscribirPI.uafPapeles}" var="up" itemLabel="#{up.nombre}" itemValue="#{up}"/>  
+                    </p:selectOneMenu>
+                </p:panelGrid>
+                <p:panelGrid styleClass="noBorder" columns="1" style="margin: 0 auto;">
+                    <p:commandButton value="Guardar Info" actionListener="#{inscribirPI.saveInfoUaf()}"/>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Participantes" widgetVar="dlgNrpm" modal="true" width="600" resizable="false">
+            <h:form id="formNrpm">
+                <p:dataTable value="#{inscribirPI.participantes}" var="par" emptyMessage="Sin participantes para seleccionar."
+                             scrollable="true" scrollHeight="250" style="text-align: center;margin: 0 auto;">
+                    <p:column headerText="CI/RUC" width="120">
+                        <p:outputLabel value="#{par.cedRuc}"/>
+                    </p:column>
+                    <p:column headerText="Nombre" >
+                        <p:outputLabel value="#{par.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Sel." width="40">
+                        <!--                        <p:commandLink actionListener="# {inscribirPI.guardarParticipante(par)}">
+                                                    <p:graphicImage value="/resources/icons/check.png" height="16"/>   
+                                                </p:commandLink>-->
+                    </p:column>
+                </p:dataTable>
+            </h:form>
+        </p:dialog>
+
+        <!--<p:dialog header="Validación de Trámite" widgetVar="dlgValidacion" modal="true" resizable="false">
+            <h:form id="formValidacion">
+                <p:panelGrid styleClass="noBorder" columns="1" style="font-weight: bolder;color: #0033FF;">
+                    Nota: Confirmar el tipo de trámite y el solicitante.
+                </p:panelGrid>
+                <p:panelGrid styleClass="noBorder" columns="2">
+                    Cédula/RUC:
+                    <p:inputText readonly="true" size="40" value="# {inscribirPI.tm.cedularuc}"/>
+                    Propietario:
+                    <p:inputText readonly="true" size="40" value="# {inscribirPI.tm.propietario}"/>
+                    Tipo:
+                    <p:inputText readonly="true" size="40" value="# {inscribirPI.tm.tipo}"/>
+                    Descripción:
+                    <p:inputText readonly="true" size="40" value="# {inscribirPI.tm.descripcion}"/>
+                    Fecha:
+                    <p:inputText readonly="true" size="40" value="# {inscribirPI.tm.fecha}"/>
+                </p:panelGrid>
+                <p:panelGrid styleClass="noBorder" columns="2" style="margin: 0 auto;">
+                    <p:commandButton value="Ejecutar Servicio" icon="ui-icon-notice" styleClass="btnStyle" oncomplete="PF('dlgValidacion').hide()"
+                                     actionListener="# {inscribirPI.ejecutarServicio()}" update="formNuevInsc:tVdetalle"/>
+                    <p:commandButton value="Cancelar" icon="ui-icon-cancel" styleClass="btnStyle" oncomplete="PF('dlgValidacion').hide()"/>
+                </p:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Intervinientes" widgetVar="dlgInterMOvimientos" modal="true" resizable="false" width="60%" >
+            <h:form id="formInterMOvimientos">
+                <p:dataTable emptyMessage="No hay datos para mostrar..." var="inter" scrollable="true" resizableColumns="true" id="dtMoviInters"
+                             value="# {inscribirPI.movimientosRelacionadosTarea}" scrollHeight="250" rowIndexVar="indexIntv"
+                             sortBy="# {inter.movimiento.id}" expandableRowGroups="true">
+                    <f:facet name="header">
+                        INTERVINIENTES MOVIMIENTOS EN TRAMITE RELACIONADOS
+                    </f:facet>
+                    <p:headerRow>
+                        <p:column colspan="3" >
+                            <p:commandButton value="Copiar" actionListener="# {inscribirPI.copiarIntervinientes(inter.movimiento)}" />
+                            <p:spacer width="20" />
+                            <h:outputText value="# {inter.movimiento.numInscripcion} - # {inter.movimiento.fechaInscripcion}" style="color: #000; "  />
+                        </p:column>
+                    </p:headerRow>
+                    <p:column headerText="No" width="15" >
+                        # {indexIntv+1}
+                    </p:column>
+                    <p:column headerText="C.I/R.U.C" width="10%">
+                        <p:outputLabel id="identInt" value="# {inter.enteInterv.cedRuc}"/>
+                        <p:tooltip value="# {inter.enteInterv.cedRuc}" for="identInt"/>
+                    </p:column>
+                    <p:column headerText="Nombre del Cliente">
+                        <p:outputLabel value="# {inter.enteInterv.nombre}" id="nombreInt"/>
+                        <p:tooltip value="# {inter.enteInterv.nombre}" for="nombreInt"/>
+                    </p:column>
+                </p:dataTable>
+                <div style="clear: both; text-align: center; ">
+                    <p:commandButton value="Cerrar" oncomplete="PF('dlgInterMOvimientos').hide()" />
+                </div>
+            </h:form>
+        </p:dialog>-->
+
+        <p:dialog header="Editar Representante" widgetVar="dlgEditRepr" resizable="false" modal="true" width="450">
+            <h:form id="formEditRepr">
+                <h:panelGrid columns="2" style="font-weight: bolder;width: 100%;" >
+                    CI/RUC:
+                    <!--<p:outputLabel value="# {inscribirPI.movRep.enteInterv.cedRuc}" style="font-weight: bolder;"/>-->
+                    <p:inputText value="#{inscribirPI.movRep.enteInterv.cedRuc}" readonly="true" style="width: 94%;"/>
+                    Nombres:
+                    <!--<p:outputLabel value="# {inscribirPI.movRep.enteInterv.nombre}" style="font-weight: bolder;"/>-->
+                    <p:inputText value="#{inscribirPI.movRep.enteInterv.nombre}" readonly="true" style="width: 94%;"/>
+                    Cargo:
+                    <p:selectOneMenu value="#{inscribirPI.movRep.cargo}" converter="entityConverter" 
+                                     filter="true" filterMatchMode="startsWith">
+                        <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}"/>  
+                        <f:selectItems value="#{inscribirPI.ctlgCargos}" var="car" itemLabel="#{car.nombre}" itemValue="#{car}"/>  
+                    </p:selectOneMenu>
+                    Atribución:
+                    <p:selectOneMenu value="#{inscribirPI.movRep.atribucion}">
+                        <f:selectItem itemLabel="Legal, judicial y extrajudicial Individual" itemValue="#{23}"/>
+                        <f:selectItem itemLabel="Legal, judicial y extrajudicial Conjunta" itemValue="#{24}"/>
+                        <f:selectItem itemLabel="Subrogar al Representante" itemValue="#{91}"/>
+                    </p:selectOneMenu>
+                    Domicilio:
+                    <p:selectOneMenu value="#{inscribirPI.movRep.domicilio}" converter="entityConverter" 
+                                     filter="true" filterMatchMode="startsWith">  
+                        <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />  
+                        <f:selectItems value="#{inscribirPI.domicilios}" var="dom" itemLabel="#{dom.nombre}" itemValue="#{dom}"/>  
+                    </p:selectOneMenu>
+                    Tiempo:
+                    <p:selectOneMenu value="#{inscribirPI.movRep.codTiempo}" converter="entityConverter">  
+                        <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />
+                        <f:selectItems value="#{inscribirPI.codigosTiempo}" var="cod" itemLabel="#{cod.valor}" itemValue="#{cod}"/>  
+                    </p:selectOneMenu>
+                    Plazo:
+                    <p:inputNumber decimalPlaces="0" value="#{inscribirPI.movRep.tiempo}"/>
+                </h:panelGrid>
+                <h:panelGrid columns="1" style="margin: 0 auto;">
+                    <p:commandButton value="Guardar" styleClass="btnStyle" oncomplete="PF('dlgEditRepr').hide()" 
+                                     update=":formNuevInsc:tVdetalle:tabPartes:dtrepresentantes" icon="ui-icon-disk"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Editar Socio" widgetVar="dlgEditSocio" resizable="false" modal="true" width="450">
+            <h:form id="formEditSocio">
+                <h:panelGrid columns="2" style="font-weight: bolder;width: 100%;" >
+                    CI/RUC:
+                    <!--<p:outputLabel value="# {inscribirPI.movSoc.enteInterv.cedRuc}" style="font-weight: bolder;"/>-->
+                    <p:inputText value="#{inscribirPI.movSoc.enteInterv.cedRuc}" readonly="true" style="width: 94%;"/>
+                    Nombres:
+                    <!--<p:outputLabel value="# {inscribirPI.movSoc.enteInterv.nombre}" style="font-weight: bolder;"/>-->
+                    <p:inputText value="#{inscribirPI.movSoc.enteInterv.nombre}" readonly="true" style="width: 94%;"/>
+                    Participacion:
+                    <p:selectOneMenu value="#{inscribirPI.movSoc.tipoParticipacion}" converter="entityConverter">  
+                        <f:selectItem itemLabel="Seleccionar..." itemValue="#{null}" />  
+                        <f:selectItems value="#{inscribirPI.ctlgParticipacion}" var="part" itemLabel="#{part.nombre}" itemValue="#{part}"/>  
+                    </p:selectOneMenu>
+                    Cantidad/Unidad:
+                    <p:inputNumber value="#{inscribirPI.movSoc.cantidad}" decimalPlaces="0" />
+                    Valor/Total:
+                    <p:inputNumber value="#{inscribirPI.movSoc.valor}" decimalPlaces="2"/>
+                </h:panelGrid>
+                <h:panelGrid columns="1" style="margin: 0 auto;">
+                    <p:commandButton value="Guardar" oncomplete="PF('dlgEditSocio').hide()" 
+                                     update=":formNuevInsc:tVdetalle:tabPartes:dtsocios" icon="pi pi-save"/>
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog header="Editar Clave Catastral" widgetVar="dlgEditFicha" resizable="false" modal="true" width="500">
+            <h:form id="formEditFicha">
+                <center><p:outputLabel value="No Ficha: #{inscribirPI.regficha.numFicha}" 
+                                       style="font-weight: bolder; font-size: 18px;color: #0033FF;" /></center><br/>
+                <h:panelGrid columns="1" style="font-weight: bolder;width: 100%;" >
+                    <p:outputLabel value="Clave Catastral:"/>
+                    <p:inputText value="#{inscribirPI.regficha.claveCatastral}" style="width: 100%;"/>
+                    <p:outputLabel value="Código Predio:"/>
+                    <p:inputNumber value="#{inscribirPI.regficha.fichaMatriz}" style="width: 100%;" 
+                                   decimalPlaces="0" thousandSeparator="" />
+                </h:panelGrid><br/>
+                <h:panelGrid columns="1" style="margin: 0 auto;">
+                    <p:commandButton value="Guardar" icon="pi pi-save" update=":formNuevInsc:tVdetalle:dtFichas"
+                                     actionListener="#{inscribirPI.editarFicha()}"  />
+                </h:panelGrid>
+            </h:form>
+        </p:dialog>
+
+        <p:dialog id="dlgInformacionFicha" header="FICHA REGISTRAL" widgetVar="dlgFichaSelect" 
+                  resizable="false" modal="true" closeOnEscape="true" height="420" width="800">
+            <h:form id="formFichaSelect">
+                <h:panelGrid style="font-weight: bolder;margin: 0 auto;width: 100%;" columns="3">
+                    <h:panelGroup>
+                        Nº de Ficha:<br/>
+                        <p:inputText value="#{inscribirPI.regficha.numFicha}" readonly="true" style="width: 100%"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Parroquia:<br/>
+                        <p:inputText value="#{inscribirPI.regficha.parroquia.descripcion}" readonly="true" style="width: 100%"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Clave Catastral<br/>
+                        <p:inputText value="#{inscribirPI.regficha.claveCatastral}" readonly="true" style="width: 100%"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Código Predio:<br/>
+                        <p:inputText value="#{inscribirPI.regficha.fichaMatriz}" readonly="true" style="width: 100%"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Área de Terreno:<br/>
+                        <p:inputText value="#{inscribirPI.regficha.areaTerreno}" readonly="true" style="width: 100%"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Área de Construcción:<br/>
+                        <p:inputText value="#{inscribirPI.regficha.areaConstruccion}" readonly="true" style="width: 100%"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Alícuota de Terreno:<br/>
+                        <p:inputText value="#{inscribirPI.regficha.alicuotaEscritura}" readonly="true" style="width: 100%"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Alícuota de Contrucción:<br/>
+                        <p:inputText value="#{inscribirPI.regficha.alicuotaConstruccion}" readonly="true" style="width: 100%"/>
+                    </h:panelGroup>
+                    <h:panelGroup>
+                        Tipo de Bien:<br/>
+                        <p:inputText value="#{inscribirPI.regficha.uafTipoBien.descripcion}" readonly="true" style="width: 100%"/>
+                    </h:panelGroup>
+                </h:panelGrid>
+                <p:panel header="Descripción del Bien y Linderos" >
+                    <p:inputTextarea value="#{inscribirPI.regficha.linderosUnificados}" 
+                                     style="width: 100%;" rows="8" readonly="true" autoResize="false"/>
+                </p:panel>
+            </h:form>
+        </p:dialog>
+
+    </ui:define>
+</ui:composition>

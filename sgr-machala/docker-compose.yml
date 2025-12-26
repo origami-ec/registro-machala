@@ -4,7 +4,7 @@ services:
     image: sigeri-web:latest 
     privileged: true 
     restart: always
-    network_mode: host
+    #network_mode: host
     environment: 
       - rutaRepoTemporal=/server_files/temp/
       - rutaRepoAnexos=/server_files/anexos/

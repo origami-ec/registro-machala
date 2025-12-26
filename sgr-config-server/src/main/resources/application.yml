@@ -6,12 +6,11 @@ spring:
   application:
     name: sigeri-config-server
 
+
   cloud:
     config:
       server:
         git:
-          uri: https://github.com/origami-ec/config-files-machala.git
-          skipSslValidation: true
+          uri: file:///opt/config-files-bas
           default-label: main
-          username: origami-ec
-          password: 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
+          clone-on-start: true

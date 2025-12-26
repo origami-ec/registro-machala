@@ -14,4 +14,4 @@ spring:
           skipSslValidation: true
           default-label: main
           username: origami-ec
-          password: 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
+          password: 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

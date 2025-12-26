@@ -10,7 +10,7 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/origami-ec/config-files-machala.git
+          uri: https://github.com/origami-ec/config-temp.git
           skipSslValidation: true
           default-label: main
           username: origami-ec

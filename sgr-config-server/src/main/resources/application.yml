@@ -11,6 +11,6 @@ spring:
     config:
       server:
         git:
-          uri: file:///opt/config-files-bas
+          uri: file:///opt/config-files-machala
           default-label: main
           clone-on-start: true
